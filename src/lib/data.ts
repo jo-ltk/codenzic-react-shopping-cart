@@ -128,14 +128,24 @@ export const LOOKBOOK = [
     speed: -0.08,
   },
   {
+    src: "/products/chair.jpg",
+    caption: "Fig. 03 — Empire chair, lion arms",
+    speed: 0.1,
+  },
+  {
     src: "/products/table.jpg",
-    caption: "Fig. 03 — Verde marble, gilt edge",
+    caption: "Fig. 04 — Verde marble, gilt edge",
     speed: 0.18,
   },
   {
     src: "/products/mirror.jpg",
-    caption: "Fig. 04 — Archival mirror, morning light",
+    caption: "Fig. 05 — Archival mirror, morning light",
     speed: -0.14,
+  },
+  {
+    src: "/products/vessel.jpg",
+    caption: "Fig. 06 — Leone urn, bronze handles",
+    speed: -0.1,
   },
 ];
 
