@@ -102,7 +102,7 @@ export function Collection() {
                 <div data-panel-img className="scale-115 will-change-transform">
                   <img
                     src={obj.img}
-                    alt={`${obj.name} — placeholder`}
+                    alt={obj.name}
                     loading="lazy"
                     className="img-tone aspect-[3/4] w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                   />

@@ -98,7 +98,7 @@ body {
 
 /* anatomy discovery dot scale is driven by GSAP on hover */
 
-/* editorial image treatment for placeholder photography */
+/* editorial image treatment for product photography */
 .img-tone {
   filter: sepia(0.18) contrast(1.04) saturate(0.92);
 }

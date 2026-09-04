@@ -6,10 +6,10 @@ project. Phase 1: visual foundation only — no product API, cart, or checkout.
 ## Concept
 
 **OBJEKT** is framed as *a catalogue of considered objects*, not a shop.
-The page reads like a magazine issue: manifesto, a horizontal index of five
-objects, a pinned "anatomy" study of one object with annotated hotspot dots,
-field notes, and a closing colophon. The background morphs between a warm
-paper world and an ink world as you scroll.
+The page reads like a magazine issue: manifesto, a horizontal index of
+objects, a pinned "anatomy" study of one object, field notes, and a closing
+colophon. The background morphs between a warm paper world and an ink world
+as you scroll.
 
 ## Stack
 
@@ -17,7 +17,7 @@ paper world and an ink world as you scroll.
 - Tailwind CSS v4 (CSS-variable theme tokens)
 - GSAP + ScrollTrigger + Lenis smooth scroll
 - Lucide icons
-- Placeholder imagery from picsum.photos
+- Product photography in `public/products/`
 
 ## Run
 

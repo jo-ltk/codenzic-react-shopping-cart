@@ -56,6 +56,14 @@ export const OBJECTS: CatalogueObject[] = [
     price: "€5,800",
     img: "/products/mirror.jpg",
   },
+  {
+    id: "obj-007",
+    index: "007",
+    name: "Crescent Sphere Sofa",
+    nature: "Forest velvet — bronze column arms",
+    price: "€7,400",
+    img: "/products/sofa.jpg",
+  },
 ];
 
 /** Dual-tone editorial fragment for the Anatomy orbital stage. */
@@ -108,8 +116,8 @@ export const STUDY = {
 
 export const LOOKBOOK = [
   {
-    src: "/products/mirror.jpg",
-    caption: "Fig. 01 — Archival mirror, morning light",
+    src: "/products/sofa.jpg",
+    caption: "Fig. 01 — Crescent sofa, evening light",
     speed: 0.12,
   },
   {
@@ -123,8 +131,8 @@ export const LOOKBOOK = [
     speed: 0.18,
   },
   {
-    src: "/products/throw.jpg",
-    caption: "Fig. 04 — Acanthus weave, fringed",
+    src: "/products/mirror.jpg",
+    caption: "Fig. 04 — Archival mirror, morning light",
     speed: -0.14,
   },
 ];

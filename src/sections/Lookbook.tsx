@@ -46,7 +46,7 @@ export function Lookbook() {
               <div data-speed={note.speed}>
                 <img
                   src={note.src}
-                  alt={`${note.caption} — placeholder`}
+                  alt={note.caption}
                   loading="lazy"
                   className="img-tone w-full scale-110 object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                 />
@@ -72,7 +72,7 @@ export function Lookbook() {
               <div data-speed={note.speed}>
                 <img
                   src={note.src}
-                  alt={`${note.caption} — placeholder`}
+                  alt={note.caption}
                   loading="lazy"
                   className="img-tone w-full scale-110 object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                 />
