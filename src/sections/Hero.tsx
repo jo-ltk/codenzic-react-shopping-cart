@@ -137,7 +137,7 @@ export function Hero() {
           src={HERO_ENVIRONMENT}
           alt=""
           draggable={false}
-          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_42%] select-none"
+          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_28%] md:object-[center_42%] select-none"
         />
       </div>
 
@@ -145,7 +145,7 @@ export function Hero() {
       <div
         data-hero-scrim
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(8,12,10,0.55)_0%,rgba(8,12,10,0.22)_32%,transparent_52%),linear-gradient(to_top,rgba(8,12,10,0.72)_0%,rgba(8,12,10,0.2)_22%,transparent_48%)] md:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
       />
 
       {/* Stage above the foot bar — figures bottom flush with SCROLL */}
@@ -153,53 +153,87 @@ export function Hero() {
         <div
           data-hero-figures
           data-cursor="VIEW"
-          className="absolute inset-x-0 top-[10%] bottom-0 z-[2] flex items-end justify-center sm:top-[8%] md:top-[6%] md:left-[18%] lg:left-[20%]"
+          className="absolute inset-x-0 top-[6%] bottom-0 z-[2] flex items-end justify-center sm:top-[8%] md:top-[6%] md:left-[18%] lg:left-[20%]"
         >
           <img
             src={HERO_FIGURES}
             alt="Sculptural figures — Heritage Collection"
             draggable={false}
-            className="pointer-events-none h-full w-full max-h-full object-contain object-bottom select-none"
+            className="pointer-events-none h-full w-full max-h-full scale-[1.12] object-cover object-[center_18%] select-none sm:scale-100 sm:object-contain sm:object-bottom md:object-contain md:object-bottom"
           />
         </div>
 
         {/* Editorial UI framed to the edges */}
-        <div className="pointer-events-none relative z-[3] flex flex-1 flex-col px-6 pt-28 md:px-12 md:pt-32 lg:px-14">
+        <div className="pointer-events-none relative z-[3] flex flex-1 flex-col px-5 pt-[4.75rem] sm:px-6 sm:pt-28 md:px-12 md:pt-32 lg:px-14">
           <div
             data-hero-copy
-            className="mt-[min(14vh,7rem)] flex max-w-xl flex-col md:mt-[min(16vh,8.5rem)]"
+            className="mt-3 flex max-w-xl flex-1 flex-col sm:mt-[min(14vh,7rem)] sm:flex-none md:mt-[min(16vh,8.5rem)]"
           >
-            <div data-hero-eyebrow className="mb-8 flex flex-col items-start gap-3.5 md:mb-10">
-              <span aria-hidden className="block h-6 w-px bg-paper/40" />
-              <p className="text-[0.55rem] tracking-[0.34em] uppercase text-paper/60">
-                Objects for a higher tomorrow
+            <div
+              data-hero-eyebrow
+              className="mb-7 flex flex-col items-start gap-3 sm:mb-8 sm:gap-3.5 md:mb-10"
+            >
+              {/* Mobile: short horizontal rule; desktop: vertical rule */}
+              <span
+                aria-hidden
+                className="block h-px w-7 bg-paper/45 sm:hidden"
+              />
+              <span
+                aria-hidden
+                className="hidden h-6 w-px bg-paper/40 sm:block"
+              />
+              <p className="text-[0.55rem] leading-[1.55] tracking-[0.34em] uppercase text-paper/60 sm:leading-normal">
+                <span className="block sm:inline">Objects</span>
+                <span className="block sm:inline">
+                  <span className="hidden sm:inline"> </span>
+                  for a higher
+                </span>
+                <span className="block sm:inline">
+                  <span className="hidden sm:inline"> </span>
+                  tomorrow
+                </span>
               </p>
             </div>
 
-            <div className="flex items-start gap-5 md:gap-8">
+            <div className="relative flex items-start gap-4 sm:gap-5 md:gap-8">
               <ol
                 aria-label="Collection sequence"
-                className="mt-2.5 flex shrink-0 flex-col gap-2"
+                className="mt-3 flex shrink-0 flex-col items-center sm:mt-2.5 sm:items-start sm:gap-2"
               >
                 {SLIDES.map((n, i) => (
                   <li
                     key={n}
                     data-hero-index
                     className={cn(
-                      "flex items-center gap-2.5 text-[0.58rem] tracking-[0.18em] tabular-nums",
+                      "flex flex-col items-center text-[0.58rem] tracking-[0.18em] tabular-nums sm:flex-row sm:gap-2.5",
                       i === 0 ? "text-paper" : "text-paper/28",
                     )}
                   >
+                    {i === 0 && (
+                      <span
+                        aria-hidden
+                        className="mb-1.5 block h-px w-3 bg-paper/70 sm:hidden"
+                      />
+                    )}
                     <span>{n}</span>
                     {i === 0 && (
-                      <span aria-hidden className="block h-px w-5 bg-paper/70" />
+                      <span
+                        aria-hidden
+                        className="hidden h-px w-5 bg-paper/70 sm:block"
+                      />
+                    )}
+                    {i < SLIDES.length - 1 && (
+                      <span
+                        aria-hidden
+                        className="my-1 block h-2.5 w-px bg-paper/28 sm:hidden"
+                      />
                     )}
                   </li>
                 ))}
               </ol>
 
-              <div className="min-w-0">
-                <h1 className="font-editorial text-[12.5vw] leading-[0.88] font-normal tracking-[-0.01em] text-paper uppercase md:text-[6.4vw] lg:text-[5.4vw]">
+              <div className="min-w-0 flex-1 pt-1 sm:pt-0">
+                <h1 className="font-editorial text-[17vw] leading-[0.86] font-normal tracking-[-0.015em] text-paper uppercase sm:text-[12.5vw] sm:leading-[0.88] sm:tracking-[-0.01em] md:text-[6.4vw] lg:text-[5.4vw]">
                   <MaskLine>Art</MaskLine>
                   <MaskLine>Lives</MaskLine>
                   <MaskLine>With</MaskLine>
@@ -213,9 +247,13 @@ export function Hero() {
 
                 <p
                   data-hero-sub
-                  className="mt-8 text-[0.55rem] tracking-[0.3em] uppercase text-paper/55 md:mt-10"
+                  className="mt-6 text-[0.55rem] leading-[1.7] tracking-[0.3em] uppercase text-paper/55 sm:mt-8 sm:leading-normal md:mt-10"
                 >
-                  Curated objects for modern spaces
+                  <span className="block sm:inline">Curated objects</span>
+                  <span className="block sm:inline">
+                    <span className="hidden sm:inline"> </span>
+                    for modern spaces
+                  </span>
                 </p>
               </div>
             </div>
@@ -225,9 +263,9 @@ export function Hero() {
               href="#catalogue"
               data-hero-cta
               data-cursor=""
-              className="pointer-events-auto mt-16 inline-flex w-fit items-center gap-5 md:mt-20"
+              className="pointer-events-auto mt-auto mb-6 inline-flex w-fit items-center gap-4 pt-10 sm:mt-16 sm:mb-0 sm:gap-5 sm:pt-0 md:mt-20"
             >
-              <span className="flex size-16 items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.05] md:size-[4.25rem]">
+              <span className="flex size-[3.75rem] items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.05] sm:size-16 md:size-[4.25rem]">
                 <ArrowRight className="size-4" strokeWidth={1.05} />
               </span>
               <span className="flex flex-col gap-1 text-[0.58rem] leading-none tracking-[0.28em] uppercase text-paper/80">
@@ -237,10 +275,10 @@ export function Hero() {
             </a>
           </div>
 
-          {/* Right-side collection info — lower right, framed to edge */}
+          {/* Right-side collection info — desktop/tablet only */}
           <aside
             data-hero-side
-            className="pointer-events-auto absolute right-6 bottom-8 flex flex-col items-end gap-2.5 text-right md:right-12 md:bottom-10 lg:right-14"
+            className="pointer-events-auto absolute right-6 bottom-8 hidden flex-col items-end gap-2.5 text-right sm:flex md:right-12 md:bottom-10 lg:right-14"
           >
             <span aria-hidden className="mb-1 block h-px w-8 bg-paper/35" />
             <span className="text-[0.55rem] tracking-[0.32em] uppercase text-paper/45">
@@ -267,9 +305,26 @@ export function Hero() {
       {/* Bottom editorial information bar */}
       <div
         data-hero-foot
-        className="relative z-[3] border-t border-paper/12 bg-[rgba(6,10,8,0.78)]"
+        className="relative z-[3] border-t border-paper/12 bg-transparent sm:bg-[rgba(6,10,8,0.78)]"
       >
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-3 md:px-12 md:py-3.5 lg:px-14">
+        {/* Mobile foot — left tags + right stacked line */}
+        <div className="flex items-end justify-between gap-4 px-5 py-4 sm:hidden">
+          <p className="text-[0.48rem] tracking-[0.24em] uppercase text-paper/48">
+            Sculpted <span className="text-paper/22">/</span> Timeless{" "}
+            <span className="text-paper/22">/</span> Meaningful
+          </p>
+          <div className="flex items-start gap-2.5 text-right">
+            <span aria-hidden className="mt-1.5 block h-px w-5 shrink-0 bg-paper/35" />
+            <p className="text-[0.48rem] leading-[1.55] tracking-[0.24em] uppercase text-paper/48">
+              <span className="block">A more</span>
+              <span className="block">conscious</span>
+              <span className="block">tomorrow</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Desktop / tablet foot — approved layout */}
+        <div className="hidden grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-3 sm:grid md:px-12 md:py-3.5 lg:px-14">
           <p className="truncate text-[0.5rem] tracking-[0.26em] uppercase text-paper/48 md:text-[0.55rem]">
             Sculpted <span className="text-paper/22">/</span> Timeless{" "}
             <span className="text-paper/22">/</span> Meaningful
@@ -285,9 +340,9 @@ export function Hero() {
           <div className="flex items-center justify-end gap-4">
             <span
               aria-hidden
-              className="hidden h-px w-14 bg-paper/28 sm:block md:w-28 lg:w-36"
+              className="h-px w-14 bg-paper/28 md:w-28 lg:w-36"
             />
-            <p className="hidden text-[0.5rem] tracking-[0.26em] uppercase text-paper/48 sm:block md:text-[0.55rem]">
+            <p className="text-[0.5rem] tracking-[0.26em] uppercase text-paper/48 md:text-[0.55rem]">
               A more conscious tomorrow
             </p>
           </div>

@@ -37,17 +37,18 @@ export function Nav() {
           ))}
         </nav>
 
-        <div className="flex items-center justify-end gap-5 md:gap-6">
+        <div className="flex items-center justify-end gap-4 sm:gap-5 md:gap-6">
           <a
             href="#catalogue"
             data-cursor=""
-            className="hidden items-center gap-2.5 text-[0.68rem] font-light tracking-[0.04em] text-white/88 sm:inline-flex"
+            aria-label="Search"
+            className="inline-flex items-center gap-2.5 text-[0.68rem] font-light tracking-[0.04em] text-white/88"
           >
-            <span>Search</span>
+            <span className="hidden sm:inline">Search</span>
             <Search className="size-3.5 opacity-90" strokeWidth={1.1} />
           </a>
 
-          <span aria-hidden className="hidden h-3.5 w-px bg-white/28 sm:block" />
+          <span aria-hidden className="h-3.5 w-px bg-white/28" />
 
           <a
             href="#footer"
