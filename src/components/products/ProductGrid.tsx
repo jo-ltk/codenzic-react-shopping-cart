@@ -5,10 +5,13 @@ import { ProductCard } from "@/components/products/ProductCard";
 
 interface ProductGridProps {
   products: Product[];
+  /** Changes when filters update so entrance motion can re-run gently. */
+  animateKey?: string;
 }
 
-export function ProductGrid({ products }: ProductGridProps) {
+export function ProductGrid({ products, animateKey = "all" }: ProductGridProps) {
   const root = useRef<HTMLDivElement>(null);
+  const hasEntered = useRef(false);
 
   useGSAP(
     () => {
@@ -17,20 +20,40 @@ export function ProductGrid({ products }: ProductGridProps) {
       const cards = gsap.utils.toArray<HTMLElement>("[data-product-card]", root.current);
       if (!cards.length) return;
 
-      gsap.from(cards, {
-        y: 36,
-        autoAlpha: 0,
-        duration: 0.7,
-        stagger: 0.06,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top 82%",
-          once: true,
+      // First paint: scroll-triggered stagger. Later filter changes: quick in-place reveal.
+      if (!hasEntered.current) {
+        gsap.from(cards, {
+          y: 36,
+          autoAlpha: 0,
+          duration: 0.7,
+          stagger: 0.06,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top 82%",
+            once: true,
+          },
+          onComplete: () => {
+            hasEntered.current = true;
+          },
+        });
+        return;
+      }
+
+      gsap.fromTo(
+        cards,
+        { y: 16, autoAlpha: 0 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.4,
+          stagger: 0.04,
+          ease: "power2.out",
+          overwrite: "auto",
         },
-      });
+      );
     },
-    { scope: root, dependencies: [products] },
+    { scope: root, dependencies: [products, animateKey] },
   );
 
   return (

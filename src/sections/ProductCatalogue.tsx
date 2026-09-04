@@ -3,14 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/motion";
 import { fetchProducts, productsQueryKey } from "@/lib/api/products";
+import { useProductFilters } from "@/hooks/useProductFilters";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { ProductSkeleton } from "@/components/products/ProductSkeleton";
 import { ProductError } from "@/components/products/ProductError";
 import { ProductEmpty } from "@/components/products/ProductEmpty";
+import { ProductFilters } from "@/components/products/ProductFilters";
+import { ProductFilterEmpty } from "@/components/products/ProductFilterEmpty";
 
 /**
- * Product Catalogue — live DummyJSON inventory rendered as an editorial grid.
- * Keeps the OBJEKT paper/ink language; TanStack Query owns fetch/cache/state.
+ * Product Catalogue — live inventory rendered as an editorial grid.
+ * TanStack Query owns fetch/cache; useProductFilters derives the visible list.
  */
 export function ProductCatalogue() {
   const root = useRef<HTMLElement>(null);
@@ -19,6 +22,9 @@ export function ProductCatalogue() {
     queryKey: productsQueryKey,
     queryFn: fetchProducts,
   });
+
+  const products = data ?? [];
+  const filters = useProductFilters(products);
 
   useGSAP(
     () => {
@@ -33,7 +39,11 @@ export function ProductCatalogue() {
     { scope: root },
   );
 
-  const products = data ?? [];
+  const showInventory = !isPending && !isError && products.length > 0;
+  const showCatalogueEmpty = !isPending && !isError && products.length === 0;
+  const showFilterEmpty =
+    showInventory && filters.hasActiveFilters && filters.filteredProducts.length === 0;
+  const showGrid = showInventory && filters.filteredProducts.length > 0;
 
   return (
     <section
@@ -65,7 +75,11 @@ export function ProductCatalogue() {
               ? "Loading inventory…"
               : isError
                 ? "Inventory unavailable"
-                : `${products.length} objects`}
+                : showInventory
+                  ? filters.hasActiveFilters
+                    ? `${filters.resultCount} of ${filters.totalCount} objects`
+                    : `${filters.totalCount} objects`
+                  : `${products.length} objects`}
           </span>
           <a
             href="#catalogue"
@@ -92,12 +106,27 @@ export function ProductCatalogue() {
         />
       ) : null}
 
-      {!isPending && !isError && products.length === 0 ? <ProductEmpty /> : null}
+      {showCatalogueEmpty ? <ProductEmpty /> : null}
 
-      {!isPending && !isError && products.length > 0 ? (
-        <div className={isFetching ? "opacity-90 transition-opacity duration-300" : undefined}>
-          <ProductGrid products={products} />
-        </div>
+      {showInventory ? (
+        <>
+          <ProductFilters filters={filters} />
+
+          {showFilterEmpty ? (
+            <ProductFilterEmpty onClear={filters.clearAll} />
+          ) : null}
+
+          {showGrid ? (
+            <div
+              className={isFetching ? "opacity-90 transition-opacity duration-300" : undefined}
+            >
+              <ProductGrid
+                products={filters.filteredProducts}
+                animateKey={`${filters.search}|${filters.category}|${filters.minPrice}|${filters.maxPrice}`}
+              />
+            </div>
+          ) : null}
+        </>
       ) : null}
     </section>
   );
