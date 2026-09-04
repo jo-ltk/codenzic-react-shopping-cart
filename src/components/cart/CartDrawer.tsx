@@ -135,9 +135,11 @@ export function CartDrawer() {
   }, [isOpen, closeCart]);
 
   const handlePlaceOrder = () => {
+    if (!canCheckout || items.length === 0) return;
     const finalTotal = summaryTotals.finalTotal;
-    clear();
+    // Capture total first, then clear — persist middleware writes [] to localStorage.
     checkout.placeOrder(finalTotal);
+    clear();
   };
 
   const handleSuccessClose = () => {
@@ -251,6 +253,7 @@ export function CartDrawer() {
           {checkout.step === "payment" ? (
             <div className="py-6">
               <PaymentSummary
+                items={items}
                 totals={summaryTotals}
                 shipping={checkout.shipping}
                 onBack={checkout.goToShipping}
@@ -272,8 +275,7 @@ export function CartDrawer() {
             <CartSummary
               totals={summaryTotals}
               onCheckout={() => {
-                if (!canCheckout) return;
-                checkout.startCheckout();
+                checkout.beginCheckout(canCheckout && items.length > 0);
               }}
             />
           </div>

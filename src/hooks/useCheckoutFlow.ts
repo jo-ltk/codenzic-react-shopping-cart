@@ -26,6 +26,14 @@ export function useCheckoutFlow() {
     setErrors({});
   }, []);
 
+  /** Guarded entry — only leave review when the bag can check out. */
+  const beginCheckout = useCallback((canProceed: boolean) => {
+    if (!canProceed) return false;
+    setStep("shipping");
+    setErrors({});
+    return true;
+  }, []);
+
   const goToReview = useCallback(() => {
     setStep("review");
   }, []);
@@ -80,6 +88,7 @@ export function useCheckoutFlow() {
     orderTotal,
     resetCheckout,
     startCheckout,
+    beginCheckout,
     goToReview,
     goToShipping,
     updateField,

@@ -1,19 +1,24 @@
 import {
   CART_DISCOUNT_RATE,
   CART_TAX_RATE,
+  calcLineTotal,
   formatMoney,
   type CartTotals,
 } from "@/lib/cart/calculations";
 import type { ShippingFormData } from "@/lib/checkout/shippingSchema";
+import type { CartItem } from "@/lib/store/cartPersist";
 
 interface PaymentSummaryProps {
+  items: CartItem[];
   totals: CartTotals;
   shipping: ShippingFormData;
   onBack: () => void;
   onPlaceOrder: () => void;
 }
 
+/** Read-only payment step — shipping + bag lines + calculated totals. */
 export function PaymentSummary({
+  items,
   totals,
   shipping,
   onBack,
@@ -47,6 +52,28 @@ export function PaymentSummary({
           <br />
           {shipping.phone}
         </p>
+      </div>
+
+      <div className="border border-charcoal/10 px-4 py-4">
+        <span className="meta text-charcoal/45">Objects</span>
+        <ul className="mt-3 space-y-3">
+          {items.map((item) => (
+            <li
+              key={item.id}
+              className="flex items-start justify-between gap-3 text-sm text-charcoal"
+            >
+              <div className="min-w-0">
+                <p className="truncate font-display text-base leading-snug">
+                  {item.title}
+                </p>
+                <p className="meta mt-1 text-charcoal/45">Qty {item.quantity}</p>
+              </div>
+              <span className="meta shrink-0 text-charcoal/80">
+                {formatMoney(calcLineTotal(item.price, item.quantity))}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="border border-charcoal/10 px-4 py-4">
@@ -93,8 +120,9 @@ export function PaymentSummary({
         <button
           type="button"
           onClick={onPlaceOrder}
+          disabled={items.length === 0 || !totals.canCheckout}
           data-cursor=""
-          className="meta inline-flex min-h-11 flex-1 items-center justify-center bg-ink px-4 py-3 text-paper transition-colors duration-300 hover:bg-accent"
+          className="meta inline-flex min-h-11 flex-1 items-center justify-center bg-ink px-4 py-3 text-paper transition-colors duration-300 hover:bg-accent disabled:cursor-not-allowed disabled:bg-charcoal/15 disabled:text-charcoal/35"
         >
           Place Order
         </button>
