@@ -1,65 +1,153 @@
 import { z } from "zod";
-import { OBJEKT_PRODUCTS } from "@/lib/data/objekt-products";
 
-const ProductSchema = z.object({
-  id: z.number(),
-  title: z.string(),
-  description: z.string(),
-  category: z.string(),
-  price: z.number(),
+const API_BASE = "https://dummyjson.com";
+
+const ReviewSchema = z.object({
   rating: z.number(),
-  thumbnail: z.string(),
-  images: z.array(z.string()).min(1),
-  brand: z.string().optional(),
-  stock: z.number().optional(),
+  comment: z.string(),
+  date: z.string(),
+  reviewerName: z.string(),
+  reviewerEmail: z.string().optional(),
 });
 
+const DimensionsSchema = z.object({
+  width: z.number(),
+  height: z.number(),
+  depth: z.number(),
+});
+
+/**
+ * DummyJSON product shape — optional fields stay optional so partial
+ * payloads still parse instead of rejecting the whole catalogue.
+ */
+const ProductSchema = z
+  .object({
+    id: z.number(),
+    title: z.string().min(1),
+    description: z.string().optional().default(""),
+    category: z.string().min(1),
+    price: z.number(),
+    discountPercentage: z.number().optional(),
+    rating: z.number().optional().default(0),
+    stock: z.number().optional(),
+    tags: z.array(z.string()).optional().default([]),
+    sku: z.string().optional(),
+    weight: z.number().optional(),
+    dimensions: DimensionsSchema.optional(),
+    warrantyInformation: z.string().optional(),
+    shippingInformation: z.string().optional(),
+    availabilityStatus: z.string().optional(),
+    reviews: z.array(ReviewSchema).optional().default([]),
+    returnPolicy: z.string().optional(),
+    minimumOrderQuantity: z.number().optional(),
+    brand: z.string().optional(),
+    thumbnail: z.string().optional().default(""),
+    images: z.array(z.string()).optional().default([]),
+  })
+  .transform((product) => {
+    const thumbnail =
+      product.thumbnail ||
+      product.images.find((src) => Boolean(src?.trim())) ||
+      "";
+    const images = (product.images.length > 0 ? product.images : [thumbnail]).filter(
+      (src) => Boolean(src?.trim()),
+    );
+
+    return {
+      ...product,
+      thumbnail,
+      images,
+    };
+  })
+  .refine((product) => product.images.length > 0 && Boolean(product.thumbnail), {
+    message: "Product requires at least one image",
+  });
+
 export type Product = z.infer<typeof ProductSchema>;
+export type ProductReview = z.infer<typeof ReviewSchema>;
 
-const ProductsSchema = z.array(ProductSchema).min(1);
+const ProductsResponseSchema = z.object({
+  products: z.array(z.unknown()),
+  total: z.number().optional(),
+  skip: z.number().optional(),
+  limit: z.number().optional(),
+});
 
-/**
- * Categories allowed in the OBJEKT shop — lighting, furniture, vessels,
- * textiles and decorative home objects only.
- */
-export const RELEVANT_CATEGORIES = new Set([
-  "sculptural-lighting",
-  "table-lamps",
-  "floor-lamps",
-  "vessels",
-  "tables",
-  "chairs",
-  "sofas",
-  "textiles",
-  "decorative-objects",
-  "furniture",
-  "home-decoration",
-]);
+const CategoryListSchema = z.array(z.string().min(1));
 
-export function isRelevantProduct(product: Product): boolean {
-  return RELEVANT_CATEGORIES.has(product.category);
-}
+function parseProducts(raw: unknown[]): Product[] {
+  const products: Product[] = [];
 
-/**
- * Catalogue inventory for TanStack Query.
- * Serves curated OBJEKT objects (incl. Meridian Floor Lamp) with local
- * sculptural photography — never beauty, apparel, or other off-brand API stock.
- */
-export async function fetchProducts(): Promise<Product[]> {
-  // Yield so TanStack Query loading state can paint editorial skeletons.
-  await Promise.resolve();
-
-  const parsed = ProductsSchema.safeParse(OBJEKT_PRODUCTS);
-  if (!parsed.success) {
-    throw new Error("Catalogue response failed validation");
-  }
-
-  const products = parsed.data.filter(isRelevantProduct);
-  if (products.length === 0) {
-    throw new Error("No relevant objects in the catalogue");
+  for (const entry of raw) {
+    const parsed = ProductSchema.safeParse(entry);
+    if (parsed.success) {
+      products.push(parsed.data);
+    }
   }
 
   return products;
 }
 
-export const productsQueryKey = ["products", "objekt-curated"] as const;
+/**
+ * Fetch the live DummyJSON catalogue.
+ * Validates each product with Zod and skips malformed rows.
+ */
+export async function fetchProducts(): Promise<Product[]> {
+  const response = await fetch(`${API_BASE}/products?limit=0`);
+
+  if (!response.ok) {
+    throw new Error(`Catalogue request failed (${response.status})`);
+  }
+
+  let json: unknown;
+  try {
+    json = await response.json();
+  } catch {
+    throw new Error("Catalogue response was not valid JSON");
+  }
+
+  const envelope = ProductsResponseSchema.safeParse(json);
+  if (!envelope.success) {
+    throw new Error("Catalogue response failed validation");
+  }
+
+  if (envelope.data.products.length === 0) {
+    return [];
+  }
+
+  const products = parseProducts(envelope.data.products);
+  if (products.length === 0) {
+    throw new Error("No valid products in the catalogue response");
+  }
+
+  return products;
+}
+
+/**
+ * All DummyJSON category slugs — used for the category filter
+ * so options are not hardcoded and stay in sync with the API.
+ */
+export async function fetchCategories(): Promise<string[]> {
+  const response = await fetch(`${API_BASE}/products/category-list`);
+
+  if (!response.ok) {
+    throw new Error(`Category list request failed (${response.status})`);
+  }
+
+  let json: unknown;
+  try {
+    json = await response.json();
+  } catch {
+    throw new Error("Category list was not valid JSON");
+  }
+
+  const parsed = CategoryListSchema.safeParse(json);
+  if (!parsed.success) {
+    throw new Error("Category list failed validation");
+  }
+
+  return [...parsed.data].sort((a, b) => a.localeCompare(b));
+}
+
+export const productsQueryKey = ["products", "dummyjson"] as const;
+export const categoriesQueryKey = ["products", "categories", "dummyjson"] as const;

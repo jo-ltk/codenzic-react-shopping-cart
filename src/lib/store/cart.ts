@@ -40,7 +40,10 @@ interface CartState {
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
-  addItem: (item: Omit<CartItem, "quantity">) => void;
+  addItem: (
+    item: Omit<CartItem, "quantity">,
+    options?: number | { quantity?: number; openCart?: boolean },
+  ) => void;
   removeItem: (id: number) => void;
   increaseQuantity: (id: number) => void;
   decreaseQuantity: (id: number) => void;
@@ -67,24 +70,36 @@ export const useCartStore = create<CartState>()(
       closeCart: () => set({ isOpen: false }),
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
 
-      addItem: (item) =>
+      addItem: (item, options) =>
         set((state) => {
+          const opts =
+            typeof options === "number"
+              ? { quantity: options, openCart: true }
+              : {
+                  quantity: options?.quantity ?? CART_MIN_QTY,
+                  openCart: options?.openCart ?? true,
+                };
+          const addQty = clampQuantity(opts.quantity ?? CART_MIN_QTY);
+          const openCart = opts.openCart !== false;
           const existing = state.items.find((i) => i.id === item.id);
           if (existing) {
             if (existing.quantity >= CART_MAX_QTY) {
-              return { isOpen: true };
+              return openCart ? { isOpen: true } : {};
             }
             return {
-              isOpen: true,
+              ...(openCart ? { isOpen: true } : {}),
               items: state.items.map((i) =>
                 i.id === item.id
-                  ? { ...i, quantity: clampQuantity(i.quantity + 1) }
+                  ? {
+                      ...i,
+                      quantity: clampQuantity(i.quantity + addQty),
+                    }
                   : i,
               ),
             };
           }
           return {
-            isOpen: true,
+            ...(openCart ? { isOpen: true } : {}),
             items: [
               ...state.items,
               {
@@ -93,7 +108,7 @@ export const useCartStore = create<CartState>()(
                 thumbnail: item.thumbnail,
                 category: item.category,
                 price: Number.isFinite(item.price) && item.price >= 0 ? item.price : 0,
-                quantity: CART_MIN_QTY,
+                quantity: addQty,
               },
             ],
           };

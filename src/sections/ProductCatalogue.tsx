@@ -1,30 +1,59 @@
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/motion";
-import { fetchProducts, productsQueryKey } from "@/lib/api/products";
+import {
+  categoriesQueryKey,
+  fetchCategories,
+  fetchProducts,
+  productsQueryKey,
+  type Product,
+} from "@/lib/api/products";
 import { useProductFilters } from "@/hooks/useProductFilters";
+import { useCartStore } from "@/lib/store/cart";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { ProductSkeleton } from "@/components/products/ProductSkeleton";
 import { ProductError } from "@/components/products/ProductError";
 import { ProductEmpty } from "@/components/products/ProductEmpty";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { ProductFilterEmpty } from "@/components/products/ProductFilterEmpty";
+import { ProductDetails } from "@/components/products/ProductDetails";
 
 /**
- * Product Catalogue — live inventory rendered as an editorial grid.
+ * Product Catalogue — live DummyJSON inventory as an editorial grid.
  * TanStack Query owns fetch/cache; useProductFilters derives the visible list.
  */
 export function ProductCatalogue() {
   const root = useRef<HTMLElement>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const isCartOpen = useCartStore((s) => s.isOpen);
 
   const { data, isPending, isError, error, refetch, isFetching } = useQuery({
     queryKey: productsQueryKey,
     queryFn: fetchProducts,
   });
 
+  const { data: categoryOptions } = useQuery({
+    queryKey: categoriesQueryKey,
+    queryFn: fetchCategories,
+    staleTime: 1000 * 60 * 30,
+  });
+
   const products = data ?? [];
-  const filters = useProductFilters(products);
+  const filters = useProductFilters(products, { categoryOptions });
+
+  const openDetails = useCallback((product: Product) => {
+    setSelectedProduct(product);
+  }, []);
+
+  const closeDetails = useCallback(() => {
+    setSelectedProduct(null);
+  }, []);
+
+  // Avoid stacking the details panel over the cart drawer.
+  useEffect(() => {
+    if (isCartOpen) setSelectedProduct(null);
+  }, [isCartOpen]);
 
   useGSAP(
     () => {
@@ -123,10 +152,15 @@ export function ProductCatalogue() {
               <ProductGrid
                 products={filters.filteredProducts}
                 animateKey={`${filters.search}|${filters.category}|${filters.minPrice}|${filters.maxPrice}`}
+                onOpenDetails={openDetails}
               />
             </div>
           ) : null}
         </>
+      ) : null}
+
+      {selectedProduct ? (
+        <ProductDetails product={selectedProduct} onClose={closeDetails} />
       ) : null}
     </section>
   );

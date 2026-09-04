@@ -7,9 +7,14 @@ interface ProductGridProps {
   products: Product[];
   /** Changes when filters update so entrance motion can re-run gently. */
   animateKey?: string;
+  onOpenDetails?: (product: Product) => void;
 }
 
-export function ProductGrid({ products, animateKey = "all" }: ProductGridProps) {
+export function ProductGrid({
+  products,
+  animateKey = "all",
+  onOpenDetails,
+}: ProductGridProps) {
   const root = useRef<HTMLDivElement>(null);
   const hasEntered = useRef(false);
 
@@ -62,7 +67,12 @@ export function ProductGrid({ products, animateKey = "all" }: ProductGridProps) 
       className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-20 xl:grid-cols-4"
     >
       {products.map((product, index) => (
-        <ProductCard key={product.id} product={product} index={index} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          index={index}
+          onOpenDetails={onOpenDetails}
+        />
       ))}
     </div>
   );

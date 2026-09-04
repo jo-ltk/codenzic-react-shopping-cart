@@ -25,25 +25,39 @@ function formatCategoryLabel(category: string) {
   return category.replace(/-/g, " ");
 }
 
+type UseProductFiltersOptions = {
+  /** Prefer API category list when available; fall back to product-derived values. */
+  categoryOptions?: string[];
+};
+
 /**
  * Client-side catalogue filtering. TanStack Query still owns the product list;
  * this hook only derives a filtered view from that data.
  */
-export function useProductFilters(products: Product[]) {
+export function useProductFilters(
+  products: Product[],
+  options: UseProductFiltersOptions = {},
+) {
   const [search, setSearch] = useState(INITIAL.search);
   const [category, setCategory] = useState(INITIAL.category);
   const [minPrice, setMinPrice] = useState<number | null>(INITIAL.minPrice);
   const [maxPrice, setMaxPrice] = useState<number | null>(INITIAL.maxPrice);
 
   const categories = useMemo(() => {
-    const unique = Array.from(new Set(products.map((p) => p.category))).sort((a, b) =>
-      a.localeCompare(b),
-    );
-    return unique.map((value) => ({
-      value,
-      label: formatCategoryLabel(value),
-    }));
-  }, [products]);
+    const fromApi = options.categoryOptions?.filter(Boolean) ?? [];
+    const unique =
+      fromApi.length > 0
+        ? Array.from(new Set(fromApi))
+        : Array.from(new Set(products.map((p) => p.category)));
+
+    return unique
+      .slice()
+      .sort((a, b) => a.localeCompare(b))
+      .map((value) => ({
+        value,
+        label: formatCategoryLabel(value),
+      }));
+  }, [products, options.categoryOptions]);
 
   const priceBounds = useMemo<PriceRange>(() => {
     if (products.length === 0) return { min: 0, max: 0 };

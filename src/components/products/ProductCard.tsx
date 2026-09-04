@@ -1,3 +1,4 @@
+import { useState, type MouseEvent } from "react";
 import { Star } from "lucide-react";
 import type { Product } from "@/lib/api/products";
 import { formatMoney } from "@/lib/cart/calculations";
@@ -8,13 +9,19 @@ interface ProductCardProps {
   product: Product;
   index: number;
   className?: string;
+  onOpenDetails?: (product: Product) => void;
 }
 
 function formatCategory(category: string) {
   return category.replace(/-/g, " ");
 }
 
-export function ProductCard({ product, index, className }: ProductCardProps) {
+export function ProductCard({
+  product,
+  index,
+  className,
+  onOpenDetails,
+}: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
   const quantityInCart = useCartStore(
     (s) => s.items.find((i) => i.id === product.id)?.quantity ?? 0,
@@ -22,17 +29,23 @@ export function ProductCard({ product, index, className }: ProductCardProps) {
   const atMax = quantityInCart >= CART_MAX_QTY;
   const image = product.images[0] ?? product.thumbnail;
   const pad = String(index + 1).padStart(3, "0");
+  const [justAdded, setJustAdded] = useState(false);
 
-  const onAdd = () => {
+  const onAdd = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     if (atMax) return;
     addItem({
       id: product.id,
       title: product.title,
       price: product.price,
-      thumbnail: product.thumbnail,
+      thumbnail: product.thumbnail || image,
       category: product.category,
     });
+    setJustAdded(true);
+    window.setTimeout(() => setJustAdded(false), 1600);
   };
+
+  const openDetails = () => onOpenDetails?.(product);
 
   return (
     <article
@@ -49,9 +62,11 @@ export function ProductCard({ product, index, className }: ProductCardProps) {
         {pad}
       </span>
 
-      <div
+      <button
+        type="button"
+        onClick={openDetails}
         data-cursor="VIEW"
-        className="relative z-10 mt-10 overflow-hidden border border-fg/10 md:mt-12"
+        className="relative z-10 mt-10 block w-full overflow-hidden border border-fg/10 text-left md:mt-12"
       >
         <div
           data-product-img
@@ -66,13 +81,20 @@ export function ProductCard({ product, index, className }: ProductCardProps) {
         </div>
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/35 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-      </div>
+      </button>
 
       <div className="relative z-10 mt-5 flex flex-1 flex-col">
-        <span className="meta text-accent">OBJ-{pad}</span>
-        <h3 className="mt-1.5 font-display text-xl leading-snug font-normal break-words md:text-2xl">
-          {product.title}
-        </h3>
+        <button
+          type="button"
+          onClick={openDetails}
+          className="text-left"
+          data-cursor=""
+        >
+          <span className="meta text-accent">OBJ-{pad}</span>
+          <h3 className="mt-1.5 font-display text-xl leading-snug font-normal break-words md:text-2xl">
+            {product.title}
+          </h3>
+        </button>
 
         <div className="meta mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-fg/50">
           <span className="capitalize">{formatCategory(product.category)}</span>
@@ -100,7 +122,11 @@ export function ProductCard({ product, index, className }: ProductCardProps) {
               : "border-fg/20 text-fg hover:border-accent hover:bg-accent hover:text-paper active:scale-[0.99]",
           )}
         >
-          {atMax ? `In bag (max ${CART_MAX_QTY})` : "Add to Cart"}
+          {atMax
+            ? `In bag (max ${CART_MAX_QTY})`
+            : justAdded
+              ? "Added"
+              : "Add to Cart"}
         </button>
       </div>
     </article>
