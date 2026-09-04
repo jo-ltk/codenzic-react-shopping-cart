@@ -50,7 +50,7 @@ export function ProductCatalogue() {
       ref={root}
       id="products"
       data-theme="paper"
-      className="relative overflow-hidden px-5 py-28 md:px-10 md:py-40 lg:px-14"
+      className="relative overflow-x-clip px-5 py-24 sm:py-28 md:px-10 md:py-40 lg:px-14"
     >
       <div
         data-catalogue-intro

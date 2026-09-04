@@ -7,6 +7,8 @@ import {
 } from "@/lib/cart/calculations";
 import type { ShippingFormData } from "@/lib/checkout/shippingSchema";
 import type { CartItem } from "@/lib/store/cartPersist";
+import { ui } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 interface PaymentSummaryProps {
   items: CartItem[];
@@ -30,10 +32,10 @@ export function PaymentSummary({
   const discountPct = Math.round(CART_DISCOUNT_RATE * 100);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-2">
       <div>
         <span className="meta text-accent">Payment</span>
-        <h3 className="mt-1 font-display text-xl font-light text-charcoal">
+        <h3 className="mt-1 font-display text-xl font-light text-charcoal sm:text-2xl">
           Review & place order
         </h3>
         <p className="mt-2 text-sm leading-relaxed text-charcoal/55">
@@ -43,7 +45,7 @@ export function PaymentSummary({
 
       <div className="border border-charcoal/10 px-4 py-4">
         <span className="meta text-charcoal/45">Ship to</span>
-        <p className="mt-2 text-sm leading-relaxed text-charcoal">
+        <p className="mt-2 text-sm leading-relaxed break-words text-charcoal">
           {shipping.fullName}
           <br />
           {shipping.address}
@@ -65,7 +67,7 @@ export function PaymentSummary({
               className="flex items-start justify-between gap-3 text-sm text-charcoal"
             >
               <div className="min-w-0">
-                <p className="truncate font-display text-base leading-snug">
+                <p className="font-display text-base leading-snug break-words">
                   {item.title}
                 </p>
                 <p className="meta mt-1 text-charcoal/45">Qty {item.quantity}</p>
@@ -116,20 +118,16 @@ export function PaymentSummary({
           onClick={onBack}
           disabled={isPlacingOrder}
           data-cursor=""
-          className="meta inline-flex min-h-11 flex-1 items-center justify-center border border-charcoal/15 px-4 py-3 text-charcoal transition-colors duration-300 hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+          className={cn(ui.btnGhost, "flex-1")}
         >
           Back to shipping
         </button>
         <button
           type="button"
           onClick={onPlaceOrder}
-          disabled={
-            items.length === 0 ||
-            !totals.canCheckout ||
-            isPlacingOrder
-          }
+          disabled={items.length === 0 || !totals.canCheckout || isPlacingOrder}
           data-cursor=""
-          className="meta inline-flex min-h-11 flex-1 items-center justify-center bg-ink px-4 py-3 text-paper transition-colors duration-300 hover:bg-accent disabled:cursor-not-allowed disabled:bg-charcoal/15 disabled:text-charcoal/35"
+          className={cn(ui.btnPrimary, "flex-1")}
         >
           {isPlacingOrder ? "Placing order…" : "Place Order"}
         </button>

@@ -6,6 +6,7 @@ import {
   formatMoney,
   type CartTotals,
 } from "@/lib/cart/calculations";
+import { ui } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 interface CartSummaryProps {
@@ -14,12 +15,13 @@ interface CartSummaryProps {
 }
 
 export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
-  const { subtotal, tax, discount, finalTotal, canCheckout } = totals;
+  const { subtotal, tax, discount, finalTotal, canCheckout, itemCount } = totals;
   const discountPct = Math.round(CART_DISCOUNT_RATE * 100);
   const taxPct = Math.round(CART_TAX_RATE * 100);
+  const isEmpty = itemCount === 0 || subtotal === 0;
 
   return (
-    <div data-cart-summary className="border-t border-charcoal/15 pt-6">
+    <div data-cart-summary className="border-t border-charcoal/15 pt-5 sm:pt-6">
       <dl className="space-y-3">
         <div className="flex items-center justify-between gap-4">
           <dt className="meta text-charcoal/45">Subtotal</dt>
@@ -59,14 +61,14 @@ export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
         </div>
       </dl>
 
-      {!canCheckout && subtotal > 0 ? (
-        <p className="mt-4 border border-accent/25 bg-accent/5 px-3 py-3 text-xs leading-relaxed text-charcoal/70">
-          Minimum order is {formatMoney(CART_MIN_CHECKOUT)}. Checkout unlocks
-          when your final total reaches {formatMoney(CART_MIN_CHECKOUT)}.
+      {!canCheckout && !isEmpty ? (
+        <p className={ui.notice} role="status">
+          Checkout is disabled below {formatMoney(CART_MIN_CHECKOUT)}. Add another
+          object so the final total reaches the minimum.
         </p>
       ) : null}
 
-      {subtotal === 0 ? (
+      {isEmpty ? (
         <p className="mt-4 text-xs leading-relaxed text-charcoal/45">
           Your bag is empty. Objects from the catalogue will gather here.
         </p>
@@ -77,14 +79,20 @@ export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
         disabled={!canCheckout}
         onClick={onCheckout}
         data-cursor=""
-        className={cn(
-          "meta mt-6 inline-flex min-h-12 w-full items-center justify-center px-4 py-3.5 transition-all duration-500",
-          canCheckout
-            ? "bg-ink text-paper hover:bg-accent"
-            : "cursor-not-allowed bg-charcoal/15 text-charcoal/35",
-        )}
+        title={
+          !canCheckout
+            ? isEmpty
+              ? "Add objects before checkout"
+              : `Minimum order is ${formatMoney(CART_MIN_CHECKOUT)}`
+            : "Continue to shipping"
+        }
+        className={cn(ui.btnPrimaryFull, "mt-6")}
       >
-        {canCheckout ? "Checkout" : "Checkout unavailable"}
+        {canCheckout
+          ? "Checkout"
+          : isEmpty
+            ? "Bag is empty"
+            : "Checkout unavailable"}
       </button>
     </div>
   );

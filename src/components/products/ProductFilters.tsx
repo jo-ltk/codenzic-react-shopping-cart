@@ -2,22 +2,13 @@ import { useRef, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/motion";
 import type { UseProductFiltersReturn } from "@/hooks/useProductFilters";
+import { formatMoney } from "@/lib/cart/calculations";
+import { ui } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 interface ProductFiltersProps {
   filters: UseProductFiltersReturn;
 }
-
-function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-const fieldClass =
-  "w-full border border-fg/15 bg-transparent px-3.5 py-2.5 text-sm text-fg outline-none transition-colors duration-300 placeholder:text-fg/35 focus:border-accent/60";
 
 const labelClass = "meta mb-2 block text-fg/45";
 
@@ -83,9 +74,9 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
   };
 
   return (
-    <div className="mb-12 border-b border-fg/15 pb-10 md:mb-16 md:pb-12">
+    <div className="mb-10 border-b border-fg/15 pb-8 sm:mb-12 sm:pb-10 md:mb-16 md:pb-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-md">
+        <div className="relative w-full sm:max-w-md lg:max-w-lg">
           <Search
             className="pointer-events-none absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-fg/40"
             strokeWidth={1.5}
@@ -98,11 +89,11 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
             placeholder="Search objects by title"
             aria-label="Search products by title"
             data-cursor=""
-            className={cn(fieldClass, "py-3 pr-3 pl-10")}
+            className={cn(ui.fieldOnTheme, "min-h-11 py-3 pr-3 pl-10")}
           />
         </div>
 
-        <div className="flex items-center justify-between gap-3 sm:justify-end">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
           <span className="meta text-fg/45">
             {resultCount} of {totalCount}
           </span>
@@ -112,7 +103,7 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
             onClick={() => setOpen((v) => !v)}
             data-cursor=""
             aria-expanded={open}
-            className="meta inline-flex items-center gap-2 border border-fg/20 px-3.5 py-2.5 text-fg transition-colors duration-300 hover:border-accent hover:text-accent md:hidden"
+            className="meta inline-flex min-h-11 items-center gap-2 border border-fg/20 px-3.5 py-2.5 text-fg transition-colors duration-300 hover:border-accent hover:text-accent md:hidden"
           >
             <SlidersHorizontal className="size-3.5" strokeWidth={1.5} />
             Filters
@@ -133,7 +124,6 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
         </div>
       </div>
 
-      {/* Desktop filters — always visible */}
       <div className="mt-6 hidden grid-cols-12 gap-4 md:grid lg:gap-6">
         <div className="md:col-span-4 lg:col-span-3">
           <label htmlFor="filter-category" className={labelClass}>
@@ -144,7 +134,7 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             data-cursor=""
-            className={cn(fieldClass, "appearance-none capitalize")}
+            className={cn(ui.fieldOnTheme, "min-h-11 appearance-none capitalize")}
           >
             <option value="all">All categories</option>
             {categories.map((item) => (
@@ -165,11 +155,11 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
             inputMode="numeric"
             min={0}
             step={50}
-            placeholder={formatPrice(priceBounds.min)}
+            placeholder={formatMoney(priceBounds.min)}
             value={minPrice ?? ""}
             onChange={(e) => onMinChange(e.target.value)}
             data-cursor=""
-            className={fieldClass}
+            className={cn(ui.fieldOnTheme, "min-h-11")}
           />
         </div>
 
@@ -183,16 +173,15 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
             inputMode="numeric"
             min={0}
             step={50}
-            placeholder={formatPrice(priceBounds.max)}
+            placeholder={formatMoney(priceBounds.max)}
             value={maxPrice ?? ""}
             onChange={(e) => onMaxChange(e.target.value)}
             data-cursor=""
-            className={fieldClass}
+            className={cn(ui.fieldOnTheme, "min-h-11")}
           />
         </div>
       </div>
 
-      {/* Mobile filters — collapsible */}
       {open ? (
         <div
           ref={panel}
@@ -206,7 +195,7 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
               id="filter-category-mobile"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className={cn(fieldClass, "appearance-none capitalize")}
+              className={cn(ui.fieldOnTheme, "min-h-11 appearance-none capitalize")}
             >
               <option value="all">All categories</option>
               {categories.map((item) => (
@@ -227,10 +216,10 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
               inputMode="numeric"
               min={0}
               step={50}
-              placeholder={formatPrice(priceBounds.min)}
+              placeholder={formatMoney(priceBounds.min)}
               value={minPrice ?? ""}
               onChange={(e) => onMinChange(e.target.value)}
-              className={fieldClass}
+              className={cn(ui.fieldOnTheme, "min-h-11")}
             />
           </div>
 
@@ -244,10 +233,10 @@ export function ProductFilters({ filters }: ProductFiltersProps) {
               inputMode="numeric"
               min={0}
               step={50}
-              placeholder={formatPrice(priceBounds.max)}
+              placeholder={formatMoney(priceBounds.max)}
               value={maxPrice ?? ""}
               onChange={(e) => onMaxChange(e.target.value)}
-              className={fieldClass}
+              className={cn(ui.fieldOnTheme, "min-h-11")}
             />
           </div>
 

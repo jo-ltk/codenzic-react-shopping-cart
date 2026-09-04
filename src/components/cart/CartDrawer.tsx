@@ -219,18 +219,31 @@ export function CartDrawer() {
         <div className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-7">
           {checkout.step === "review" ? (
             items.length === 0 ? (
-              <div className="py-16 text-center">
-                <p className="font-display text-xl font-light text-charcoal/70">
-                  Nothing gathered yet.
-                </p>
-                <button
-                  type="button"
-                  onClick={closeCart}
-                  data-cursor=""
-                  className="meta mt-6 inline-flex text-accent"
-                >
-                  Continue in the catalogue
-                </button>
+              <div className="py-12 sm:py-16">
+                <div className="mx-auto max-w-sm border border-charcoal/10 px-6 py-12 text-center sm:px-8 sm:py-14">
+                  <span className="meta text-charcoal/45">Empty</span>
+                  <p className="mt-4 font-display text-xl font-light text-charcoal sm:text-2xl">
+                    Nothing gathered yet.
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal/55">
+                    Objects from the catalogue will appear here when you add them.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeCart();
+                      requestAnimationFrame(() => {
+                        document
+                          .getElementById("products")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      });
+                    }}
+                    data-cursor=""
+                    className="meta mt-8 inline-flex min-h-11 items-center justify-center border border-charcoal/15 px-6 py-3 text-charcoal transition-colors duration-300 hover:border-accent hover:text-accent"
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
               </div>
             ) : (
               <div>

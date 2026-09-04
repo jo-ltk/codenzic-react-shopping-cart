@@ -1,4 +1,6 @@
 import { formatMoney } from "@/lib/cart/calculations";
+import { ui } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 interface OrderSuccessProps {
   orderTotal: number;
@@ -13,7 +15,7 @@ export function OrderSuccess({
   onContinueShopping,
 }: OrderSuccessProps) {
   return (
-    <div className="flex flex-col items-center py-10 text-center sm:py-14">
+    <div className="flex flex-col items-center px-1 py-10 text-center sm:py-14">
       <span className="meta text-accent">Confirmed</span>
       <h3 className="mt-4 font-display text-3xl leading-snug font-light text-charcoal sm:text-4xl">
         Order placed
@@ -26,8 +28,8 @@ export function OrderSuccess({
 
       <dl className="mt-8 w-full max-w-xs space-y-3 border border-charcoal/10 px-5 py-5 text-left">
         <div className="flex items-start justify-between gap-4">
-          <dt className="meta text-charcoal/45">Reference</dt>
-          <dd className="meta text-right text-charcoal">{orderReference}</dd>
+          <dt className="meta shrink-0 text-charcoal/45">Reference</dt>
+          <dd className="meta break-all text-right text-charcoal">{orderReference}</dd>
         </div>
         <div className="flex items-end justify-between gap-4 border-t border-charcoal/10 pt-3">
           <dt className="meta text-charcoal/45">Total</dt>
@@ -41,7 +43,7 @@ export function OrderSuccess({
         type="button"
         onClick={onContinueShopping}
         data-cursor=""
-        className="meta mt-10 inline-flex min-h-11 items-center justify-center bg-ink px-7 py-3 text-paper transition-colors duration-300 hover:bg-accent"
+        className={cn(ui.btnPrimary, "mt-10 px-7")}
       >
         Continue Shopping
       </button>

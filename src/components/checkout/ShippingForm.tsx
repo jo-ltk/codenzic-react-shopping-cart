@@ -4,6 +4,7 @@ import {
   type ShippingField,
   type ShippingFormData,
 } from "@/lib/checkout/shippingSchema";
+import { ui } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 interface ShippingFormProps {
@@ -15,7 +16,12 @@ interface ShippingFormProps {
   onBack: () => void;
 }
 
-const FIELDS: { name: ShippingField; label: string; type: string; autoComplete: string }[] = [
+const FIELDS: {
+  name: ShippingField;
+  label: string;
+  type: string;
+  autoComplete: string;
+}[] = [
   { name: "fullName", label: "Full Name", type: "text", autoComplete: "name" },
   { name: "email", label: "Email", type: "email", autoComplete: "email" },
   { name: "phone", label: "Phone", type: "tel", autoComplete: "tel" },
@@ -23,9 +29,6 @@ const FIELDS: { name: ShippingField; label: string; type: string; autoComplete: 
   { name: "city", label: "City", type: "text", autoComplete: "address-level2" },
   { name: "postalCode", label: "Postal Code", type: "text", autoComplete: "postal-code" },
 ];
-
-const fieldClass =
-  "w-full border border-charcoal/15 bg-transparent px-3.5 py-2.5 text-sm text-charcoal outline-none transition-colors duration-300 placeholder:text-charcoal/30 focus:border-accent/60";
 
 export function ShippingForm({
   values,
@@ -44,22 +47,36 @@ export function ShippingForm({
     onChange(field, e.target.value);
   };
 
+  const hasErrors = Object.keys(errors).length > 0;
+
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5 pb-2">
       <div>
         <span className="meta text-accent">Shipping</span>
-        <h3 className="mt-1 font-display text-xl font-light text-charcoal">
+        <h3 className="mt-1 font-display text-xl font-light text-charcoal sm:text-2xl">
           Where should it arrive?
         </h3>
       </div>
 
+      {hasErrors ? (
+        <p className={ui.notice} role="alert">
+          Please correct the highlighted fields before continuing.
+        </p>
+      ) : null}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {FIELDS.map((field) => {
           const error = errors[field.name];
-          const wide = field.name === "fullName" || field.name === "address" || field.name === "email";
+          const wide =
+            field.name === "fullName" ||
+            field.name === "address" ||
+            field.name === "email";
           return (
             <div key={field.name} className={wide ? "sm:col-span-2" : undefined}>
-              <label htmlFor={`ship-${field.name}`} className="meta mb-2 block text-charcoal/45">
+              <label
+                htmlFor={`ship-${field.name}`}
+                className="meta mb-2 block text-charcoal/45"
+              >
                 {field.label}
               </label>
               <input
@@ -73,12 +90,16 @@ export function ShippingForm({
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? `ship-${field.name}-error` : undefined}
                 data-cursor=""
-                className={cn(fieldClass, error && "border-accent/50")}
+                className={cn(
+                  ui.fieldOnPaper,
+                  "min-h-11",
+                  error && "border-accent/60 bg-accent/[0.03]",
+                )}
               />
               {error ? (
                 <p
                   id={`ship-${field.name}-error`}
-                  className="mt-1.5 text-xs text-accent"
+                  className="mt-1.5 text-xs leading-snug text-accent"
                   role="alert"
                 >
                   {error}
@@ -89,20 +110,11 @@ export function ShippingForm({
         })}
       </div>
 
-      <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-        <button
-          type="button"
-          onClick={onBack}
-          data-cursor=""
-          className="meta inline-flex min-h-11 flex-1 items-center justify-center border border-charcoal/15 px-4 py-3 text-charcoal transition-colors duration-300 hover:border-accent hover:text-accent"
-        >
+      <div className="flex flex-col gap-3 pt-1 sm:flex-row">
+        <button type="button" onClick={onBack} data-cursor="" className={cn(ui.btnGhost, "flex-1")}>
           Back to review
         </button>
-        <button
-          type="submit"
-          data-cursor=""
-          className="meta inline-flex min-h-11 flex-1 items-center justify-center bg-ink px-4 py-3 text-paper transition-colors duration-300 hover:bg-accent"
-        >
+        <button type="submit" data-cursor="" className={cn(ui.btnPrimary, "flex-1")}>
           Continue to payment
         </button>
       </div>
