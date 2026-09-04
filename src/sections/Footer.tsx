@@ -16,9 +16,9 @@ const LINK_GROUPS = [
   {
     title: "Practical",
     links: [
+      { label: "About", href: "/about" },
       { label: "Shipping", href: "/#footer" },
       { label: "Returns", href: "/#footer" },
-      { label: "Care guides", href: "/#footer" },
     ],
   },
   {

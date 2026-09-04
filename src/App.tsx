@@ -6,6 +6,7 @@ import { Cursor } from "@/components/Cursor";
 import { Nav } from "@/components/Nav";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { HomePage } from "@/pages/HomePage";
+import { AboutPage } from "@/pages/AboutPage";
 import { CataloguePage } from "@/pages/CataloguePage";
 import { ProductPage } from "@/pages/ProductPage";
 
@@ -13,8 +14,29 @@ function ScrollToTop() {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    if (hash) return;
-    window.scrollTo(0, 0);
+    if (!hash) {
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    const id = decodeURIComponent(hash.slice(1));
+    if (!id) return;
+
+    const scrollToHash = () => {
+      const el = document.getElementById(id);
+      if (!el) return false;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      return true;
+    };
+
+    if (scrollToHash()) return;
+
+    // Target may not be mounted yet (e.g. navigating from /about → /#catalogue).
+    const raf = requestAnimationFrame(() => {
+      if (scrollToHash()) return;
+      window.setTimeout(scrollToHash, 120);
+    });
+    return () => cancelAnimationFrame(raf);
   }, [pathname, hash]);
 
   return null;
@@ -36,6 +58,7 @@ export default function App() {
         <CartDrawer />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/catalogue" element={<CataloguePage />}>
             <Route path=":productId" element={<ProductPage />} />
           </Route>

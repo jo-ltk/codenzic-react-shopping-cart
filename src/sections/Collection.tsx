@@ -4,9 +4,10 @@ import { gsap, useGSAP } from "@/lib/motion";
 import { OBJECTS } from "@/lib/data";
 
 /**
- * "The Index" — a pinned horizontal catalogue on desktop.
+ * "The Index" — a pinned horizontal catalogue on all viewports.
+ * Vertical page scroll drives left-to-right travel.
  * Each panel's photograph drifts against the travel direction for depth.
- * On mobile / reduced motion it degrades to a vertical list.
+ * Reduced-motion users get a native horizontal swipe instead.
  */
 export function Collection() {
   const root = useRef<HTMLElement>(null);
@@ -16,7 +17,7 @@ export function Collection() {
     () => {
       const mm = gsap.matchMedia();
 
-      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
         const trackEl = track.current!;
         const distance = () => trackEl.scrollWidth - window.innerWidth;
 
@@ -53,19 +54,33 @@ export function Collection() {
           );
         });
       });
+
+      // Native L→R swipe when motion is reduced (no pin/scrub)
+      mm.add("(prefers-reduced-motion: reduce)", () => {
+        const trackEl = track.current!;
+        const scroller = root.current!;
+        scroller.style.overflowX = "auto";
+        scroller.style.setProperty("-webkit-overflow-scrolling", "touch");
+        trackEl.style.width = "max-content";
+        return () => {
+          scroller.style.overflowX = "";
+          scroller.style.removeProperty("-webkit-overflow-scrolling");
+          trackEl.style.width = "";
+        };
+      });
     },
     { scope: root },
   );
 
   return (
-    <section ref={root} id="catalogue" data-theme="ink" className="relative overflow-hidden">
+    <section ref={root} id="catalogue" data-theme="ink" className="relative overflow-x-clip">
       <div className="flex min-h-dvh items-center">
         <div
           ref={track}
-          className="flex w-full flex-col gap-20 px-5 py-28 md:w-max md:flex-row md:items-center md:gap-[7vw] md:px-[8vw] md:py-0"
+          className="flex w-max flex-row items-center gap-[12vw] px-5 py-10 md:gap-[7vw] md:px-[8vw]"
         >
           {/* intro panel */}
-          <div className="shrink-0 md:w-[30vw]">
+          <div className="w-[78vw] shrink-0 md:w-[30vw]">
             <span className="meta text-fg/50">N°03 — The Index</span>
             <h2 className="mt-6 font-display text-5xl leading-[1.05] font-light md:text-6xl">
               Five objects,
@@ -80,18 +95,18 @@ export function Collection() {
           </div>
 
           {OBJECTS.map((obj) => (
-            <article key={obj.id} className="group relative shrink-0 md:w-[34vw]">
-              {/* oversized ghost index number */}
+            <article key={obj.id} className="group relative w-[78vw] shrink-0 md:w-[34vw]">
+              {/* oversized ghost index — kept in-flow bounds so pin/overflow never crops glyphs */}
               <span
                 aria-hidden
-                className="text-outline pointer-events-none absolute -top-[0.55em] left-[-0.08em] z-0 font-display text-[9rem] leading-none font-light md:text-[13vw]"
+                className="text-outline pointer-events-none absolute top-0 left-[-0.08em] z-0 font-display text-[22vw] leading-none font-light md:text-[13vw]"
               >
                 {obj.index}
               </span>
 
               <div
                 data-cursor="VIEW"
-                className="relative z-10 mt-16 overflow-hidden md:mt-[7vw]"
+                className="relative z-10 mt-[26vw] overflow-hidden md:mt-[15vw]"
               >
                 <div data-panel-img className="scale-115 will-change-transform">
                   <img
@@ -121,7 +136,7 @@ export function Collection() {
           ))}
 
           {/* outro panel */}
-          <div className="shrink-0 md:w-[24vw] md:pr-[8vw]">
+          <div className="w-[70vw] shrink-0 pr-5 md:w-[24vw] md:pr-[8vw]">
             <p className="font-display text-3xl leading-snug font-light text-fg/70">
               Forty-three more inside the catalogue.
             </p>

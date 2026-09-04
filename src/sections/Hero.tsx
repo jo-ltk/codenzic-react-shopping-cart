@@ -24,29 +24,34 @@ export function Hero() {
 
       const ease = gsap.parseEase(`cubic-bezier(${EASE_GSAP.join(",")})`);
       const tl = gsap.timeline({ defaults: { ease } });
+      const desktopFig = root.current?.querySelector<HTMLElement>(
+        "[data-hero-figures-desktop]",
+      );
+      const figuresStage = root.current?.querySelector<HTMLElement>(
+        "[data-hero-figures]",
+      );
 
       tl.from("[data-hero-env]", {
-        scale: 1.05,
+        scale: 1.04,
         autoAlpha: 0,
-        duration: 1.8,
+        duration: 1.4,
       })
         .from(
-          "[data-hero-figures]",
-          { yPercent: 10, scale: 1.03, autoAlpha: 0, duration: 1.5 },
-          0.28,
+          figuresStage ?? "[data-hero-figures]",
+          { yPercent: 6, autoAlpha: 0, duration: 1.1 },
+          0.2,
         )
-        .from("[data-hero-scrim]", { autoAlpha: 0, duration: 1 }, 0.12)
+        .from("[data-hero-scrim]", { autoAlpha: 0, duration: 0.8 }, 0.1)
         .from(
           "[data-hero-line]",
-          { yPercent: 108, duration: 1.05, stagger: 0.09 },
-          0.48,
+          { yPercent: 100, duration: 0.85, stagger: 0.07 },
+          0.4,
         )
-        .from("[data-hero-eyebrow]", { y: 10, autoAlpha: 0, duration: 0.55 }, 0.55)
-        .from("[data-hero-sub]", { y: 12, autoAlpha: 0, duration: 0.6 }, 1.02)
-        .from("[data-hero-cta]", { y: 16, autoAlpha: 0, duration: 0.7 }, 1.12)
-        .from("[data-hero-side]", { y: 14, autoAlpha: 0, duration: 0.7 }, 1.18)
-        .from("[data-hero-index]", { autoAlpha: 0, x: -8, duration: 0.7 }, 1.05)
-        .from("[data-hero-foot]", { autoAlpha: 0, duration: 0.6 }, 1.28);
+        .from("[data-hero-eyebrow]", { autoAlpha: 0, duration: 0.45 }, 0.5)
+        .from("[data-hero-sub]", { autoAlpha: 0, duration: 0.45 }, 0.85)
+        .from("[data-hero-cta]", { autoAlpha: 0, duration: 0.5 }, 0.95)
+        .from("[data-hero-side]", { autoAlpha: 0, duration: 0.5 }, 1)
+        .from("[data-hero-foot]", { autoAlpha: 0, duration: 0.45 }, 1.05);
 
       gsap.to("[data-hero-env] img", {
         yPercent: 6,
@@ -60,28 +65,108 @@ export function Hero() {
         },
       });
 
-      gsap.to("[data-hero-figures] img", {
-        yPercent: -10,
-        scale: 1.03,
-        ease: "none",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
+      const mm = gsap.matchMedia();
+      const mobileFig = root.current?.querySelector<HTMLElement>(
+        "[data-hero-figures-mobile]",
+      );
+
+      // Mobile — gentle parallax while scrolling
+      mm.add("(max-width: 639px)", () => {
+        if (mobileFig) {
+          gsap.to(mobileFig, {
+            yPercent: -12,
+            scale: 1.04,
+            ease: "none",
+            scrollTrigger: {
+              trigger: root.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.7,
+            },
+          });
+        }
+
+        gsap.to("[data-hero-eyebrow]", {
+          y: -24,
+          autoAlpha: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top top",
+            end: "35% top",
+            scrub: true,
+          },
+        });
+
+        gsap.to("[data-hero-copy]", {
+          yPercent: -18,
+          autoAlpha: 0.35,
+          ease: "none",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.55,
+          },
+        });
+
+        gsap.to("[data-hero-foot]", {
+          y: 20,
+          autoAlpha: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top top",
+            end: "40% top",
+            scrub: true,
+          },
+        });
       });
 
-      gsap.to("[data-hero-copy]", {
-        yPercent: -7,
-        autoAlpha: 0.5,
-        ease: "none",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "42% top",
-          end: "bottom top",
-          scrub: true,
-        },
+      // Web / tablet — figures rise and scale with scroll depth
+      mm.add("(min-width: 640px)", () => {
+        if (!desktopFig) return;
+
+        gsap.fromTo(
+          desktopFig,
+          { yPercent: 0, scale: 1, transformOrigin: "50% 100%" },
+          {
+            yPercent: -18,
+            scale: 1.06,
+            ease: "none",
+            scrollTrigger: {
+              trigger: root.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.85,
+            },
+          },
+        );
+
+        if (figuresStage) {
+          gsap.to(figuresStage, {
+            yPercent: -6,
+            ease: "none",
+            scrollTrigger: {
+              trigger: root.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.1,
+            },
+          });
+        }
+
+        gsap.to("[data-hero-copy]", {
+          yPercent: -7,
+          autoAlpha: 0.5,
+          ease: "none",
+          scrollTrigger: {
+            trigger: root.current,
+            start: "42% top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
       });
 
       const explore = exploreRef.current;
@@ -165,7 +250,7 @@ export function Hero() {
       data-theme="ink"
       className="relative flex min-h-dvh flex-col overflow-hidden text-paper"
     >
-      {/* z-0 — full-bleed environment; muted on mobile so new artwork leads */}
+      {/* z-0 — same full-bleed environment on all breakpoints */}
       <div
         data-hero-env
         data-cursor="EXPLORE"
@@ -175,12 +260,7 @@ export function Hero() {
           src={HERO_ENVIRONMENT}
           alt=""
           draggable={false}
-          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_35%] opacity-40 select-none sm:opacity-100 sm:object-[center_42%]"
-        />
-        {/* Mobile atmospheric wash — blends black cutout into brand ink */}
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,rgba(18,38,26,0.35)_0%,rgba(10,22,16,0.92)_72%,#0a1610_100%)] sm:hidden"
+          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_35%] select-none sm:object-[center_42%]"
         />
       </div>
 
@@ -188,76 +268,60 @@ export function Hero() {
       <div
         data-hero-scrim
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(8,12,10,0.55)_0%,transparent_18%,transparent_48%,rgba(8,12,10,0.45)_68%,rgba(8,12,10,0.88)_100%),linear-gradient(90deg,rgba(8,12,10,0.42)_0%,transparent_22%)] sm:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(8,12,10,0.35)_0%,transparent_14%,transparent_70%,rgba(8,12,10,0.75)_100%)] sm:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
       />
 
       {/* Stage above the foot bar */}
       <div className="relative z-[2] flex min-h-0 flex-1 flex-col">
-        {/* Mobile section index — 01 / 02 / 03 */}
-        <nav
-          data-hero-index
-          aria-label="Hero sections"
-          className="pointer-events-none absolute top-[22%] left-4 z-[4] flex flex-col items-center gap-0 sm:hidden"
+        {/* Mobile eyebrow */}
+        <p
+          data-hero-eyebrow
+          className="relative z-[3] shrink-0 px-5 pt-[4.75rem] text-[0.5rem] leading-[1.65] tracking-[0.28em] uppercase text-paper/55 sm:hidden"
         >
-          {[
-            { n: "01", active: true },
-            { n: "02", active: false },
-            { n: "03", active: false },
-          ].map((item, i) => (
-            <div key={item.n} className="flex flex-col items-center">
-              {i === 0 ? (
-                <span aria-hidden className="mb-2 block h-px w-3 bg-paper/70" />
-              ) : null}
-              <span
-                className={cn(
-                  "font-mono text-[0.58rem] tracking-[0.18em]",
-                  item.active ? "text-paper" : "text-paper/35",
-                )}
-              >
-                {item.n}
-              </span>
-              {i < 2 ? (
-                <span aria-hidden className="my-2 block h-7 w-px bg-paper/25" />
-              ) : null}
-            </div>
-          ))}
-        </nav>
+          Objects for a higher tomorrow
+        </p>
 
+        {/* Figures — in-flow above copy on mobile; absolute overlay on sm+ */}
         <div
           data-hero-figures
           data-cursor="VIEW"
-          className="absolute inset-x-0 top-[6%] bottom-[2%] z-[2] flex items-center justify-center sm:top-[8%] sm:bottom-0 sm:items-end md:top-[6%] md:left-[18%] lg:left-[20%]"
+          className="relative z-[2] flex min-h-0 w-full flex-1 items-end justify-center px-2 pt-1 sm:absolute sm:inset-x-0 sm:top-[8%] sm:bottom-0 sm:items-end sm:px-0 sm:pt-0 md:top-[6%] md:left-[8%] lg:left-[10%]"
         >
           <img
+            data-hero-figures-mobile
             src={HERO_FIGURES_MOBILE}
             alt="Sculptural figures — Heritage Collection"
             draggable={false}
-            className="pointer-events-none h-[92%] w-auto max-h-full max-w-[118%] origin-center scale-[1.08] object-contain object-center select-none sm:hidden"
+            className="pointer-events-none h-full max-h-full w-full origin-bottom object-contain object-bottom will-change-transform select-none sm:hidden"
           />
           <img
+            data-hero-figures-desktop
             src={HERO_FIGURES}
             alt="Sculptural figures — Heritage Collection"
             draggable={false}
-            className="pointer-events-none hidden h-full w-full max-h-full origin-bottom object-contain object-bottom select-none sm:block sm:scale-100"
+            className="pointer-events-none hidden h-full w-full max-h-full origin-bottom object-contain object-bottom will-change-transform select-none sm:block sm:scale-100"
           />
         </div>
 
-        {/* Editorial UI framed to the edges */}
-        <div className="pointer-events-none relative z-[3] flex flex-1 flex-col px-5 pt-[4.75rem] sm:px-6 sm:pt-28 md:px-12 md:pt-32 lg:px-14">
-          {/* Mobile eyebrow — sits above the composition */}
-          <p
-            data-hero-eyebrow
-            className="mb-auto max-w-[11rem] pl-6 text-[0.5rem] leading-[1.65] tracking-[0.28em] uppercase text-paper/55 sm:hidden"
-          >
-            Objects for a higher tomorrow
-          </p>
-
+        {/* Editorial UI — sits below artwork on mobile with a little gap */}
+        <div className="pointer-events-none relative z-[3] flex shrink-0 flex-col px-5 pt-1.5 pb-1 sm:flex-1 sm:px-6 sm:pt-28 sm:pb-0 md:px-12 md:pt-32 lg:px-14">
           <div
             data-hero-copy
-            className="mt-auto flex max-w-xl flex-col pb-1 sm:mt-[min(14vh,7rem)] sm:flex-none sm:pb-0 md:mt-[min(16vh,8.5rem)]"
+            className="flex max-w-xl flex-col sm:mt-[min(14vh,7rem)]"
           >
             <div className="min-w-0">
-              <h1 className="font-editorial text-[14.5vw] leading-[0.9] font-normal tracking-[-0.015em] text-paper uppercase drop-shadow-[0_2px_24px_rgba(8,12,10,0.45)] sm:text-[12.5vw] sm:leading-[0.88] sm:tracking-[-0.01em] sm:drop-shadow-none md:text-[6.4vw] lg:text-[5.4vw]">
+              {/* Mobile — single horizontal line, clear of the image */}
+              <h1 className="font-editorial text-[clamp(1.35rem,7.2vw,2.05rem)] leading-none font-normal tracking-[-0.02em] whitespace-nowrap text-paper uppercase sm:hidden">
+                <MaskLine>
+                  Art Lives With You
+                  <sup className="ml-0.5 align-super text-[0.32em] tracking-normal normal-case">
+                    ™
+                  </sup>
+                </MaskLine>
+              </h1>
+
+              {/* Desktop / tablet — stacked editorial lines */}
+              <h1 className="font-editorial hidden text-[12.5vw] leading-[0.88] font-normal tracking-[-0.01em] text-paper uppercase sm:block md:text-[6.4vw] lg:text-[5.4vw]">
                 <MaskLine>Art</MaskLine>
                 <MaskLine>Lives</MaskLine>
                 <MaskLine>With</MaskLine>
@@ -271,7 +335,7 @@ export function Hero() {
 
               <p
                 data-hero-sub
-                className="mt-4 text-[0.52rem] leading-[1.7] tracking-[0.28em] uppercase text-paper/65 sm:mt-8 sm:text-[0.55rem] sm:leading-normal sm:tracking-[0.3em] sm:text-paper/55 md:mt-10"
+                className="mt-3 text-[0.52rem] leading-[1.7] tracking-[0.28em] uppercase text-paper/65 sm:mt-8 sm:text-[0.55rem] sm:leading-normal sm:tracking-[0.3em] sm:text-paper/55 md:mt-10"
               >
                 <span className="block sm:inline">Curated objects</span>
                 <span className="block sm:inline">
@@ -286,7 +350,7 @@ export function Hero() {
               href="#catalogue"
               data-hero-cta
               data-cursor=""
-              className="pointer-events-auto mt-8 mb-3 inline-flex w-fit items-center gap-3.5 sm:mt-16 sm:mb-0 sm:gap-5 sm:pt-0 md:mt-20"
+              className="pointer-events-auto mt-5 mb-2 inline-flex w-fit items-center gap-3.5 sm:mt-16 sm:mb-0 sm:gap-5 md:mt-20"
             >
               <span className="relative flex size-[4.25rem] shrink-0 items-center justify-center sm:size-[5.5rem] md:size-[6.75rem]">
                 <span
@@ -296,7 +360,7 @@ export function Hero() {
                 />
                 <span
                   data-hero-cta-circle
-                  className="relative z-[1] flex size-full items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] will-change-transform active:scale-[0.97] transition-transform"
+                  className="relative z-[1] flex size-full items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] will-change-transform transition-transform active:scale-[0.97]"
                 >
                   <ArrowRight
                     data-hero-cta-arrow

@@ -8,16 +8,23 @@ import { cn } from "@/lib/utils";
 type NavLink = { label: string; to: string };
 
 function buildLinks(isHome: boolean): NavLink[] {
+  // Only real routes / home sections — no Journal page, so Lookbook stands in.
   return [
     { label: "Shop", to: "/catalogue" },
-    { label: "Collections", to: isHome ? "#index" : "/#index" },
-    { label: "About", to: isHome ? "#manifesto" : "/#manifesto" },
-    { label: "Journal", to: isHome ? "#anatomy" : "/#anatomy" },
+    { label: "Collections", to: isHome ? "#catalogue" : "/#catalogue" },
+    { label: "About", to: "/about" },
+    { label: "Lookbook", to: isHome ? "#index" : "/#index" },
   ];
 }
 
 function isShopActive(pathname: string) {
   return pathname === "/catalogue" || pathname.startsWith("/catalogue/");
+}
+
+function isLinkActive(to: string, pathname: string) {
+  if (to === "/catalogue") return isShopActive(pathname);
+  if (to === "/about") return pathname === "/about";
+  return false;
 }
 
 const SCROLL_DELTA = 6;
@@ -274,7 +281,7 @@ export function Nav() {
 
           <nav aria-label="Primary" className="hidden flex-1 items-stretch md:flex">
             {links.map((link) => {
-              const active = link.to === "/catalogue" && isShopActive(pathname);
+              const active = isLinkActive(link.to, pathname);
               return (
                 <Link
                   key={link.label}
@@ -408,7 +415,7 @@ export function Nav() {
             <nav aria-label="Menu links" className="flex flex-1 flex-col justify-center">
               <ul className="grid gap-3 sm:gap-4 md:grid-cols-2 md:gap-5">
                 {links.map((link) => {
-                  const active = link.to === "/catalogue" && isShopActive(pathname);
+                  const active = isLinkActive(link.to, pathname);
                   return (
                     <li key={link.label} className="overflow-hidden">
                       <Link
