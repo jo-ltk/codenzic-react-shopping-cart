@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/motion";
 import { OBJECTS } from "@/lib/data";
@@ -73,7 +74,7 @@ export function Collection() {
   );
 
   return (
-    <section ref={root} id="catalogue" data-theme="ink" className="relative overflow-x-clip">
+    <section ref={root} id="collection" data-theme="ink" className="relative overflow-x-clip">
       <div className="flex min-h-dvh items-center">
         <div
           ref={track}
@@ -140,12 +141,13 @@ export function Collection() {
             <p className="font-display text-3xl leading-snug font-light text-fg/70">
               Forty-three more inside the catalogue.
             </p>
-            <a
-              href="#footer"
+            <Link
+              to="/catalogue"
+              data-cursor=""
               className="meta mt-6 inline-flex items-center gap-2 text-accent"
             >
-              Request access <ArrowUpRight className="size-3.5" strokeWidth={1.5} />
-            </a>
+              Enter the catalogue <ArrowUpRight className="size-3.5" strokeWidth={1.5} />
+            </Link>
           </div>
         </div>
       </div>

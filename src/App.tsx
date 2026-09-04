@@ -32,7 +32,7 @@ function ScrollToTop() {
 
     if (scrollToHash()) return;
 
-    // Target may not be mounted yet (e.g. navigating from /about → /#catalogue).
+    // Target may not be mounted yet (e.g. navigating from /about → /#collection).
     const raf = requestAnimationFrame(() => {
       if (scrollToHash()) return;
       window.setTimeout(scrollToHash, 120);

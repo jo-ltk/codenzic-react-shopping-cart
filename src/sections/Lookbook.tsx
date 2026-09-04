@@ -220,7 +220,7 @@ export function Lookbook() {
   return (
     <section
       ref={root}
-      id="index"
+      id="lookbook"
       data-theme="paper"
       className="relative overflow-x-clip px-5 py-28 md:px-10 md:py-44 lg:py-52"
     >

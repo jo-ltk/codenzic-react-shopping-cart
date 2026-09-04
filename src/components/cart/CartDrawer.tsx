@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router";
 import { X } from "lucide-react";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { useCartTotals } from "@/hooks/useCartTotals";
@@ -21,6 +22,7 @@ export function CartDrawer() {
   const closeCart = useCartStore((s) => s.closeCart);
   const clear = useCartStore((s) => s.clear);
   const checkout = useCheckoutFlow();
+  const navigate = useNavigate();
 
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLElement>(null);
@@ -33,6 +35,20 @@ export function CartDrawer() {
   useEffect(() => {
     if (!isOpen) checkout.resetCheckout();
   }, [isOpen, checkout.resetCheckout]);
+
+  // Avoid "aria-hidden on focused descendant" when closing with focus still inside.
+  useEffect(() => {
+    if (isOpen) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && root.current?.contains(active)) {
+      active.blur();
+    }
+  }, [isOpen]);
+
+  const goContinueShopping = () => {
+    closeCart();
+    navigate("/catalogue");
+  };
 
   useEffect(() => {
     const rootEl = root.current;
@@ -153,10 +169,7 @@ export function CartDrawer() {
 
   const handleContinueShopping = () => {
     checkout.resetCheckout();
-    closeCart();
-    requestAnimationFrame(() => {
-      document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
-    });
+    goContinueShopping();
   };
 
   const title =
@@ -230,14 +243,7 @@ export function CartDrawer() {
                   </p>
                   <button
                     type="button"
-                    onClick={() => {
-                      closeCart();
-                      requestAnimationFrame(() => {
-                        document
-                          .getElementById("products")
-                          ?.scrollIntoView({ behavior: "smooth" });
-                      });
-                    }}
+                    onClick={goContinueShopping}
                     data-cursor=""
                     className="meta mt-8 inline-flex min-h-11 items-center justify-center border border-charcoal/15 px-6 py-3 text-charcoal transition-colors duration-300 hover:border-accent hover:text-accent"
                   >

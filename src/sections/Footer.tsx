@@ -11,7 +11,7 @@ const LINK_GROUPS = [
     links: [
       { label: "Current issue", to: "/catalogue" },
       { label: "Archive", to: "/catalogue" },
-      { label: "The workshops", to: "/#index" },
+      { label: "The workshops", to: "/#lookbook" },
     ],
   },
   {

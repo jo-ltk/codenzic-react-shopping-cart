@@ -9,11 +9,13 @@ type NavLink = { label: string; to: string };
 
 function buildLinks(isHome: boolean): NavLink[] {
   // Only real routes / home sections — no Journal page, so Lookbook stands in.
+  // Hash targets use distinct ids (collection / lookbook) so they never collide
+  // with the /catalogue route path.
   return [
     { label: "Shop", to: "/catalogue" },
-    { label: "Collections", to: isHome ? "#catalogue" : "/#catalogue" },
+    { label: "Collections", to: isHome ? "#collection" : "/#collection" },
     { label: "About", to: "/about" },
-    { label: "Lookbook", to: isHome ? "#index" : "/#index" },
+    { label: "Lookbook", to: isHome ? "#lookbook" : "/#lookbook" },
   ];
 }
 
@@ -58,6 +60,15 @@ export function Nav() {
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
+
+  // Avoid aria-hidden focus warnings when the overlay closes with focus inside.
+  useEffect(() => {
+    if (menuOpen) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && overlayRef.current?.contains(active)) {
+      active.blur();
+    }
+  }, [menuOpen]);
 
   // Publish live nav height so drawers/overlays clear the fixed bar.
   useEffect(() => {

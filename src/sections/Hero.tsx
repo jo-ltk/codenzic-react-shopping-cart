@@ -347,7 +347,7 @@ export function Hero() {
 
             <a
               ref={exploreRef}
-              href="#catalogue"
+              href="#collection"
               data-hero-cta
               data-cursor=""
               className="pointer-events-auto mt-5 mb-2 inline-flex w-fit items-center gap-3.5 sm:mt-16 sm:mb-0 sm:gap-5 md:mt-20"
@@ -389,7 +389,7 @@ export function Hero() {
               The Heritage Collection
             </p>
             <a
-              href="#catalogue"
+              href="#collection"
               data-cursor=""
               className="group mt-3 inline-flex flex-col items-end gap-1.5 text-[0.55rem] tracking-[0.22em] uppercase text-paper/60 transition-colors hover:text-paper"
             >
