@@ -16,6 +16,7 @@ export function Nav() {
   const cartCount = useCartStore((s) =>
     s.items.reduce((sum, item) => sum + item.quantity, 0),
   );
+  const openCart = useCartStore((s) => s.openCart);
 
   return (
     <header className="fixed inset-x-0 top-0 z-[80] mix-blend-difference">
@@ -55,13 +56,15 @@ export function Nav() {
 
           <span aria-hidden className="h-3.5 w-px bg-white/45 sm:bg-white/28" />
 
-          <a
-            href="#products"
+          <button
+            type="button"
+            onClick={openCart}
             data-cursor=""
-            className="text-[0.68rem] font-light tracking-[0.04em] text-white/88"
+            aria-label={`Open cart, ${cartCount} items`}
+            className="text-[0.68rem] font-light tracking-[0.04em] text-white/88 transition-opacity duration-300 hover:opacity-70"
           >
             Cart ({cartCount})
-          </a>
+          </button>
 
           <button
             type="button"

@@ -4,6 +4,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { Grain } from "@/components/Grain";
 import { Cursor } from "@/components/Cursor";
 import { Nav } from "@/components/Nav";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Hero } from "@/sections/Hero";
 import { Manifesto } from "@/sections/Manifesto";
 import { Collection } from "@/sections/Collection";
@@ -70,6 +71,7 @@ export default function App() {
       <Grain />
       <Cursor />
       <Nav />
+      <CartDrawer />
       <main ref={main}>
         <Hero />
         <Manifesto />

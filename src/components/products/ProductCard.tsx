@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 import type { Product } from "@/lib/api/products";
-import { useCartStore } from "@/lib/store/cart";
+import { CART_MAX_QTY, useCartStore } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
@@ -23,10 +23,15 @@ function formatCategory(category: string) {
 
 export function ProductCard({ product, index, className }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
+  const quantityInCart = useCartStore(
+    (s) => s.items.find((i) => i.id === product.id)?.quantity ?? 0,
+  );
+  const atMax = quantityInCart >= CART_MAX_QTY;
   const image = product.images[0] ?? product.thumbnail;
   const pad = String(index + 1).padStart(3, "0");
 
   const onAdd = () => {
+    if (atMax) return;
     addItem({
       id: product.id,
       title: product.title,
@@ -92,10 +97,16 @@ export function ProductCard({ product, index, className }: ProductCardProps) {
         <button
           type="button"
           onClick={onAdd}
+          disabled={atMax}
           data-cursor=""
-          className="meta mt-5 inline-flex min-h-11 w-full items-center justify-center border border-fg/20 px-4 py-3 text-fg transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-accent hover:bg-accent hover:text-paper active:scale-[0.99]"
+          className={cn(
+            "meta mt-5 inline-flex min-h-11 w-full items-center justify-center border px-4 py-3 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            atMax
+              ? "cursor-not-allowed border-fg/10 text-fg/35"
+              : "border-fg/20 text-fg hover:border-accent hover:bg-accent hover:text-paper active:scale-[0.99]",
+          )}
         >
-          Add to Cart
+          {atMax ? "In bag (max 5)" : "Add to Cart"}
         </button>
       </div>
     </article>
