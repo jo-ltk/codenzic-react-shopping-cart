@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link, useParams } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
-import { gsap, prefersReducedMotion, THEME, useGSAP } from "@/lib/motion";
+import { THEME } from "@/lib/motion";
 import {
   fetchProductById,
+  fetchProducts,
   ProductNotFoundError,
   productQueryKey,
   productsQueryKey,
@@ -22,6 +23,14 @@ function parseProductId(value: string | undefined) {
   return Number.isFinite(id) && id > 0 ? id : null;
 }
 
+function pickRelated(all: Product[] | undefined, current: Product, count = 4) {
+  if (!all?.length) return [];
+  const others = all.filter((item) => item.id !== current.id);
+  const same = others.filter((item) => item.category === current.category);
+  const rest = others.filter((item) => item.category !== current.category);
+  return [...same, ...rest].slice(0, count);
+}
+
 function BackToObjects() {
   return (
     <Link
@@ -30,16 +39,16 @@ function BackToObjects() {
       className="meta inline-flex items-center gap-2 text-fg/55 transition-colors duration-300 hover:text-accent"
     >
       <ArrowLeft className="size-3.5" strokeWidth={1.5} />
-      Back to Objects
+      Back to Catalogue
     </Link>
   );
 }
 
 function ProductStudySkeleton() {
   return (
-    <div aria-hidden className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-12 lg:gap-16">
-      <div className="aspect-[3/4] w-full animate-pulse border border-fg/10 bg-fg/[0.05]" />
-      <div className="animate-pulse space-y-5 md:pt-2">
+    <div aria-hidden className="grid grid-cols-1 border-y border-fg/15 lg:grid-cols-2">
+      <div className="aspect-[3/4] w-full animate-pulse bg-fg/[0.05] lg:aspect-auto lg:min-h-[calc(100svh-8.5rem)]" />
+      <div className="animate-pulse space-y-5 px-5 py-10 sm:px-8 lg:px-12 lg:py-12">
         <div className="h-2 w-24 bg-fg/10" />
         <div className="h-12 w-4/5 max-w-sm bg-fg/[0.08]" />
         <div className="h-2 w-32 bg-fg/10" />
@@ -49,7 +58,7 @@ function ProductStudySkeleton() {
           <div className="h-3 w-5/6 bg-fg/10" />
           <div className="h-3 w-2/3 bg-fg/10" />
         </div>
-        <div className="mt-8 h-12 w-full border border-fg/10 bg-fg/[0.03]" />
+        <div className="mt-8 h-24 w-full border border-fg/10 bg-fg/[0.03]" />
       </div>
     </div>
   );
@@ -57,17 +66,19 @@ function ProductStudySkeleton() {
 
 function ProductMissing() {
   return (
-    <EditorialState
-      eyebrow="Not found"
-      accent
-      title="This object is no longer in the issue."
-      body="It may have left the catalogue, or the link is incomplete."
-      action={
-        <Link to="/catalogue" data-cursor="" className={ui.btnGhostTheme}>
-          Back to Objects
-        </Link>
-      }
-    />
+    <div className="px-5 py-24 sm:px-8 md:px-10 lg:px-14">
+      <EditorialState
+        eyebrow="Not found"
+        accent
+        title="This object is no longer in the issue."
+        body="It may have left the catalogue, or the link is incomplete."
+        action={
+          <Link to="/catalogue" data-cursor="" className={ui.btnGhostTheme}>
+            Back to Catalogue
+          </Link>
+        }
+      />
+    </div>
   );
 }
 
@@ -95,23 +106,21 @@ export function ProductPage() {
     },
   });
 
+  const catalogue = useQuery({
+    queryKey: productsQueryKey,
+    queryFn: fetchProducts,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const related = useMemo(
+    () => (data ? pickRelated(catalogue.data, data) : []),
+    [catalogue.data, data],
+  );
+
   useEffect(() => {
     document.documentElement.style.setProperty("--bg", THEME.paper.bg);
     document.documentElement.style.setProperty("--fg", THEME.paper.fg);
   }, []);
-
-  useGSAP(
-    () => {
-      if (prefersReducedMotion() || !data) return;
-      gsap.from("[data-study]", {
-        y: 28,
-        autoAlpha: 0,
-        duration: 0.75,
-        ease: "power3.out",
-      });
-    },
-    { scope: root, dependencies: [data?.id] },
-  );
 
   const isNotFound = id === null || error instanceof ProductNotFoundError;
 
@@ -120,12 +129,12 @@ export function ProductPage() {
       <main
         ref={root}
         data-theme="paper"
-        className="relative overflow-x-clip px-5 pt-28 pb-24 sm:pt-32 sm:pb-28 md:px-10 md:pt-36 md:pb-40 lg:px-14"
+        className="relative overflow-x-clip pt-24 pb-0 sm:pt-28 md:pt-32"
       >
-        <div className="mb-10 flex flex-col gap-6 border-b border-fg/15 pb-8 md:mb-14 md:flex-row md:items-end md:justify-between md:pb-10">
+        <div className="flex flex-col gap-4 px-5 py-6 sm:px-8 sm:py-8 md:flex-row md:items-end md:justify-between md:px-10 lg:px-14">
           <div className="min-w-0">
             <BackToObjects />
-            <p className="meta mt-5 text-fg/45">
+            <p className="meta mt-4 text-fg/45">
               <Link to="/" data-cursor="" className="transition-colors duration-300 hover:text-accent">
                 Home
               </Link>
@@ -135,7 +144,7 @@ export function ProductPage() {
                 data-cursor=""
                 className="transition-colors duration-300 hover:text-accent"
               >
-                Shop / Objects
+                Catalogue
               </Link>
               {data && !isNotFound ? ` / ${data.title}` : ""}
             </p>
@@ -145,21 +154,19 @@ export function ProductPage() {
         {id !== null && isLoading && !data ? <ProductStudySkeleton /> : null}
 
         {id !== null && isError && !isNotFound && !data ? (
-          <ProductError
-            message={error instanceof Error ? error.message : undefined}
-            onRetry={() => void refetch()}
-          />
+          <div className="px-5 py-16 sm:px-8 md:px-10 lg:px-14">
+            <ProductError
+              message={error instanceof Error ? error.message : undefined}
+              onRetry={() => void refetch()}
+            />
+          </div>
         ) : null}
 
         {isNotFound || (id !== null && !isLoading && !isError && !data) ? (
           <ProductMissing />
         ) : null}
 
-        {data && !isNotFound ? (
-          <div data-study>
-            <ProductDetails product={data} />
-          </div>
-        ) : null}
+        {data && !isNotFound ? <ProductDetails product={data} related={related} /> : null}
       </main>
       <Footer />
     </>
