@@ -37,11 +37,6 @@ export function Manifesto() {
             accents={["slow", "quiet", "outlive"]}
             className="font-display text-3xl leading-[1.25] font-light md:text-5xl lg:text-6xl"
           />
-
-          <p className="mt-14 max-w-sm text-sm leading-relaxed text-fg/50 md:ml-[38%]">
-            No drops. No countdown timers. Each issue holds forty-eight
-            objects and stays open until they find their rooms.
-          </p>
         </div>
       </div>
     </section>

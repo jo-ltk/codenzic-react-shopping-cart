@@ -80,8 +80,10 @@ export interface StudyState {
 
 export const STUDY = {
   object: OBJECTS[2],
-  intro:
-    "One object per issue is taken apart. Not physically — narratively. This issue: the Empire Wing Chair.",
+  /** Cutout / study-only art — keeps The Index on the original catalogue plates. */
+  img: "/products/chair.png",
+  companionImg: "/products/sofa.png",
+  fragmentImg: "/products/vessel.png",
   /** Three scroll-pinned editorial states around one object. */
   states: [
     {
@@ -142,3 +144,6 @@ export const HERO_ENVIRONMENT = "/hero/objekt-environment2.png";
 
 /** Transparent-cutout foreground figures for the hero only. */
 export const HERO_FIGURES = "/hero/objekt-figures.png";
+
+/** Mobile-only foreground figures for the hero. */
+export const HERO_FIGURES_MOBILE = "/hero/objekt-figures-mobile.png";

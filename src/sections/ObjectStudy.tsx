@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/motion";
-import { LOOKBOOK, OBJECTS, STUDY } from "@/lib/data";
+import { STUDY } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 type OrbitConfig = {
@@ -20,6 +20,7 @@ type OrbitItem = {
   src?: string;
   alt?: string;
   className?: string;
+  imgClassName?: string;
 };
 
 /**
@@ -35,22 +36,24 @@ const ORBIT: OrbitItem[] = [
   {
     id: "photo-a",
     kind: "photo",
-    src: STUDY.object.img,
+    src: STUDY.img,
     alt: `${STUDY.object.name} study`,
     desktop: { angle: 205, rx: 46, ry: 38, scale: 1 },
     mobile: { angle: 200, rx: 38, ry: 40, scale: 0.62 },
     className:
-      "h-[min(36vmin,22rem)] w-[min(24vmin,15rem)] overflow-hidden rounded-[1.6rem] shadow-[0_20px_50px_-28px_rgba(10,22,16,0.45)] sm:rounded-[2rem] md:h-[min(42vmin,28rem)] md:w-[min(28vmin,19rem)] md:rounded-[2.4rem]",
+      "h-[min(40vmin,26rem)] w-[min(40vmin,26rem)] md:h-[min(48vmin,32rem)] md:w-[min(48vmin,32rem)]",
+    imgClassName: "object-contain",
   },
   {
     id: "photo-b",
     kind: "photo",
-    src: LOOKBOOK[0].src,
+    src: STUDY.companionImg,
     alt: "Object in situ",
     desktop: { angle: 25, rx: 44, ry: 36, scale: 1 },
     mobile: { angle: 18, rx: 36, ry: 38, scale: 0.58 },
     className:
-      "h-[min(30vmin,18rem)] w-[min(21vmin,13rem)] overflow-hidden rounded-[1.4rem] shadow-[0_18px_46px_-26px_rgba(10,22,16,0.4)] sm:rounded-[1.8rem] md:h-[min(38vmin,24rem)] md:w-[min(26vmin,17rem)] md:rounded-[2.2rem]",
+      "h-[min(34vmin,22rem)] w-[min(34vmin,22rem)] md:h-[min(42vmin,28rem)] md:w-[min(42vmin,28rem)]",
+    imgClassName: "object-contain",
   },
   {
     id: "forest",
@@ -103,12 +106,13 @@ const ORBIT: OrbitItem[] = [
   {
     id: "fragment",
     kind: "photo",
-    src: OBJECTS[0].img,
-    alt: "Material fragment",
+    src: STUDY.fragmentImg,
+    alt: "Leone Urn study",
     desktop: { angle: 175, rx: 50, ry: 32, scale: 0.7 },
     mobile: false,
     className:
-      "hidden h-[min(18vmin,12rem)] w-[min(14vmin,9rem)] overflow-hidden rounded-[1.4rem] md:block",
+      "hidden h-[min(22vmin,14rem)] w-[min(22vmin,14rem)] md:block",
+    imgClassName: "object-contain",
   },
 ];
 
@@ -316,7 +320,10 @@ export function ObjectStudy() {
                   src={item.src}
                   alt={item.alt ?? ""}
                   loading="lazy"
-                  className="img-tone h-full w-full object-cover"
+                  className={cn(
+                    "img-tone h-full w-full",
+                    item.imgClassName ?? "object-cover",
+                  )}
                 />
               ) : null}
               {item.kind === "disc" ? (
@@ -360,10 +367,6 @@ export function ObjectStudy() {
             </p>
           </div>
         </div>
-
-        <p className="pointer-events-none absolute bottom-[max(1.25rem,3vh)] left-1/2 z-20 hidden max-w-xs -translate-x-1/2 text-center text-xs leading-relaxed text-fg/40 md:block">
-          {STUDY.intro}
-        </p>
       </div>
     </section>
   );

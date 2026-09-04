@@ -9,7 +9,8 @@ import { ProductSkeleton } from "@/components/products/ProductSkeleton";
 import { ProductError } from "@/components/products/ProductError";
 import { ProductEmpty } from "@/components/products/ProductEmpty";
 
-const HOME_SELECTION = 6;
+/** Two full rows at `xl:grid-cols-4` — avoids a sparse last row. */
+const HOME_SELECTION = 8;
 
 /**
  * Homepage catalogue preview — a small curated set from the live inventory.

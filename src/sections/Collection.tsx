@@ -11,7 +11,6 @@ import { OBJECTS } from "@/lib/data";
 export function Collection() {
   const root = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
-  const progress = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -32,11 +31,6 @@ export function Collection() {
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              if (progress.current) {
-                gsap.set(progress.current, { scaleX: self.progress });
-              }
-            },
           },
         });
 
@@ -139,11 +133,6 @@ export function Collection() {
             </a>
           </div>
         </div>
-      </div>
-
-      {/* travel progress */}
-      <div className="pointer-events-none absolute inset-x-[8vw] bottom-10 hidden h-px bg-fg/15 md:block">
-        <div ref={progress} className="h-full origin-left scale-x-0 bg-accent" />
       </div>
     </section>
   );

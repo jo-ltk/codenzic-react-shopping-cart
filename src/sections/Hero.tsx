@@ -1,7 +1,7 @@
 import { useRef, type ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { gsap, useGSAP, EASE_GSAP, prefersReducedMotion, isFinePointer } from "@/lib/motion";
-import { HERO_ENVIRONMENT, HERO_FIGURES } from "@/lib/data";
+import { HERO_ENVIRONMENT, HERO_FIGURES, HERO_FIGURES_MOBILE } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 function MaskLine({ children, className }: { children: ReactNode; className?: string }) {
@@ -13,8 +13,6 @@ function MaskLine({ children, className }: { children: ReactNode; className?: st
     </span>
   );
 }
-
-const SLIDES = ["01", "02", "03"] as const;
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
@@ -38,12 +36,10 @@ export function Hero() {
           0.28,
         )
         .from("[data-hero-scrim]", { autoAlpha: 0, duration: 1 }, 0.12)
-        .from("[data-hero-eyebrow]", { y: -8, autoAlpha: 0, duration: 0.6 }, 0.48)
-        .from("[data-hero-index]", { y: 10, autoAlpha: 0, duration: 0.5, stagger: 0.05 }, 0.52)
         .from(
           "[data-hero-line]",
           { yPercent: 108, duration: 1.05, stagger: 0.09 },
-          0.56,
+          0.48,
         )
         .from("[data-hero-sub]", { y: 12, autoAlpha: 0, duration: 0.6 }, 1.02)
         .from("[data-hero-cta]", { y: 16, autoAlpha: 0, duration: 0.7 }, 1.12)
@@ -196,10 +192,16 @@ export function Hero() {
           className="absolute inset-x-0 top-[8%] bottom-[4%] z-[2] flex items-end justify-center sm:top-[8%] sm:bottom-0 md:top-[6%] md:left-[18%] lg:left-[20%]"
         >
           <img
+            src={HERO_FIGURES_MOBILE}
+            alt="Sculptural figures — Heritage Collection"
+            draggable={false}
+            className="pointer-events-none h-full w-full max-h-full origin-bottom scale-[1.18] object-contain object-bottom select-none sm:hidden"
+          />
+          <img
             src={HERO_FIGURES}
             alt="Sculptural figures — Heritage Collection"
             draggable={false}
-            className="pointer-events-none h-full w-full max-h-full origin-bottom scale-[1.18] object-contain object-bottom select-none sm:scale-100"
+            className="pointer-events-none hidden h-full w-full max-h-full origin-bottom object-contain object-bottom select-none sm:block sm:scale-100"
           />
         </div>
 
@@ -209,93 +211,29 @@ export function Hero() {
             data-hero-copy
             className="mt-2 flex max-w-xl flex-1 flex-col sm:mt-[min(14vh,7rem)] sm:flex-none md:mt-[min(16vh,8.5rem)]"
           >
-            <div
-              data-hero-eyebrow
-              className="mb-8 flex flex-col items-start gap-3 sm:mb-8 sm:gap-3.5 md:mb-10"
-            >
-              {/* Mobile: short horizontal rule; desktop: vertical rule */}
-              <span
-                aria-hidden
-                className="block h-px w-7 bg-paper/50 sm:hidden"
-              />
-              <span
-                aria-hidden
-                className="hidden h-6 w-px bg-paper/40 sm:block"
-              />
-              <p className="text-[0.55rem] leading-[1.65] tracking-[0.34em] uppercase text-paper/65 sm:leading-normal sm:text-paper/60">
-                <span className="block sm:inline">Objects</span>
+            <div className="min-w-0">
+              <h1 className="font-editorial text-[15.5vw] leading-[0.88] font-normal tracking-[-0.01em] text-paper uppercase sm:text-[12.5vw] md:text-[6.4vw] lg:text-[5.4vw]">
+                <MaskLine>Art</MaskLine>
+                <MaskLine>Lives</MaskLine>
+                <MaskLine>With</MaskLine>
+                <MaskLine>
+                  You
+                  <sup className="ml-1 align-super text-[0.28em] tracking-normal normal-case">
+                    ™
+                  </sup>
+                </MaskLine>
+              </h1>
+
+              <p
+                data-hero-sub
+                className="mt-5 text-[0.55rem] leading-[1.7] tracking-[0.3em] uppercase text-paper/60 sm:mt-8 sm:leading-normal sm:text-paper/55 md:mt-10"
+              >
+                <span className="block sm:inline">Curated objects</span>
                 <span className="block sm:inline">
                   <span className="hidden sm:inline"> </span>
-                  for a higher
-                </span>
-                <span className="block sm:inline">
-                  <span className="hidden sm:inline"> </span>
-                  tomorrow
+                  for modern spaces
                 </span>
               </p>
-            </div>
-
-            <div className="relative flex items-start gap-3.5 sm:gap-5 md:gap-8">
-              <ol
-                aria-label="Collection sequence"
-                className="mt-4 flex shrink-0 flex-col items-center sm:mt-2.5 sm:items-start sm:gap-2"
-              >
-                {SLIDES.map((n, i) => (
-                  <li
-                    key={n}
-                    data-hero-index
-                    className={cn(
-                      "flex flex-col items-center text-[0.58rem] tracking-[0.18em] tabular-nums sm:flex-row sm:gap-2.5",
-                      i === 0 ? "text-paper" : "text-paper/40 sm:text-paper/28",
-                    )}
-                  >
-                    {i === 0 && (
-                      <span
-                        aria-hidden
-                        className="mb-1.5 block h-px w-3 bg-paper/70 sm:hidden"
-                      />
-                    )}
-                    <span>{n}</span>
-                    {i === 0 && (
-                      <span
-                        aria-hidden
-                        className="hidden h-px w-5 bg-paper/70 sm:block"
-                      />
-                    )}
-                    {i < SLIDES.length - 1 && (
-                      <span
-                        aria-hidden
-                        className="my-1.5 block h-3 w-px bg-paper/30 sm:hidden"
-                      />
-                    )}
-                  </li>
-                ))}
-              </ol>
-
-              <div className="min-w-0 flex-1 pt-1 sm:pt-0">
-                <h1 className="font-editorial text-[15.5vw] leading-[0.88] font-normal tracking-[-0.01em] text-paper uppercase sm:text-[12.5vw] md:text-[6.4vw] lg:text-[5.4vw]">
-                  <MaskLine>Art</MaskLine>
-                  <MaskLine>Lives</MaskLine>
-                  <MaskLine>With</MaskLine>
-                  <MaskLine>
-                    You
-                    <sup className="ml-1 align-super text-[0.28em] tracking-normal normal-case">
-                      ™
-                    </sup>
-                  </MaskLine>
-                </h1>
-
-                <p
-                  data-hero-sub
-                  className="mt-5 text-[0.55rem] leading-[1.7] tracking-[0.3em] uppercase text-paper/60 sm:mt-8 sm:leading-normal sm:text-paper/55 md:mt-10"
-                >
-                  <span className="block sm:inline">Curated objects</span>
-                  <span className="block sm:inline">
-                    <span className="hidden sm:inline"> </span>
-                    for modern spaces
-                  </span>
-                </p>
-              </div>
             </div>
 
             <a
