@@ -1,10 +1,20 @@
-export function ProductSkeleton() {
+import { cn } from "@/lib/utils";
+
+interface ProductSkeletonProps {
+  count?: number;
+  className?: string;
+}
+
+export function ProductSkeleton({ count = 8, className }: ProductSkeletonProps) {
   return (
     <div
       aria-hidden
-      className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-20 xl:grid-cols-4"
+      className={cn(
+        "grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-20 xl:grid-cols-4",
+        className,
+      )}
     >
-      {Array.from({ length: 8 }).map((_, i) => (
+      {Array.from({ length: count }).map((_, i) => (
         <article key={i} className="animate-pulse">
           <div className="aspect-[3/4] w-full border border-fg/10 bg-fg/[0.05]" />
           <div className="mt-5 space-y-3">

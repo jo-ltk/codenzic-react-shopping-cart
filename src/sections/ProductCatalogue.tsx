@@ -1,27 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/motion";
 import {
-  categoriesQueryKey,
-  fetchCategories,
   fetchProducts,
   productsQueryKey,
   type Product,
 } from "@/lib/api/products";
-import { useProductFilters } from "@/hooks/useProductFilters";
 import { useCartStore } from "@/lib/store/cart";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { ProductSkeleton } from "@/components/products/ProductSkeleton";
 import { ProductError } from "@/components/products/ProductError";
 import { ProductEmpty } from "@/components/products/ProductEmpty";
-import { ProductFilters } from "@/components/products/ProductFilters";
-import { ProductFilterEmpty } from "@/components/products/ProductFilterEmpty";
 import { ProductDetails } from "@/components/products/ProductDetails";
 
+const HOME_SELECTION = 6;
+
 /**
- * Product Catalogue — live DummyJSON inventory as an editorial grid.
- * TanStack Query owns fetch/cache; useProductFilters derives the visible list.
+ * Homepage catalogue preview — a small curated set from the live inventory.
+ * The full archive lives at /catalogue.
  */
 export function ProductCatalogue() {
   const root = useRef<HTMLElement>(null);
@@ -33,14 +31,8 @@ export function ProductCatalogue() {
     queryFn: fetchProducts,
   });
 
-  const { data: categoryOptions } = useQuery({
-    queryKey: categoriesQueryKey,
-    queryFn: fetchCategories,
-    staleTime: 1000 * 60 * 30,
-  });
-
   const products = data ?? [];
-  const filters = useProductFilters(products, { categoryOptions });
+  const curated = products.slice(0, HOME_SELECTION);
 
   const openDetails = useCallback((product: Product) => {
     setSelectedProduct(product);
@@ -50,7 +42,6 @@ export function ProductCatalogue() {
     setSelectedProduct(null);
   }, []);
 
-  // Avoid stacking the details panel over the cart drawer.
   useEffect(() => {
     if (isCartOpen) setSelectedProduct(null);
   }, [isCartOpen]);
@@ -68,11 +59,8 @@ export function ProductCatalogue() {
     { scope: root },
   );
 
-  const showInventory = !isPending && !isError && products.length > 0;
+  const showInventory = !isPending && !isError && curated.length > 0;
   const showCatalogueEmpty = !isPending && !isError && products.length === 0;
-  const showFilterEmpty =
-    showInventory && filters.hasActiveFilters && filters.filteredProducts.length === 0;
-  const showGrid = showInventory && filters.filteredProducts.length > 0;
 
   return (
     <section
@@ -104,27 +92,23 @@ export function ProductCatalogue() {
               ? "Loading inventory…"
               : isError
                 ? "Inventory unavailable"
-                : showInventory
-                  ? filters.hasActiveFilters
-                    ? `${filters.resultCount} of ${filters.totalCount} objects`
-                    : `${filters.totalCount} objects`
-                  : `${products.length} objects`}
+                : `${products.length} objects`}
           </span>
-          <a
-            href="#catalogue"
+          <Link
+            to="/catalogue"
             data-cursor=""
             className="meta inline-flex items-center gap-2 text-accent"
           >
-            View the Index
+            View All Objects
             <ArrowUpRight className="size-3.5" strokeWidth={1.5} />
-          </a>
+          </Link>
         </div>
       </div>
 
       {isPending ? (
         <div aria-busy="true" aria-live="polite">
           <p className="meta mb-10 text-fg/45">Preparing the catalogue…</p>
-          <ProductSkeleton />
+          <ProductSkeleton count={HOME_SELECTION} />
         </div>
       ) : null}
 
@@ -138,25 +122,20 @@ export function ProductCatalogue() {
       {showCatalogueEmpty ? <ProductEmpty /> : null}
 
       {showInventory ? (
-        <>
-          <ProductFilters filters={filters} />
+        <div className={isFetching ? "opacity-90 transition-opacity duration-300" : undefined}>
+          <ProductGrid products={curated} animateKey="home-selection" onOpenDetails={openDetails} />
 
-          {showFilterEmpty ? (
-            <ProductFilterEmpty onClear={filters.clearAll} />
-          ) : null}
-
-          {showGrid ? (
-            <div
-              className={isFetching ? "opacity-90 transition-opacity duration-300" : undefined}
+          <div className="mt-16 flex justify-center md:mt-20">
+            <Link
+              to="/catalogue"
+              data-cursor=""
+              className="meta inline-flex min-h-12 items-center gap-2 border border-fg/20 px-7 py-3.5 text-fg transition-colors duration-500 hover:border-accent hover:text-accent"
             >
-              <ProductGrid
-                products={filters.filteredProducts}
-                animateKey={`${filters.search}|${filters.category}|${filters.minPrice}|${filters.maxPrice}`}
-                onOpenDetails={openDetails}
-              />
-            </div>
-          ) : null}
-        </>
+              Explore Catalogue
+              <ArrowUpRight className="size-3.5" strokeWidth={1.5} />
+            </Link>
+          </div>
+        </div>
       ) : null}
 
       {selectedProduct ? (

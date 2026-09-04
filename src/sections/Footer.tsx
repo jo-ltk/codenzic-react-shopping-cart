@@ -5,9 +5,30 @@ import { Marquee } from "@/components/Marquee";
 import { MagneticButton } from "@/components/MagneticButton";
 
 const LINK_GROUPS = [
-  { title: "Catalogue", links: ["Current issue", "Archive", "The workshops"] },
-  { title: "Practical", links: ["Shipping", "Returns", "Care guides"] },
-  { title: "Elsewhere", links: ["Instagram", "Are.na", "Newsletter"] },
+  {
+    title: "Catalogue",
+    links: [
+      { label: "Current issue", href: "/catalogue" },
+      { label: "Archive", href: "/catalogue" },
+      { label: "The workshops", href: "/#index" },
+    ],
+  },
+  {
+    title: "Practical",
+    links: [
+      { label: "Shipping", href: "/#footer" },
+      { label: "Returns", href: "/#footer" },
+      { label: "Care guides", href: "/#footer" },
+    ],
+  },
+  {
+    title: "Elsewhere",
+    links: [
+      { label: "Instagram", href: "/#footer" },
+      { label: "Are.na", href: "/#footer" },
+      { label: "Newsletter", href: "/#footer" },
+    ],
+  },
 ];
 
 export function Footer() {
@@ -61,7 +82,7 @@ export function Footer() {
             <em className="text-accent">better</em> things.
           </h2>
           <div data-footer-reveal className="mt-12">
-            <MagneticButton className="meta text-fg" href="#top">
+            <MagneticButton className="meta text-fg" href="/catalogue">
               <span className="flex items-center gap-2">
                 Enter the catalogue
                 <ArrowUpRight className="size-4" strokeWidth={1.5} />
@@ -85,12 +106,12 @@ export function Footer() {
               <span className="meta text-fg/45">{group.title}</span>
               <ul className="mt-4 space-y-2.5">
                 {group.links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <a
-                      href="#top"
+                      href={link.href}
                       className="text-sm text-fg/75 transition-colors duration-300 hover:text-accent"
                     >
-                      {link}
+                      {link.label}
                     </a>
                   </li>
                 ))}
