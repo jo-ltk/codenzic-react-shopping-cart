@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
-import {
-  computeCartTotals,
-  useCartStore,
-} from "@/lib/store/cart";
+import { useCartTotals } from "@/hooks/useCartTotals";
+import { useCartStore } from "@/lib/store/cart";
 import { CartLineItem } from "@/components/cart/CartLineItem";
 import { CartSummary } from "@/components/cart/CartSummary";
 
@@ -13,7 +11,7 @@ import { CartSummary } from "@/components/cart/CartSummary";
  * Zustand owns items + open state; GSAP handles open/close only.
  */
 export function CartDrawer() {
-  const items = useCartStore((s) => s.items);
+  const { items, itemCount, canCheckout, ...totals } = useCartTotals();
   const isOpen = useCartStore((s) => s.isOpen);
   const closeCart = useCartStore((s) => s.closeCart);
   const clear = useCartStore((s) => s.clear);
@@ -23,7 +21,7 @@ export function CartDrawer() {
   const scrim = useRef<HTMLButtonElement>(null);
   const wasOpen = useRef(false);
 
-  const totals = computeCartTotals(items);
+  const summaryTotals = { ...totals, itemCount, canCheckout };
 
   useEffect(() => {
     const rootEl = root.current;
@@ -154,9 +152,9 @@ export function CartDrawer() {
               Your selection
             </h2>
             <p className="meta mt-2 text-charcoal/45">
-              {totals.itemCount === 0
+              {itemCount === 0
                 ? "Empty"
-                : `${totals.itemCount} object${totals.itemCount === 1 ? "" : "s"}`}
+                : `${itemCount} object${itemCount === 1 ? "" : "s"}`}
             </p>
           </div>
           <button
@@ -204,9 +202,9 @@ export function CartDrawer() {
 
         <div className="px-5 pt-2 pb-6 sm:px-7 sm:pb-8">
           <CartSummary
-            totals={totals}
+            totals={summaryTotals}
             onCheckout={() => {
-              if (!totals.canCheckout) return;
+              if (!canCheckout) return;
               // Checkout is out of scope — keep the control wired for later.
               closeCart();
             }}

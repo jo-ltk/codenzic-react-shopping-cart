@@ -1,12 +1,29 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import {
+  CART_MAX_QTY,
+  CART_MIN_QTY,
+  calculateCartTotals,
+  clampQuantity,
+  type CartTotals,
+} from "@/lib/cart/calculations";
 
-export const CART_MIN_QTY = 1;
-export const CART_MAX_QTY = 5;
-export const CART_TAX_RATE = 0.05;
-export const CART_DISCOUNT_RATE = 0.1;
-export const CART_DISCOUNT_THRESHOLD = 100;
-export const CART_MIN_CHECKOUT = 10;
+export {
+  CART_MIN_QTY,
+  CART_MAX_QTY,
+  CART_TAX_RATE,
+  CART_DISCOUNT_RATE,
+  CART_DISCOUNT_THRESHOLD,
+  CART_MIN_CHECKOUT,
+  calculateCartTotals,
+  calcLineTotal,
+  clampQuantity,
+  formatMoney,
+  type CartTotals,
+} from "@/lib/cart/calculations";
+
+/** @deprecated Prefer calculateCartTotals — kept as a thin alias. */
+export const computeCartTotals = calculateCartTotals;
 
 export interface CartItem {
   id: number;
@@ -15,32 +32,6 @@ export interface CartItem {
   thumbnail: string;
   category: string;
   quantity: number;
-}
-
-export interface CartTotals {
-  subtotal: number;
-  tax: number;
-  discount: number;
-  total: number;
-  canCheckout: boolean;
-  itemCount: number;
-}
-
-export function computeCartTotals(items: CartItem[]): CartTotals {
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const tax = subtotal * CART_TAX_RATE;
-  const discount = subtotal > CART_DISCOUNT_THRESHOLD ? subtotal * CART_DISCOUNT_RATE : 0;
-  const total = Math.max(0, subtotal + tax - discount);
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-
-  return {
-    subtotal,
-    tax,
-    discount,
-    total,
-    canCheckout: subtotal >= CART_MIN_CHECKOUT,
-    itemCount,
-  };
 }
 
 interface CartState {
@@ -55,6 +46,14 @@ interface CartState {
   decreaseQuantity: (id: number) => void;
   clear: () => void;
   getTotals: () => CartTotals;
+}
+
+function normalizeItems(items: CartItem[]): CartItem[] {
+  return items.map((item) => ({
+    ...item,
+    quantity: clampQuantity(item.quantity),
+    price: Number.isFinite(item.price) && item.price >= 0 ? item.price : 0,
+  }));
 }
 
 export const useCartStore = create<CartState>()(
@@ -78,14 +77,21 @@ export const useCartStore = create<CartState>()(
               isOpen: true,
               items: state.items.map((i) =>
                 i.id === item.id
-                  ? { ...i, quantity: Math.min(CART_MAX_QTY, i.quantity + 1) }
+                  ? { ...i, quantity: clampQuantity(i.quantity + 1) }
                   : i,
               ),
             };
           }
           return {
             isOpen: true,
-            items: [...state.items, { ...item, quantity: CART_MIN_QTY }],
+            items: [
+              ...state.items,
+              {
+                ...item,
+                price: Number.isFinite(item.price) && item.price >= 0 ? item.price : 0,
+                quantity: CART_MIN_QTY,
+              },
+            ],
           };
         }),
 
@@ -94,29 +100,34 @@ export const useCartStore = create<CartState>()(
 
       increaseQuantity: (id) =>
         set((state) => ({
-          items: state.items.map((i) =>
-            i.id === id && i.quantity < CART_MAX_QTY
-              ? { ...i, quantity: i.quantity + 1 }
-              : i,
-          ),
+          items: state.items.map((i) => {
+            if (i.id !== id) return i;
+            if (i.quantity >= CART_MAX_QTY) return i;
+            return { ...i, quantity: clampQuantity(i.quantity + 1) };
+          }),
         })),
 
       decreaseQuantity: (id) =>
         set((state) => ({
-          items: state.items.map((i) =>
-            i.id === id && i.quantity > CART_MIN_QTY
-              ? { ...i, quantity: i.quantity - 1 }
-              : i,
-          ),
+          items: state.items.map((i) => {
+            if (i.id !== id) return i;
+            if (i.quantity <= CART_MIN_QTY) return i;
+            return { ...i, quantity: clampQuantity(i.quantity - 1) };
+          }),
         })),
 
       clear: () => set({ items: [] }),
 
-      getTotals: () => computeCartTotals(get().items),
+      getTotals: () => calculateCartTotals(get().items),
     }),
     {
       name: "objekt-cart",
       partialize: (state) => ({ items: state.items }),
+      merge: (persisted, current) => {
+        const raw = persisted as Partial<CartState> | undefined;
+        const items = Array.isArray(raw?.items) ? normalizeItems(raw.items) : [];
+        return { ...current, ...raw, items, isOpen: false };
+      },
     },
   ),
 );

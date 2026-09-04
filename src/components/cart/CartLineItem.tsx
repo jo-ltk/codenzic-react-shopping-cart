@@ -2,21 +2,14 @@ import { Minus, Plus, X } from "lucide-react";
 import {
   CART_MAX_QTY,
   CART_MIN_QTY,
-  type CartItem,
-  useCartStore,
-} from "@/lib/store/cart";
+  calcLineTotal,
+  formatMoney,
+} from "@/lib/cart/calculations";
+import { type CartItem, useCartStore } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
 
 interface CartLineItemProps {
   item: CartItem;
-}
-
-function formatMoney(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: value >= 100 ? 0 : 2,
-  }).format(value);
 }
 
 function formatCategory(category: string) {
@@ -28,7 +21,7 @@ export function CartLineItem({ item }: CartLineItemProps) {
   const decreaseQuantity = useCartStore((s) => s.decreaseQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
 
-  const lineTotal = item.price * item.quantity;
+  const lineTotal = calcLineTotal(item.price, item.quantity);
   const atMin = item.quantity <= CART_MIN_QTY;
   const atMax = item.quantity >= CART_MAX_QTY;
 

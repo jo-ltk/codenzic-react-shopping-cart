@@ -3,8 +3,9 @@ import {
   CART_DISCOUNT_THRESHOLD,
   CART_MIN_CHECKOUT,
   CART_TAX_RATE,
+  formatMoney,
   type CartTotals,
-} from "@/lib/store/cart";
+} from "@/lib/cart/calculations";
 import { cn } from "@/lib/utils";
 
 interface CartSummaryProps {
@@ -12,16 +13,8 @@ interface CartSummaryProps {
   onCheckout?: () => void;
 }
 
-function formatMoney(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
 export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
-  const { subtotal, tax, discount, total, canCheckout } = totals;
+  const { subtotal, tax, discount, finalTotal, canCheckout } = totals;
   const discountPct = Math.round(CART_DISCOUNT_RATE * 100);
   const taxPct = Math.round(CART_TAX_RATE * 100);
 
@@ -61,15 +54,15 @@ export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
             className="font-display text-2xl font-light text-charcoal"
             data-cart-total
           >
-            {formatMoney(total)}
+            {formatMoney(finalTotal)}
           </dd>
         </div>
       </dl>
 
       {!canCheckout && subtotal > 0 ? (
         <p className="mt-4 border border-accent/25 bg-accent/5 px-3 py-3 text-xs leading-relaxed text-charcoal/70">
-          Checkout opens at {formatMoney(CART_MIN_CHECKOUT)}. Add another object
-          to reach the minimum.
+          Minimum order is {formatMoney(CART_MIN_CHECKOUT)}. Checkout unlocks
+          when your final total reaches {formatMoney(CART_MIN_CHECKOUT)}.
         </p>
       ) : null}
 
