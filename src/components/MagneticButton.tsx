@@ -1,16 +1,26 @@
 import { useRef, type ReactNode, type MouseEvent } from "react";
+import { Link } from "react-router";
 import { gsap, isFinePointer } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 interface MagneticButtonProps {
   children: ReactNode;
   className?: string;
+  /** Client-side route (preferred). Falls back to `href` for legacy call sites. */
+  to?: string;
+  /** @deprecated Prefer `to` — kept so existing call sites keep working. */
   href?: string;
 }
 
 /** CTA that leans toward the cursor and snaps back elastically. */
-export function MagneticButton({ children, className, href = "#" }: MagneticButtonProps) {
+export function MagneticButton({
+  children,
+  className,
+  to,
+  href = "#",
+}: MagneticButtonProps) {
   const ref = useRef<HTMLAnchorElement>(null);
+  const destination = to ?? href;
 
   const onMove = (e: MouseEvent) => {
     const el = ref.current;
@@ -27,9 +37,9 @@ export function MagneticButton({ children, className, href = "#" }: MagneticButt
   };
 
   return (
-    <a
+    <Link
       ref={ref}
-      href={href}
+      to={destination}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       className={cn(
@@ -42,6 +52,6 @@ export function MagneticButton({ children, className, href = "#" }: MagneticButt
       <span className="relative z-10 transition-colors duration-500 group-hover:text-paper">
         {children}
       </span>
-    </a>
+    </Link>
   );
 }

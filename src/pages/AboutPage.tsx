@@ -240,7 +240,7 @@ export function AboutPage() {
                 experiences with the same preference for clarity over clutter.
               </p>
               <div className="mt-12">
-                <MagneticButton className="meta text-fg" href="/catalogue">
+                <MagneticButton className="meta text-fg" to="/catalogue">
                   <span className="flex items-center gap-2">
                     Enter the catalogue
                     <ArrowUpRight className="size-4" strokeWidth={1.5} />

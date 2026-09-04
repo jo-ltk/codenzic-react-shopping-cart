@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/motion";
 import { Marquee } from "@/components/Marquee";
@@ -8,25 +9,25 @@ const LINK_GROUPS = [
   {
     title: "Catalogue",
     links: [
-      { label: "Current issue", href: "/catalogue" },
-      { label: "Archive", href: "/catalogue" },
-      { label: "The workshops", href: "/#index" },
+      { label: "Current issue", to: "/catalogue" },
+      { label: "Archive", to: "/catalogue" },
+      { label: "The workshops", to: "/#index" },
     ],
   },
   {
     title: "Practical",
     links: [
-      { label: "About", href: "/about" },
-      { label: "Shipping", href: "/#footer" },
-      { label: "Returns", href: "/#footer" },
+      { label: "About", to: "/about" },
+      { label: "Shipping", to: "/#footer" },
+      { label: "Returns", to: "/#footer" },
     ],
   },
   {
     title: "Elsewhere",
     links: [
-      { label: "Instagram", href: "/#footer" },
-      { label: "Are.na", href: "/#footer" },
-      { label: "Newsletter", href: "/#footer" },
+      { label: "Instagram", to: "/#footer" },
+      { label: "Are.na", to: "/#footer" },
+      { label: "Newsletter", to: "/#footer" },
     ],
   },
 ];
@@ -82,7 +83,7 @@ export function Footer() {
             <em className="text-accent">better</em> things.
           </h2>
           <div data-footer-reveal className="mt-12">
-            <MagneticButton className="meta text-fg" href="/catalogue">
+            <MagneticButton className="meta text-fg" to="/catalogue">
               <span className="flex items-center gap-2">
                 Enter the catalogue
                 <ArrowUpRight className="size-4" strokeWidth={1.5} />
@@ -107,12 +108,12 @@ export function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {group.links.map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.to}
                       className="text-sm text-fg/75 transition-colors duration-300 hover:text-accent"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

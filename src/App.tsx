@@ -9,6 +9,7 @@ import { HomePage } from "@/pages/HomePage";
 import { AboutPage } from "@/pages/AboutPage";
 import { CataloguePage } from "@/pages/CataloguePage";
 import { ProductPage } from "@/pages/ProductPage";
+import { NotFoundPage } from "@/pages/NotFoundPage";
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -64,6 +65,7 @@ export default function App() {
           </Route>
           <Route path="/objects" element={<Navigate to="/catalogue" replace />} />
           <Route path="/objects/:productId" element={<ObjectsRedirect />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </SmoothScroll>
     </BrowserRouter>
