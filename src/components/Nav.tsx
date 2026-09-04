@@ -257,16 +257,16 @@ export function Nav() {
     <>
       <header
         ref={headerRef}
-        className="fixed inset-x-0 top-0 z-[100] border-b-2 border-ink bg-ink text-paper will-change-transform"
+        className="fixed inset-x-0 top-0 z-[100] border-b border-paper/10 bg-ink/75 text-paper backdrop-blur-md will-change-transform sm:border-b-2 sm:border-ink sm:bg-ink sm:backdrop-blur-none"
       >
-        <div className="flex items-stretch">
+        <div className="flex items-center sm:items-stretch">
           <Link
             to={homeTo}
             data-cursor=""
             onClick={() => setMenuOpen(false)}
-            className="flex shrink-0 items-center border-r-2 border-paper/15 bg-ink px-5 py-4 transition-colors duration-300 hover:bg-botanical sm:px-7 md:px-8 md:py-5 lg:px-10"
+            className="flex shrink-0 items-center px-5 py-3.5 transition-colors duration-300 hover:text-paper/80 sm:border-r-2 sm:border-paper/15 sm:bg-ink sm:px-7 sm:py-4 sm:hover:bg-botanical sm:hover:text-paper md:px-8 md:py-5 lg:px-10"
           >
-            <span className="text-base font-medium tracking-[0.28em] uppercase sm:text-lg md:tracking-[0.32em]">
+            <span className="text-[0.95rem] font-medium tracking-[0.32em] uppercase sm:text-lg sm:tracking-[0.28em] md:tracking-[0.32em]">
               Objekt
               <sup className="ml-0.5 text-[0.45em] font-medium tracking-normal">®</sup>
             </span>
@@ -294,7 +294,24 @@ export function Nav() {
             })}
           </nav>
 
-          <div className="ml-auto flex items-stretch">
+          <div className="ml-auto flex items-center gap-0 sm:items-stretch">
+            {/* Mobile search — icon only */}
+            <Link
+              to="/catalogue"
+              data-cursor=""
+              aria-label="Search catalogue"
+              onClick={() => setMenuOpen(false)}
+              className="inline-flex items-center justify-center px-3 py-3.5 text-paper/85 transition-colors duration-300 hover:text-paper sm:hidden"
+            >
+              <Search className="size-[1.05rem]" strokeWidth={1.35} />
+            </Link>
+
+            <span
+              aria-hidden
+              className="mx-0.5 hidden h-3.5 w-px self-center bg-paper/30 max-sm:block"
+            />
+
+            {/* Desktop / tablet search */}
             <Link
               to="/catalogue"
               data-cursor=""
@@ -314,12 +331,13 @@ export function Nav() {
               }}
               data-cursor=""
               aria-label={`Open cart, ${cartCount} items`}
-              className="inline-flex items-center gap-2.5 border-l-2 border-paper/15 px-4 text-sm font-medium tracking-[0.12em] uppercase transition-colors duration-300 hover:bg-accent hover:text-paper sm:px-5 md:px-6"
+              className="inline-flex items-center gap-1.5 px-3 py-3.5 text-[0.68rem] font-medium tracking-[0.18em] uppercase text-paper/85 transition-colors duration-300 hover:text-paper sm:gap-2.5 sm:border-l-2 sm:border-paper/15 sm:px-5 sm:py-0 sm:text-sm sm:tracking-[0.12em] sm:text-paper sm:hover:bg-accent sm:hover:text-paper md:px-6"
             >
+              <span className="sm:hidden">Cart ({cartCount})</span>
               <span className="hidden sm:inline">Cart</span>
               <span
                 ref={countRef}
-                className="inline-flex min-w-7 items-center justify-center bg-paper px-1.5 py-0.5 font-mono text-xs font-medium tracking-wider text-ink"
+                className="hidden min-w-7 items-center justify-center bg-paper px-1.5 py-0.5 font-mono text-xs font-medium tracking-wider text-ink sm:inline-flex"
               >
                 {cartCount}
               </span>
@@ -333,30 +351,30 @@ export function Nav() {
               aria-controls="nav-menu"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               className={cn(
-                "inline-flex items-center gap-3 border-l-2 border-paper/15 px-4 text-sm font-medium tracking-[0.14em] uppercase transition-colors duration-300 md:px-6",
+                "inline-flex items-center gap-3 px-4 py-3.5 text-sm font-medium tracking-[0.14em] uppercase transition-colors duration-300 sm:border-l-2 sm:border-paper/15 sm:py-0 md:px-6",
                 menuOpen
-                  ? "bg-paper text-ink"
-                  : "text-paper hover:bg-paper hover:text-ink",
+                  ? "text-paper sm:bg-paper sm:text-ink"
+                  : "text-paper/85 hover:text-paper sm:text-paper sm:hover:bg-paper sm:hover:text-ink",
               )}
             >
               <span className="hidden sm:inline">{menuOpen ? "Close" : "Menu"}</span>
-              <span className="relative flex h-3.5 w-5 flex-col justify-between" aria-hidden>
+              <span className="relative flex h-3 w-[1.15rem] flex-col justify-between sm:h-3.5 sm:w-5" aria-hidden>
                 <span
                   className={cn(
-                    "block h-0.5 w-full origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    menuOpen && "translate-y-[6px] rotate-45",
+                    "block h-px w-full origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:h-0.5",
+                    menuOpen && "translate-y-[5px] rotate-45 sm:translate-y-[6px]",
                   )}
                 />
                 <span
                   className={cn(
-                    "block h-0.5 w-full bg-current transition-opacity duration-200",
+                    "block h-px w-full bg-current transition-opacity duration-200 sm:h-0.5",
                     menuOpen && "opacity-0",
                   )}
                 />
                 <span
                   className={cn(
-                    "block h-0.5 w-full origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    menuOpen && "-translate-y-[6px] -rotate-45",
+                    "block h-px w-full origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:h-0.5",
+                    menuOpen && "-translate-y-[5px] -rotate-45 sm:-translate-y-[6px]",
                   )}
                 />
               </span>

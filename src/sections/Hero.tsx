@@ -41,9 +41,11 @@ export function Hero() {
           { yPercent: 108, duration: 1.05, stagger: 0.09 },
           0.48,
         )
+        .from("[data-hero-eyebrow]", { y: 10, autoAlpha: 0, duration: 0.55 }, 0.55)
         .from("[data-hero-sub]", { y: 12, autoAlpha: 0, duration: 0.6 }, 1.02)
         .from("[data-hero-cta]", { y: 16, autoAlpha: 0, duration: 0.7 }, 1.12)
         .from("[data-hero-side]", { y: 14, autoAlpha: 0, duration: 0.7 }, 1.18)
+        .from("[data-hero-index]", { autoAlpha: 0, x: -8, duration: 0.7 }, 1.05)
         .from("[data-hero-foot]", { autoAlpha: 0, duration: 0.6 }, 1.28);
 
       gsap.to("[data-hero-env] img", {
@@ -163,7 +165,7 @@ export function Hero() {
       data-theme="ink"
       className="relative flex min-h-dvh flex-col overflow-hidden text-paper"
     >
-      {/* z-0 — full-bleed environment (unchanged) */}
+      {/* z-0 — full-bleed environment; muted on mobile so new artwork leads */}
       <div
         data-hero-env
         data-cursor="EXPLORE"
@@ -173,7 +175,12 @@ export function Hero() {
           src={HERO_ENVIRONMENT}
           alt=""
           draggable={false}
-          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_35%] sm:object-[center_42%] select-none"
+          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_35%] opacity-40 select-none sm:opacity-100 sm:object-[center_42%]"
+        />
+        {/* Mobile atmospheric wash — blends black cutout into brand ink */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,rgba(18,38,26,0.35)_0%,rgba(10,22,16,0.92)_72%,#0a1610_100%)] sm:hidden"
         />
       </div>
 
@@ -181,21 +188,51 @@ export function Hero() {
       <div
         data-hero-scrim
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(8,12,10,0.52)_0%,rgba(8,12,10,0.18)_28%,transparent_50%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)] sm:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(8,12,10,0.55)_0%,transparent_18%,transparent_48%,rgba(8,12,10,0.45)_68%,rgba(8,12,10,0.88)_100%),linear-gradient(90deg,rgba(8,12,10,0.42)_0%,transparent_22%)] sm:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
       />
 
-      {/* Stage above the foot bar — figures bottom flush with SCROLL */}
+      {/* Stage above the foot bar */}
       <div className="relative z-[2] flex min-h-0 flex-1 flex-col">
+        {/* Mobile section index — 01 / 02 / 03 */}
+        <nav
+          data-hero-index
+          aria-label="Hero sections"
+          className="pointer-events-none absolute top-[22%] left-4 z-[4] flex flex-col items-center gap-0 sm:hidden"
+        >
+          {[
+            { n: "01", active: true },
+            { n: "02", active: false },
+            { n: "03", active: false },
+          ].map((item, i) => (
+            <div key={item.n} className="flex flex-col items-center">
+              {i === 0 ? (
+                <span aria-hidden className="mb-2 block h-px w-3 bg-paper/70" />
+              ) : null}
+              <span
+                className={cn(
+                  "font-mono text-[0.58rem] tracking-[0.18em]",
+                  item.active ? "text-paper" : "text-paper/35",
+                )}
+              >
+                {item.n}
+              </span>
+              {i < 2 ? (
+                <span aria-hidden className="my-2 block h-7 w-px bg-paper/25" />
+              ) : null}
+            </div>
+          ))}
+        </nav>
+
         <div
           data-hero-figures
           data-cursor="VIEW"
-          className="absolute inset-x-0 top-[8%] bottom-[4%] z-[2] flex items-end justify-center sm:top-[8%] sm:bottom-0 md:top-[6%] md:left-[18%] lg:left-[20%]"
+          className="absolute inset-x-0 top-[6%] bottom-[2%] z-[2] flex items-center justify-center sm:top-[8%] sm:bottom-0 sm:items-end md:top-[6%] md:left-[18%] lg:left-[20%]"
         >
           <img
             src={HERO_FIGURES_MOBILE}
             alt="Sculptural figures — Heritage Collection"
             draggable={false}
-            className="pointer-events-none h-full w-full max-h-full origin-bottom scale-[1.18] object-contain object-bottom select-none sm:hidden"
+            className="pointer-events-none h-[92%] w-auto max-h-full max-w-[118%] origin-center scale-[1.08] object-contain object-center select-none sm:hidden"
           />
           <img
             src={HERO_FIGURES}
@@ -207,12 +244,20 @@ export function Hero() {
 
         {/* Editorial UI framed to the edges */}
         <div className="pointer-events-none relative z-[3] flex flex-1 flex-col px-5 pt-[4.75rem] sm:px-6 sm:pt-28 md:px-12 md:pt-32 lg:px-14">
+          {/* Mobile eyebrow — sits above the composition */}
+          <p
+            data-hero-eyebrow
+            className="mb-auto max-w-[11rem] pl-6 text-[0.5rem] leading-[1.65] tracking-[0.28em] uppercase text-paper/55 sm:hidden"
+          >
+            Objects for a higher tomorrow
+          </p>
+
           <div
             data-hero-copy
-            className="mt-2 flex max-w-xl flex-1 flex-col sm:mt-[min(14vh,7rem)] sm:flex-none md:mt-[min(16vh,8.5rem)]"
+            className="mt-auto flex max-w-xl flex-col pb-1 sm:mt-[min(14vh,7rem)] sm:flex-none sm:pb-0 md:mt-[min(16vh,8.5rem)]"
           >
             <div className="min-w-0">
-              <h1 className="font-editorial text-[15.5vw] leading-[0.88] font-normal tracking-[-0.01em] text-paper uppercase sm:text-[12.5vw] md:text-[6.4vw] lg:text-[5.4vw]">
+              <h1 className="font-editorial text-[14.5vw] leading-[0.9] font-normal tracking-[-0.015em] text-paper uppercase drop-shadow-[0_2px_24px_rgba(8,12,10,0.45)] sm:text-[12.5vw] sm:leading-[0.88] sm:tracking-[-0.01em] sm:drop-shadow-none md:text-[6.4vw] lg:text-[5.4vw]">
                 <MaskLine>Art</MaskLine>
                 <MaskLine>Lives</MaskLine>
                 <MaskLine>With</MaskLine>
@@ -226,7 +271,7 @@ export function Hero() {
 
               <p
                 data-hero-sub
-                className="mt-5 text-[0.55rem] leading-[1.7] tracking-[0.3em] uppercase text-paper/60 sm:mt-8 sm:leading-normal sm:text-paper/55 md:mt-10"
+                className="mt-4 text-[0.52rem] leading-[1.7] tracking-[0.28em] uppercase text-paper/65 sm:mt-8 sm:text-[0.55rem] sm:leading-normal sm:tracking-[0.3em] sm:text-paper/55 md:mt-10"
               >
                 <span className="block sm:inline">Curated objects</span>
                 <span className="block sm:inline">
@@ -241,9 +286,9 @@ export function Hero() {
               href="#catalogue"
               data-hero-cta
               data-cursor=""
-              className="pointer-events-auto mt-auto mb-5 inline-flex w-fit items-center gap-4 pt-8 sm:mt-16 sm:mb-0 sm:gap-5 sm:pt-0 md:mt-20"
+              className="pointer-events-auto mt-8 mb-3 inline-flex w-fit items-center gap-3.5 sm:mt-16 sm:mb-0 sm:gap-5 sm:pt-0 md:mt-20"
             >
-              <span className="relative flex size-[4.75rem] shrink-0 items-center justify-center sm:size-[5.5rem] md:size-[6.75rem]">
+              <span className="relative flex size-[4.25rem] shrink-0 items-center justify-center sm:size-[5.5rem] md:size-[6.75rem]">
                 <span
                   data-hero-cta-ring
                   aria-hidden
@@ -251,16 +296,16 @@ export function Hero() {
                 />
                 <span
                   data-hero-cta-circle
-                  className="relative z-[1] flex size-full items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] will-change-transform"
+                  className="relative z-[1] flex size-full items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] will-change-transform active:scale-[0.97] transition-transform"
                 >
                   <ArrowRight
                     data-hero-cta-arrow
-                    className="size-5 will-change-transform sm:size-6 md:size-7"
+                    className="size-[1.15rem] will-change-transform sm:size-6 md:size-7"
                     strokeWidth={1.05}
                   />
                 </span>
               </span>
-              <span className="flex flex-col gap-1 text-[0.58rem] leading-none tracking-[0.28em] uppercase text-paper/80">
+              <span className="flex flex-col gap-1 text-[0.55rem] leading-none tracking-[0.26em] uppercase text-paper/85 sm:text-[0.58rem] sm:tracking-[0.28em] sm:text-paper/80">
                 <span>Explore</span>
                 <span>The Collection</span>
               </span>
@@ -300,18 +345,16 @@ export function Hero() {
         className="relative z-[3] border-t border-paper/12 bg-transparent sm:bg-[rgba(6,10,8,0.78)]"
       >
         {/* Mobile foot — left tags + right stacked line */}
-        <div className="flex items-end justify-between gap-4 px-5 py-4 sm:hidden">
-          <p className="text-[0.48rem] tracking-[0.24em] uppercase text-paper/48">
+        <div className="flex items-end justify-between gap-4 px-5 py-3.5 sm:hidden">
+          <p className="text-[0.46rem] tracking-[0.22em] uppercase text-paper/50">
             Sculpted <span className="text-paper/22">/</span> Timeless{" "}
             <span className="text-paper/22">/</span> Meaningful
           </p>
-          <div className="flex items-start gap-2.5 text-right">
-            <span aria-hidden className="mt-1.5 block h-px w-5 shrink-0 bg-paper/35" />
-            <p className="text-[0.48rem] leading-[1.55] tracking-[0.24em] uppercase text-paper/48">
-              <span className="block">A more</span>
-              <span className="block">conscious</span>
-              <span className="block">tomorrow</span>
+          <div className="flex flex-col items-end gap-1.5 text-right">
+            <p className="text-[0.46rem] leading-[1.45] tracking-[0.22em] uppercase text-paper/50">
+              A more conscious tomorrow
             </p>
+            <span aria-hidden className="block h-px w-10 bg-paper/35" />
           </div>
         </div>
 
