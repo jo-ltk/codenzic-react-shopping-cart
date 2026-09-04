@@ -9,6 +9,7 @@ import { Manifesto } from "@/sections/Manifesto";
 import { Collection } from "@/sections/Collection";
 import { ObjectStudy } from "@/sections/ObjectStudy";
 import { Lookbook } from "@/sections/Lookbook";
+import { ProductCatalogue } from "@/sections/ProductCatalogue";
 import { Footer } from "@/sections/Footer";
 
 export default function App() {
@@ -75,6 +76,7 @@ export default function App() {
         <Collection />
         <ObjectStudy />
         <Lookbook />
+        <ProductCatalogue />
         <Footer />
       </main>
     </SmoothScroll>

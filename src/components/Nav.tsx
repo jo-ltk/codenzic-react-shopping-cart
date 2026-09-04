@@ -1,7 +1,8 @@
 import { Menu, Search } from "lucide-react";
+import { useCartStore } from "@/lib/store/cart";
 
 const LINKS = [
-  { label: "Shop", href: "#catalogue" },
+  { label: "Shop", href: "#products" },
   { label: "Collections", href: "#index" },
   { label: "About", href: "#manifesto" },
   { label: "Journal", href: "#anatomy" },
@@ -12,6 +13,10 @@ const LINKS = [
  * mix-blend-difference keeps ivory chrome legible across paper/ink worlds.
  */
 export function Nav() {
+  const cartCount = useCartStore((s) =>
+    s.items.reduce((sum, item) => sum + item.quantity, 0),
+  );
+
   return (
     <header className="fixed inset-x-0 top-0 z-[80] mix-blend-difference">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center px-6 py-5 text-white md:px-12 md:py-7 lg:px-14">
@@ -39,7 +44,7 @@ export function Nav() {
 
         <div className="flex items-center justify-end gap-4 sm:gap-5 md:gap-6">
           <a
-            href="#catalogue"
+            href="#products"
             data-cursor=""
             aria-label="Search"
             className="inline-flex items-center gap-2.5 text-[0.68rem] font-light tracking-[0.04em] text-white/88"
@@ -51,11 +56,11 @@ export function Nav() {
           <span aria-hidden className="h-3.5 w-px bg-white/45 sm:bg-white/28" />
 
           <a
-            href="#footer"
+            href="#products"
             data-cursor=""
             className="text-[0.68rem] font-light tracking-[0.04em] text-white/88"
           >
-            Cart (0)
+            Cart ({cartCount})
           </a>
 
           <button
