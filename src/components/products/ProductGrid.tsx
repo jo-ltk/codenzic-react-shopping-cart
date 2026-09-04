@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { gsap, useGSAP, prefersReducedMotion } from "@/lib/motion";
+import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion } from "@/lib/motion";
 import type { Product } from "@/lib/api/products";
 import { ProductCard, type ProductCardLayout } from "@/components/products/ProductCard";
 import { cn } from "@/lib/utils";
@@ -30,31 +30,41 @@ export function ProductGrid({
 
   useGSAP(
     () => {
-      if (prefersReducedMotion()) return;
+      if (prefersReducedMotion()) {
+        hasEntered.current = true;
+        return;
+      }
 
       const cards = gsap.utils.toArray<HTMLElement>("[data-product-card]", root.current);
       if (!cards.length) return;
 
+      // fromTo (not from) so teardown never leaves cards stuck at autoAlpha:0.
       if (!hasEntered.current) {
-        gsap.from(cards, {
-          y: 36,
-          autoAlpha: 0,
-          duration: 0.7,
-          stagger: 0.06,
-          ease: "power3.out",
-          ...(immediate
-            ? {}
-            : {
-                scrollTrigger: {
-                  trigger: root.current,
-                  start: "top 82%",
-                  once: true,
-                },
-              }),
-          onComplete: () => {
-            hasEntered.current = true;
+        gsap.fromTo(
+          cards,
+          { y: 36, autoAlpha: 0 },
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.7,
+            stagger: 0.06,
+            ease: "power3.out",
+            ...(immediate
+              ? {}
+              : {
+                  scrollTrigger: {
+                    trigger: root.current,
+                    start: "top 82%",
+                    once: true,
+                  },
+                }),
+            onComplete: () => {
+              hasEntered.current = true;
+            },
           },
-        });
+        );
+        // Recalc after late mount (e.g. related products resolve post-scroll).
+        requestAnimationFrame(() => ScrollTrigger.refresh());
         return;
       }
 
@@ -71,7 +81,7 @@ export function ProductGrid({
         },
       );
     },
-    { scope: root, dependencies: [products, animateKey] },
+    { scope: root, dependencies: [products, animateKey, immediate] },
   );
 
   return (

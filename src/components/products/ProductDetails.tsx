@@ -391,12 +391,14 @@ export function ProductDetails({ product, related = [] }: ProductDetailsProps) {
       <ProductDossier product={product} />
 
       {/* ---------- Act V — The collection ---------- */}
+      {/* Reveal only the header — wrapping ProductGrid in data-reveal left cards
+          stuck at autoAlpha:0 (parent + grid both hide, only the parent restored). */}
       {related.length > 0 ? (
-        <section
-          data-reveal
-          className="border-t border-fg/15 px-5 pt-16 pb-28 sm:px-8 md:px-10 md:pt-24 md:pb-36 lg:px-14 xl:px-16"
-        >
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <section className="border-t border-fg/15 px-5 pt-16 pb-28 sm:px-8 md:px-10 md:pt-24 md:pb-36 lg:px-14 xl:px-16">
+          <div
+            data-reveal
+            className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"
+          >
             <div>
               <p className="meta text-fg/45">The collection</p>
               <h2 className="mt-3 font-display text-3xl leading-[1.05] font-light text-fg md:text-4xl lg:text-5xl">
