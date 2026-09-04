@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+*.tsbuildinfo
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs / OS / IDE
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local / reference noise (not part of the app)
+_refs/
+tmp-verify/
+.cursor/

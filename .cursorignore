@@ -1,0 +1,51 @@
+﻿# Dependencies & build
+node_modules/
+.pnpm-store/
+.yarn/
+.npm/
+dist/
+build/
+out/
+.next/
+.nuxt/
+.turbo/
+.vercel/
+coverage/
+*.tsbuildinfo
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# VCS / IDE noise
+.git/
+.svn/
+.hg/
+
+# Large / binary
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+*.mp4
+*.mov
+*.webm
+*.psd
+*.ai
+*.sketch
+*.fig
+*.wasm
+*.pack
+*.map
+
+# Logs & caches
+*.log
+logs/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+tmp/
+temp/

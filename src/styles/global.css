@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #efe9df;
+  --color-ink: #17140f;
+  --color-accent: #e44a17;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-editorial: "Bodoni Moda", "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+
+/* Live theme channel — GSAP morphs --bg/--fg as you scroll between worlds */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+}
+
+:root {
+  --bg: #efe9df;
+  --fg: #17140f;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+/* Custom companion cursor — desktop / fine pointer only */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+/* ---------- primitives ---------- */
+
+.font-display {
+  font-optical-sizing: auto;
+}
+
+.font-editorial {
+  font-optical-sizing: auto;
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* marquee */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee var(--marquee-duration, 28s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* pulsing status dot */
+@keyframes dot-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-accent) 45%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 9px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.dot-pulse {
+  animation: dot-pulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* anatomy hotspot dots */
+.hotspot {
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hotspot .hotspot-label {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hotspot.is-active {
+  transform: scale(1.6);
+  background-color: var(--color-accent);
+  animation: dot-pulse 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.hotspot.is-active .hotspot-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* editorial image treatment for placeholder photography */
+.img-tone {
+  filter: sepia(0.18) contrast(1.04) saturate(0.92);
+}
+
+/* outline display type */
+.text-outline {
+  -webkit-text-stroke: 1px color-mix(in oklab, var(--fg) 55%, transparent);
+  color: transparent;
+}
