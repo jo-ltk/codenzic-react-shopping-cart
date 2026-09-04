@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 type OrbitConfig = {
   /** Starting angle in degrees (0 = right, clockwise as scroll progresses) */
   angle: number;
-  /** Elliptical radii as % of the orbit field */
+  /** Elliptical radii as % of the orbit field — scales with viewport */
   rx: number;
   ry: number;
   scale: number;
@@ -26,6 +26,10 @@ type OrbitItem = {
  * Stable orbital composition. Relative angular spacing is fixed;
  * scroll advances a shared turn angle so every object travels the
  * same circular path in the same direction.
+ *
+ * Radii are % of the orbit field so paths scale fluidly with the viewport.
+ * Desktop: wide ellipse using full viewport. Mobile: taller ellipse,
+ * fewer/smaller objects, kept clear of central copy.
  */
 const ORBIT: OrbitItem[] = [
   {
@@ -33,77 +37,78 @@ const ORBIT: OrbitItem[] = [
     kind: "photo",
     src: STUDY.object.img,
     alt: `${STUDY.object.name} study`,
-    desktop: { angle: 205, rx: 38, ry: 26, scale: 1 },
-    mobile: { angle: 205, rx: 42, ry: 30, scale: 0.72 },
+    desktop: { angle: 205, rx: 46, ry: 38, scale: 1 },
+    mobile: { angle: 200, rx: 36, ry: 44, scale: 0.58 },
     className:
-      "h-[38vmin] w-[26vmin] max-h-72 max-w-52 overflow-hidden rounded-[2rem] shadow-[0_20px_50px_-28px_rgba(23,20,15,0.45)] md:h-[42vmin] md:w-[28vmin] md:rounded-[2.4rem]",
+      "h-[min(36vmin,22rem)] w-[min(24vmin,15rem)] overflow-hidden rounded-[1.6rem] shadow-[0_20px_50px_-28px_rgba(23,20,15,0.45)] sm:rounded-[2rem] md:h-[min(42vmin,28rem)] md:w-[min(28vmin,19rem)] md:rounded-[2.4rem]",
   },
   {
     id: "photo-b",
     kind: "photo",
     src: LOOKBOOK[0].src,
     alt: "Object in situ",
-    desktop: { angle: 25, rx: 36, ry: 24, scale: 1 },
-    mobile: { angle: 25, rx: 40, ry: 28, scale: 0.7 },
+    desktop: { angle: 25, rx: 44, ry: 36, scale: 1 },
+    mobile: { angle: 20, rx: 34, ry: 42, scale: 0.55 },
     className:
-      "h-[34vmin] w-[24vmin] max-h-64 max-w-48 overflow-hidden rounded-[1.8rem] shadow-[0_18px_46px_-26px_rgba(23,20,15,0.4)] md:h-[38vmin] md:w-[26vmin] md:rounded-[2.2rem]",
+      "h-[min(30vmin,18rem)] w-[min(21vmin,13rem)] overflow-hidden rounded-[1.4rem] shadow-[0_18px_46px_-26px_rgba(23,20,15,0.4)] sm:rounded-[1.8rem] md:h-[min(38vmin,24rem)] md:w-[min(26vmin,17rem)] md:rounded-[2.2rem]",
   },
   {
     id: "forest",
     kind: "disc",
-    desktop: { angle: 290, rx: 30, ry: 34, scale: 1 },
-    mobile: { angle: 290, rx: 34, ry: 36, scale: 0.85 },
+    desktop: { angle: 290, rx: 42, ry: 42, scale: 1 },
+    mobile: { angle: 285, rx: 30, ry: 46, scale: 0.72 },
     className:
-      "size-[14vmin] max-h-36 max-w-36 rounded-full bg-[radial-gradient(circle_at_35%_30%,#2f5a45_0%,#163528_55%,#0f241c_100%)] shadow-[inset_0_0_24px_rgba(0,0,0,0.25)] md:size-[16vmin]",
+      "size-[min(12vmin,6.5rem)] rounded-full bg-[radial-gradient(circle_at_35%_30%,#2f5a45_0%,#163528_55%,#0f241c_100%)] shadow-[inset_0_0_24px_rgba(0,0,0,0.25)] md:size-[min(16vmin,9rem)]",
   },
   {
     id: "stone",
     kind: "orb",
-    desktop: { angle: 110, rx: 28, ry: 32, scale: 1 },
-    mobile: { angle: 110, rx: 32, ry: 34, scale: 0.9 },
-    className: "size-[7vmin] max-h-20 max-w-20 rounded-full bg-[#6b5748] md:size-[8vmin]",
+    desktop: { angle: 110, rx: 40, ry: 40, scale: 1 },
+    mobile: { angle: 105, rx: 28, ry: 44, scale: 0.8 },
+    className:
+      "size-[min(6vmin,3.5rem)] rounded-full bg-[#6b5748] md:size-[min(8vmin,5rem)]",
   },
   {
     id: "pill-sage",
     kind: "pill",
-    desktop: { angle: 330, rx: 34, ry: 36, scale: 1 },
-    mobile: { angle: 330, rx: 36, ry: 38, scale: 0.9 },
+    desktop: { angle: 330, rx: 48, ry: 44, scale: 1 },
+    mobile: { angle: 325, rx: 32, ry: 48, scale: 0.78 },
     className:
-      "h-[4.5vmin] w-[16vmin] max-h-8 max-w-40 rounded-full bg-[linear-gradient(90deg,#7a9178_0%,#efe9df_100%)] md:h-7 md:w-40",
+      "h-[min(3.5vmin,1.5rem)] w-[min(12vmin,8rem)] rounded-full bg-[linear-gradient(90deg,#7a9178_0%,#efe9df_100%)] md:h-7 md:w-40",
   },
   {
     id: "pill-clay",
     kind: "pill",
-    desktop: { angle: 150, rx: 32, ry: 34, scale: 1 },
-    mobile: { angle: 150, rx: 34, ry: 36, scale: 0.9 },
+    desktop: { angle: 150, rx: 46, ry: 42, scale: 1 },
+    mobile: { angle: 145, rx: 30, ry: 46, scale: 0.78 },
     className:
-      "h-[4vmin] w-[14vmin] max-h-7 max-w-36 rounded-full bg-[linear-gradient(90deg,#c4a484_0%,#efe9df_100%)] md:h-6 md:w-36",
+      "h-[min(3vmin,1.25rem)] w-[min(11vmin,7rem)] rounded-full bg-[linear-gradient(90deg,#c4a484_0%,#efe9df_100%)] md:h-6 md:w-36",
   },
   {
     id: "pill-taupe",
     kind: "pill",
-    desktop: { angle: 60, rx: 40, ry: 28, scale: 0.9 },
+    desktop: { angle: 60, rx: 50, ry: 34, scale: 0.9 },
     mobile: false,
     className:
-      "hidden h-[3.5vmin] w-[12vmin] max-h-6 max-w-32 rounded-full bg-[linear-gradient(90deg,#a8998c_0%,#efe9df_100%)] md:block md:h-5 md:w-32",
+      "hidden h-5 w-32 rounded-full bg-[linear-gradient(90deg,#a8998c_0%,#efe9df_100%)] md:block",
   },
   {
     id: "moss",
     kind: "disc",
-    desktop: { angle: 245, rx: 26, ry: 30, scale: 0.85 },
+    desktop: { angle: 245, rx: 38, ry: 40, scale: 0.85 },
     mobile: false,
     className:
-      "hidden size-[11vmin] max-h-28 max-w-28 rounded-full bg-[radial-gradient(circle_at_60%_40%,#3d5c48_0%,#1c3328_70%)] md:block md:size-[12vmin]",
+      "hidden size-[min(12vmin,7rem)] rounded-full bg-[radial-gradient(circle_at_60%_40%,#3d5c48_0%,#1c3328_70%)] md:block",
   },
   {
     id: "fragment",
     kind: "photo",
     src: OBJECTS[0].img,
     alt: "Material fragment",
-    desktop: { angle: 175, rx: 42, ry: 22, scale: 0.7 },
+    desktop: { angle: 175, rx: 50, ry: 32, scale: 0.7 },
     mobile: false,
     className:
-      "hidden h-[18vmin] w-[14vmin] max-h-40 max-w-32 overflow-hidden rounded-[1.4rem] md:block",
+      "hidden h-[min(18vmin,12rem)] w-[min(14vmin,9rem)] overflow-hidden rounded-[1.4rem] md:block",
   },
 ];
 
@@ -330,10 +335,10 @@ export function ObjectStudy() {
     <section ref={root} id="anatomy" data-theme="paper" className="relative">
       <div
         ref={stage}
-        className="relative flex min-h-dvh items-center justify-center overflow-hidden px-5 py-24 md:px-10"
+        className="relative flex h-dvh min-h-dvh w-full items-center justify-center overflow-hidden px-[4vw] py-[max(4rem,8vh)] md:px-[2vw] md:py-0"
       >
         {/* Section chrome */}
-        <div className="pointer-events-none absolute left-5 top-8 z-20 md:left-10 md:top-12">
+        <div className="pointer-events-none absolute left-[4vw] top-[max(1.5rem,4vh)] z-20 md:left-[2.5vw] md:top-[max(2.5rem,6vh)]">
           <span className="meta text-fg/50">N°04 — Anatomy</span>
           <div className="mt-3 flex items-baseline gap-1 font-display text-4xl font-light md:text-5xl">
             <span ref={counter}>01</span>
@@ -343,18 +348,18 @@ export function ObjectStudy() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute right-5 top-8 z-20 text-right md:right-10 md:top-12">
+        <div className="pointer-events-none absolute right-[4vw] top-[max(1.5rem,4vh)] z-20 text-right md:right-[2.5vw] md:top-[max(2.5rem,6vh)]">
           <span className="meta text-fg/45">OBJ-{STUDY.object.index}</span>
           <p className="mt-2 font-display text-lg font-light text-fg/70 md:text-xl">
             {STUDY.object.name}
           </p>
         </div>
 
-        {/* Orbit field */}
+        {/* Orbit field — full viewport; radii (% of this box) scale fluidly */}
         <div
           ref={field}
           data-orbit-field
-          className="relative z-0 flex h-[min(78vh,44rem)] w-full max-w-6xl items-center justify-center"
+          className="relative z-0 flex h-full w-full max-w-none items-center justify-center"
         >
           {ORBIT.map((item) => (
             <div
@@ -404,13 +409,13 @@ export function ObjectStudy() {
             </button>
           </div>
 
-          {/* Central editorial statements */}
-          <div className="relative z-10 mx-auto w-[min(92%,34rem)] md:w-[min(70%,40rem)]">
+          {/* Central editorial statements — constrained so orbit clears the copy */}
+          <div className="relative z-10 mx-auto w-[min(78%,17.5rem)] sm:w-[min(70%,22rem)] md:w-[min(38vw,36rem)] lg:w-[min(34vw,40rem)]">
             {STATES.map((state) => (
               <p
                 key={state.id}
                 data-study-copy
-                className="absolute inset-0 flex items-center justify-center text-center font-display text-[1.65rem] leading-[1.28] font-light tracking-[-0.01em] md:text-4xl md:leading-[1.3] lg:text-[2.75rem]"
+                className="absolute inset-0 flex items-center justify-center text-center font-display text-[1.45rem] leading-[1.3] font-light tracking-[-0.01em] sm:text-[1.65rem] sm:leading-[1.28] md:text-4xl md:leading-[1.3] lg:text-[2.75rem]"
               >
                 <span>
                   {state.parts.map((part, i) => (
@@ -426,14 +431,14 @@ export function ObjectStudy() {
             ))}
             <p
               aria-hidden
-              className="invisible text-center font-display text-[1.65rem] leading-[1.28] font-light md:text-4xl md:leading-[1.3] lg:text-[2.75rem]"
+              className="invisible text-center font-display text-[1.45rem] leading-[1.3] font-light sm:text-[1.65rem] sm:leading-[1.28] md:text-4xl md:leading-[1.3] lg:text-[2.75rem]"
             >
               {STATES[0].parts.map((p) => p.text).join("")}
             </p>
           </div>
         </div>
 
-        <p className="pointer-events-none absolute bottom-8 left-1/2 z-20 hidden max-w-xs -translate-x-1/2 text-center text-xs leading-relaxed text-fg/40 md:bottom-10 md:block">
+        <p className="pointer-events-none absolute bottom-[max(1.25rem,3vh)] left-1/2 z-20 hidden max-w-xs -translate-x-1/2 text-center text-xs leading-relaxed text-fg/40 md:block">
           {STUDY.intro}
         </p>
       </div>
