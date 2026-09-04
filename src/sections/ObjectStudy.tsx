@@ -40,7 +40,7 @@ const ORBIT: OrbitItem[] = [
     desktop: { angle: 205, rx: 46, ry: 38, scale: 1 },
     mobile: { angle: 200, rx: 38, ry: 40, scale: 0.62 },
     className:
-      "h-[min(36vmin,22rem)] w-[min(24vmin,15rem)] overflow-hidden rounded-[1.6rem] shadow-[0_20px_50px_-28px_rgba(23,20,15,0.45)] sm:rounded-[2rem] md:h-[min(42vmin,28rem)] md:w-[min(28vmin,19rem)] md:rounded-[2.4rem]",
+      "h-[min(36vmin,22rem)] w-[min(24vmin,15rem)] overflow-hidden rounded-[1.6rem] shadow-[0_20px_50px_-28px_rgba(10,22,16,0.45)] sm:rounded-[2rem] md:h-[min(42vmin,28rem)] md:w-[min(28vmin,19rem)] md:rounded-[2.4rem]",
   },
   {
     id: "photo-b",
@@ -50,7 +50,7 @@ const ORBIT: OrbitItem[] = [
     desktop: { angle: 25, rx: 44, ry: 36, scale: 1 },
     mobile: { angle: 18, rx: 36, ry: 38, scale: 0.58 },
     className:
-      "h-[min(30vmin,18rem)] w-[min(21vmin,13rem)] overflow-hidden rounded-[1.4rem] shadow-[0_18px_46px_-26px_rgba(23,20,15,0.4)] sm:rounded-[1.8rem] md:h-[min(38vmin,24rem)] md:w-[min(26vmin,17rem)] md:rounded-[2.2rem]",
+      "h-[min(30vmin,18rem)] w-[min(21vmin,13rem)] overflow-hidden rounded-[1.4rem] shadow-[0_18px_46px_-26px_rgba(10,22,16,0.4)] sm:rounded-[1.8rem] md:h-[min(38vmin,24rem)] md:w-[min(26vmin,17rem)] md:rounded-[2.2rem]",
   },
   {
     id: "forest",
@@ -66,7 +66,7 @@ const ORBIT: OrbitItem[] = [
     desktop: { angle: 110, rx: 40, ry: 40, scale: 1 },
     mobile: { angle: 120, rx: 30, ry: 36, scale: 0.85 },
     className:
-      "size-[min(6vmin,3.5rem)] rounded-full bg-[#6b5748] md:size-[min(8vmin,5rem)]",
+      "size-[min(6vmin,3.5rem)] rounded-full bg-earth md:size-[min(8vmin,5rem)]",
   },
   {
     id: "pill-sage",
@@ -74,7 +74,7 @@ const ORBIT: OrbitItem[] = [
     desktop: { angle: 330, rx: 48, ry: 44, scale: 1 },
     mobile: { angle: 340, rx: 22, ry: 46, scale: 0.85 },
     className:
-      "h-[min(3.5vmin,1.5rem)] w-[min(12vmin,8rem)] rounded-full bg-[linear-gradient(90deg,#7a9178_0%,#efe9df_100%)] md:h-7 md:w-40",
+      "h-[min(3.5vmin,1.5rem)] w-[min(12vmin,8rem)] rounded-full bg-[linear-gradient(90deg,var(--color-sage)_0%,var(--color-paper)_100%)] md:h-7 md:w-40",
   },
   {
     id: "pill-clay",
@@ -82,7 +82,7 @@ const ORBIT: OrbitItem[] = [
     desktop: { angle: 150, rx: 46, ry: 42, scale: 1 },
     mobile: { angle: 155, rx: 24, ry: 44, scale: 0.85 },
     className:
-      "h-[min(3vmin,1.25rem)] w-[min(11vmin,7rem)] rounded-full bg-[linear-gradient(90deg,#c4a484_0%,#efe9df_100%)] md:h-6 md:w-36",
+      "h-[min(3vmin,1.25rem)] w-[min(11vmin,7rem)] rounded-full bg-[linear-gradient(90deg,var(--color-clay)_0%,var(--color-paper)_100%)] md:h-6 md:w-36",
   },
   {
     id: "pill-taupe",
@@ -90,7 +90,7 @@ const ORBIT: OrbitItem[] = [
     desktop: { angle: 60, rx: 50, ry: 34, scale: 0.9 },
     mobile: false,
     className:
-      "hidden h-5 w-32 rounded-full bg-[linear-gradient(90deg,#a8998c_0%,#efe9df_100%)] md:block",
+      "hidden h-5 w-32 rounded-full bg-[linear-gradient(90deg,var(--color-stone)_0%,var(--color-paper)_100%)] md:block",
   },
   {
     id: "moss",

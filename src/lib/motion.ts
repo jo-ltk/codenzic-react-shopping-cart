@@ -8,9 +8,12 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 export const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 export const EASE_GSAP = [0.22, 1, 0.36, 1] as const;
 
+/** Scroll-morph worlds — hexes stay in lockstep with `global.css` tokens. */
 export const THEME = {
+  /* Light: warm ivory ground + charcoal text */
   paper: { bg: "#efe9df", fg: "#17140f" },
-  ink: { bg: "#17140f", fg: "#efe9df" },
+  /* Dark: hero forest green + ivory text */
+  ink: { bg: "#0a1610", fg: "#efe9df" },
 } as const;
 
 export type ThemeName = keyof typeof THEME;

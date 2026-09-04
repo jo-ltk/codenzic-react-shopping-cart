@@ -1,9 +1,27 @@
 @import "tailwindcss";
 
+/*
+  OBJEKT global palette — sourced from the hero environment.
+  Deep forest green + warm ivory + muted sage/stone/bronze.
+  Accent orange stays restrained and existing.
+*/
 @theme {
-  --color-paper: #efe9df;
-  --color-ink: #17140f;
-  --color-accent: #e44a17;
+  /* Primary surfaces */
+  --color-paper: #efe9df; /* warm ivory / parchment */
+  --color-ink: #0a1610; /* deep forest green / almost-black green */
+  --color-botanical: #12261a; /* secondary dark botanical green */
+  --color-surface: #1a2e24; /* muted deep green surface */
+
+  /* Neutrals */
+  --color-stone: #a8998c; /* warm stone / beige */
+  --color-sage: #7a9178; /* muted sage */
+  --color-charcoal: #17140f; /* deep charcoal for text on light */
+
+  /* Accents */
+  --color-bronze: #8a6f4e; /* muted bronze / warm earth */
+  --color-earth: #6b5748; /* deeper earthen brown */
+  --color-clay: #c4a484; /* soft earthen clay */
+  --color-accent: #e44a17; /* existing restrained orange */
 
   --font-display: "Fraunces", ui-serif, Georgia, serif;
   --font-editorial: "Bodoni Moda", "Fraunces", ui-serif, Georgia, serif;
@@ -17,9 +35,10 @@
   --color-fg: var(--fg);
 }
 
+/* First paint matches the hero (ink / forest) before ScrollTrigger settles */
 :root {
-  --bg: #efe9df;
-  --fg: #17140f;
+  --bg: #0a1610;
+  --fg: #efe9df;
 }
 
 html {

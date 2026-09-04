@@ -16,8 +16,8 @@ export default function App() {
 
   useGSAP(
     () => {
-      // 1. World morph — the page crossfades between paper and ink
-      //    as themed sections take over the viewport.
+      // 1. World morph — the page crossfades between ivory paper and
+      //    forest ink as themed sections take over the viewport.
       gsap.utils.toArray<HTMLElement>("[data-theme]").forEach((section) => {
         const theme = THEME[section.dataset.theme as ThemeName];
         ScrollTrigger.create({
