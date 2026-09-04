@@ -101,7 +101,7 @@ export function Footer() {
 
         <div className="meta mt-16 flex items-center justify-between pb-6 text-fg/40">
           <span>© 2026 OBJEKT — Codenzic Innovations</span>
-          <span>Placeholder imagery via picsum.photos</span>
+          <span>Objects photographed in situ</span>
         </div>
       </div>
 

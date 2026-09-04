@@ -1,6 +1,3 @@
-const img = (seed: string, w = 900, h = 1200) =>
-  `https://picsum.photos/seed/${seed}/${w}/${h}`;
-
 export interface CatalogueObject {
   id: string;
   index: string;
@@ -14,42 +11,50 @@ export const OBJECTS: CatalogueObject[] = [
   {
     id: "obj-001",
     index: "001",
-    name: "Vessel in Raw Clay",
-    nature: "Stoneware — fired at 1260°",
-    price: "€240",
-    img: img("objekt-vessel"),
+    name: "Leone Urn",
+    nature: "Verde marble — bronze lion handles",
+    price: "€1,280",
+    img: "/products/vessel.jpg",
   },
   {
     id: "obj-002",
     index: "002",
     name: "Meridian Floor Lamp",
-    nature: "Patinated brass — hand spun",
-    price: "€1,150",
-    img: img("objekt-lamp"),
+    nature: "Malachite shade — fluted bronze stem",
+    price: "€2,450",
+    img: "/products/lamp.jpg",
   },
   {
     id: "obj-003",
     index: "003",
-    name: "Fold Chair No. 2",
-    nature: "Steam-bent ash — natural oil",
-    price: "€890",
-    img: img("objekt-chair"),
+    name: "Empire Wing Chair",
+    nature: "Forest velvet — bronze lion arms",
+    price: "€3,200",
+    img: "/products/chair.jpg",
   },
   {
     id: "obj-004",
     index: "004",
-    name: "Slab Table, Low",
-    nature: "Travertine — honed edge",
-    price: "€2,400",
-    img: img("objekt-table"),
+    name: "Verde Sphere Table",
+    nature: "Veined marble — gilt pedestal",
+    price: "€4,100",
+    img: "/products/table.jpg",
   },
   {
     id: "obj-005",
     index: "005",
-    name: "Wool Throw in Umber",
-    nature: "Undyed highland wool",
-    price: "€180",
-    img: img("objekt-throw"),
+    name: "Acanthus Throw",
+    nature: "Woven green & gold — fringed edge",
+    price: "€420",
+    img: "/products/throw.jpg",
+  },
+  {
+    id: "obj-006",
+    index: "006",
+    name: "Archival Floor Mirror",
+    nature: "Emerald marble — gilt crest",
+    price: "€5,800",
+    img: "/products/mirror.jpg",
   },
 ];
 
@@ -68,32 +73,32 @@ export interface StudyState {
 export const STUDY = {
   object: OBJECTS[2],
   intro:
-    "One object per issue is taken apart. Not physically — narratively. This issue: the Fold Chair No. 2.",
+    "One object per issue is taken apart. Not physically — narratively. This issue: the Empire Wing Chair.",
   /** Three scroll-pinned editorial states around one object. */
   states: [
     {
       id: "frame",
       parts: [
-        { text: "The Fold Chair", tone: "strong" },
-        { text: " is ash bent once — ", tone: "mute" },
-        { text: "grain unbroken", tone: "strong" },
-        { text: " from floor to backrest.", tone: "mute" },
+        { text: "The Empire Wing Chair", tone: "strong" },
+        { text: " holds court in forest velvet — ", tone: "mute" },
+        { text: "lion arms", tone: "strong" },
+        { text: " cast in burnished bronze.", tone: "mute" },
       ],
     },
     {
       id: "joinery",
       parts: [
-        { text: "Every joint", tone: "strong" },
-        { text: " is a wedged tenon. ", tone: "mute" },
-        { text: "No screws.", tone: "strong" },
-        { text: " Built to be taken apart a century from now.", tone: "mute" },
+        { text: "Every claw foot", tone: "strong" },
+        { text: " carries weight like a sentinel. ", tone: "mute" },
+        { text: "No soft edges.", tone: "strong" },
+        { text: " Built for rooms that outlast seasons.", tone: "mute" },
       ],
     },
     {
       id: "finish",
       parts: [
-        { text: "Linseed oil", tone: "strong" },
-        { text: " darkens where hands rest. The chair ", tone: "mute" },
+        { text: "Velvet deepens", tone: "strong" },
+        { text: " where light rests. The chair ", tone: "mute" },
         { text: "keeps a diary", tone: "strong" },
         { text: " of its room.", tone: "mute" },
       ],
@@ -103,23 +108,23 @@ export const STUDY = {
 
 export const LOOKBOOK = [
   {
-    src: img("objekt-field-a", 1000, 1250),
-    caption: "Fig. 01 — Morning light, north window",
+    src: "/products/mirror.jpg",
+    caption: "Fig. 01 — Archival mirror, morning light",
     speed: 0.12,
   },
   {
-    src: img("objekt-field-b", 900, 700),
-    caption: "Fig. 02 — The lamp, unlit",
+    src: "/products/lamp.jpg",
+    caption: "Fig. 02 — Meridian lamp, lit",
     speed: -0.08,
   },
   {
-    src: img("objekt-field-c", 800, 1100),
-    caption: "Fig. 03 — Travertine, honed",
+    src: "/products/table.jpg",
+    caption: "Fig. 03 — Verde marble, gilt edge",
     speed: 0.18,
   },
   {
-    src: img("objekt-field-d", 1100, 800),
-    caption: "Fig. 04 — Wool, undyed",
+    src: "/products/throw.jpg",
+    caption: "Fig. 04 — Acanthus weave, fringed",
     speed: -0.14,
   },
 ];
