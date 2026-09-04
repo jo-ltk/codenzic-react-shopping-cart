@@ -10,4 +10,12 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "src"),
     },
   },
+  // Windows often locks files mid-write (e.g. AI-generated PNGs landing in
+  // public/). Polling avoids the fatal EBUSY crash from native fs.watch.
+  server: {
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
+  },
 });

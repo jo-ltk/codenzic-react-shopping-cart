@@ -96,31 +96,7 @@ body {
   animation: dot-pulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
-/* anatomy hotspot dots */
-.hotspot {
-  transition:
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.hotspot .hotspot-label {
-  opacity: 0;
-  transform: translateY(6px);
-  transition:
-    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.hotspot.is-active {
-  transform: scale(1.6);
-  background-color: var(--color-accent);
-  animation: dot-pulse 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-}
-
-.hotspot.is-active .hotspot-label {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* anatomy discovery dot scale is driven by GSAP on hover */
 
 /* editorial image treatment for placeholder photography */
 .img-tone {

@@ -53,44 +53,52 @@ export const OBJECTS: CatalogueObject[] = [
   },
 ];
 
-export interface Annotation {
-  title: string;
-  body: string;
-  /** dot position over the study image, in percent */
-  x: number;
-  y: number;
+/** Dual-tone editorial fragment for the Anatomy orbital stage. */
+export interface StudyPart {
+  text: string;
+  /** strong = charcoal focal words; mute = quiet connectors */
+  tone: "strong" | "mute";
+}
+
+export interface StudyState {
+  id: string;
+  parts: StudyPart[];
 }
 
 export const STUDY = {
   object: OBJECTS[2],
   intro:
     "One object per issue is taken apart. Not physically — narratively. This issue: the Fold Chair No. 2.",
-  annotations: [
+  /** Three scroll-pinned editorial states around one object. */
+  states: [
     {
-      title: "Steam-bent frame",
-      body: "A single plank of ash is bent over fourteen hours of steam and clamp. No laminations, no shortcuts — the grain runs unbroken from floor to backrest.",
-      x: 28,
-      y: 22,
+      id: "frame",
+      parts: [
+        { text: "The Fold Chair", tone: "strong" },
+        { text: " is ash bent once — ", tone: "mute" },
+        { text: "grain unbroken", tone: "strong" },
+        { text: " from floor to backrest.", tone: "mute" },
+      ],
     },
     {
-      title: "Joinery without screws",
-      body: "Every connection is a wedged through-tenon. The chair can be disassembled with a mallet and reassembled by hand, a century from now.",
-      x: 68,
-      y: 38,
+      id: "joinery",
+      parts: [
+        { text: "Every joint", tone: "strong" },
+        { text: " is a wedged tenon. ", tone: "mute" },
+        { text: "No screws.", tone: "strong" },
+        { text: " Built to be taken apart a century from now.", tone: "mute" },
+      ],
     },
     {
-      title: "Finish that ages",
-      body: "Raw linseed oil, burnished in three passes. It darkens where hands rest and pales where light falls — the chair keeps a diary of its room.",
-      x: 40,
-      y: 62,
+      id: "finish",
+      parts: [
+        { text: "Linseed oil", tone: "strong" },
+        { text: " darkens where hands rest. The chair ", tone: "mute" },
+        { text: "keeps a diary", tone: "strong" },
+        { text: " of its room.", tone: "mute" },
+      ],
     },
-    {
-      title: "Weight & balance",
-      body: "4.1 kilograms. Light enough to lift with two fingers under the seat rail, planted enough that it never skates on a wooden floor.",
-      x: 62,
-      y: 84,
-    },
-  ] satisfies Annotation[],
+  ] satisfies StudyState[],
 };
 
 export const LOOKBOOK = [
@@ -117,7 +125,7 @@ export const LOOKBOOK = [
 ];
 
 /** Full-bleed sculptural environment for the hero only. */
-export const HERO_ENVIRONMENT = "/hero/objekt-environment.png";
+export const HERO_ENVIRONMENT = "/hero/objekt-environment2.png";
 
 /** Transparent-cutout foreground figures for the hero only. */
 export const HERO_FIGURES = "/hero/objekt-figures.png";

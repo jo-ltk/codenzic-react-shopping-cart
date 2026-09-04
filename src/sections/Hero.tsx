@@ -148,118 +148,120 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
       />
 
-      {/* z-2 — foreground figures (layout unchanged) */}
-      <div
-        data-hero-figures
-        data-cursor="VIEW"
-        className="absolute bottom-[-10%] left-[-10%] top-[4%] z-[2] flex w-[92%] items-end justify-start md:left-[-6%] md:top-0 md:w-[72%] lg:w-[68%]"
-      >
-        <img
-          src={HERO_FIGURES}
-          alt="Sculptural figures — Heritage Collection"
-          draggable={false}
-          className="pointer-events-none h-full w-auto max-w-none object-contain object-left-bottom select-none"
-        />
-      </div>
-
-      {/* z-3 — editorial UI framed to the edges */}
-      <div className="pointer-events-none relative z-[3] flex flex-1 flex-col px-6 pt-28 md:px-12 md:pt-32 lg:px-14">
+      {/* Stage above the foot bar — figures bottom flush with SCROLL */}
+      <div className="relative z-[2] flex min-h-0 flex-1 flex-col">
         <div
-          data-hero-copy
-          className="mt-[min(14vh,7rem)] flex max-w-xl flex-col md:mt-[min(16vh,8.5rem)]"
+          data-hero-figures
+          data-cursor="VIEW"
+          className="absolute inset-x-0 top-[10%] bottom-0 z-[2] flex items-end justify-center sm:top-[8%] md:top-[6%] md:left-[18%] lg:left-[20%]"
         >
-          <div data-hero-eyebrow className="mb-8 flex flex-col items-start gap-3.5 md:mb-10">
-            <span aria-hidden className="block h-6 w-px bg-paper/40" />
-            <p className="text-[0.55rem] tracking-[0.34em] uppercase text-paper/60">
-              Objects for a higher tomorrow
-            </p>
-          </div>
-
-          <div className="flex items-start gap-5 md:gap-8">
-            <ol
-              aria-label="Collection sequence"
-              className="mt-2.5 flex shrink-0 flex-col gap-2"
-            >
-              {SLIDES.map((n, i) => (
-                <li
-                  key={n}
-                  data-hero-index
-                  className={cn(
-                    "flex items-center gap-2.5 text-[0.58rem] tracking-[0.18em] tabular-nums",
-                    i === 0 ? "text-paper" : "text-paper/28",
-                  )}
-                >
-                  <span>{n}</span>
-                  {i === 0 && (
-                    <span aria-hidden className="block h-px w-5 bg-paper/70" />
-                  )}
-                </li>
-              ))}
-            </ol>
-
-            <div className="min-w-0">
-              <h1 className="font-editorial text-[12.5vw] leading-[0.88] font-normal tracking-[-0.01em] text-paper uppercase md:text-[6.4vw] lg:text-[5.4vw]">
-                <MaskLine>Art</MaskLine>
-                <MaskLine>Lives</MaskLine>
-                <MaskLine>With</MaskLine>
-                <MaskLine>
-                  You
-                  <sup className="ml-1 align-super text-[0.28em] tracking-normal normal-case">
-                    ™
-                  </sup>
-                </MaskLine>
-              </h1>
-
-              <p
-                data-hero-sub
-                className="mt-8 text-[0.55rem] tracking-[0.3em] uppercase text-paper/55 md:mt-10"
-              >
-                Curated objects for modern spaces
-              </p>
-            </div>
-          </div>
-
-          <a
-            ref={exploreRef}
-            href="#catalogue"
-            data-hero-cta
-            data-cursor=""
-            className="pointer-events-auto mt-16 inline-flex w-fit items-center gap-5 md:mt-20"
-          >
-            <span className="flex size-16 items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.05] md:size-[4.25rem]">
-              <ArrowRight className="size-4" strokeWidth={1.05} />
-            </span>
-            <span className="flex flex-col gap-1 text-[0.58rem] leading-none tracking-[0.28em] uppercase text-paper/80">
-              <span>Explore</span>
-              <span>The Collection</span>
-            </span>
-          </a>
+          <img
+            src={HERO_FIGURES}
+            alt="Sculptural figures — Heritage Collection"
+            draggable={false}
+            className="pointer-events-none h-full w-full max-h-full object-contain object-bottom select-none"
+          />
         </div>
 
-        {/* Right-side collection info — lower right, framed to edge */}
-        <aside
-          data-hero-side
-          className="pointer-events-auto absolute right-6 bottom-[6.5rem] flex flex-col items-end gap-2.5 text-right md:right-12 md:bottom-28 lg:right-14"
-        >
-          <span aria-hidden className="mb-1 block h-px w-8 bg-paper/35" />
-          <span className="text-[0.55rem] tracking-[0.32em] uppercase text-paper/45">
-            SS26
-          </span>
-          <p className="max-w-[10rem] text-[0.62rem] leading-[1.5] tracking-[0.2em] uppercase text-paper/88">
-            The Heritage Collection
-          </p>
-          <a
-            href="#catalogue"
-            data-cursor=""
-            className="group mt-3 inline-flex flex-col items-end gap-1.5 text-[0.55rem] tracking-[0.22em] uppercase text-paper/60 transition-colors hover:text-paper"
+        {/* Editorial UI framed to the edges */}
+        <div className="pointer-events-none relative z-[3] flex flex-1 flex-col px-6 pt-28 md:px-12 md:pt-32 lg:px-14">
+          <div
+            data-hero-copy
+            className="mt-[min(14vh,7rem)] flex max-w-xl flex-col md:mt-[min(16vh,8.5rem)]"
           >
-            <span>View All</span>
-            <ArrowRight
-              className="size-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1"
-              strokeWidth={1.1}
-            />
-          </a>
-        </aside>
+            <div data-hero-eyebrow className="mb-8 flex flex-col items-start gap-3.5 md:mb-10">
+              <span aria-hidden className="block h-6 w-px bg-paper/40" />
+              <p className="text-[0.55rem] tracking-[0.34em] uppercase text-paper/60">
+                Objects for a higher tomorrow
+              </p>
+            </div>
+
+            <div className="flex items-start gap-5 md:gap-8">
+              <ol
+                aria-label="Collection sequence"
+                className="mt-2.5 flex shrink-0 flex-col gap-2"
+              >
+                {SLIDES.map((n, i) => (
+                  <li
+                    key={n}
+                    data-hero-index
+                    className={cn(
+                      "flex items-center gap-2.5 text-[0.58rem] tracking-[0.18em] tabular-nums",
+                      i === 0 ? "text-paper" : "text-paper/28",
+                    )}
+                  >
+                    <span>{n}</span>
+                    {i === 0 && (
+                      <span aria-hidden className="block h-px w-5 bg-paper/70" />
+                    )}
+                  </li>
+                ))}
+              </ol>
+
+              <div className="min-w-0">
+                <h1 className="font-editorial text-[12.5vw] leading-[0.88] font-normal tracking-[-0.01em] text-paper uppercase md:text-[6.4vw] lg:text-[5.4vw]">
+                  <MaskLine>Art</MaskLine>
+                  <MaskLine>Lives</MaskLine>
+                  <MaskLine>With</MaskLine>
+                  <MaskLine>
+                    You
+                    <sup className="ml-1 align-super text-[0.28em] tracking-normal normal-case">
+                      ™
+                    </sup>
+                  </MaskLine>
+                </h1>
+
+                <p
+                  data-hero-sub
+                  className="mt-8 text-[0.55rem] tracking-[0.3em] uppercase text-paper/55 md:mt-10"
+                >
+                  Curated objects for modern spaces
+                </p>
+              </div>
+            </div>
+
+            <a
+              ref={exploreRef}
+              href="#catalogue"
+              data-hero-cta
+              data-cursor=""
+              className="pointer-events-auto mt-16 inline-flex w-fit items-center gap-5 md:mt-20"
+            >
+              <span className="flex size-16 items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.05] md:size-[4.25rem]">
+                <ArrowRight className="size-4" strokeWidth={1.05} />
+              </span>
+              <span className="flex flex-col gap-1 text-[0.58rem] leading-none tracking-[0.28em] uppercase text-paper/80">
+                <span>Explore</span>
+                <span>The Collection</span>
+              </span>
+            </a>
+          </div>
+
+          {/* Right-side collection info — lower right, framed to edge */}
+          <aside
+            data-hero-side
+            className="pointer-events-auto absolute right-6 bottom-8 flex flex-col items-end gap-2.5 text-right md:right-12 md:bottom-10 lg:right-14"
+          >
+            <span aria-hidden className="mb-1 block h-px w-8 bg-paper/35" />
+            <span className="text-[0.55rem] tracking-[0.32em] uppercase text-paper/45">
+              SS26
+            </span>
+            <p className="max-w-[10rem] text-[0.62rem] leading-[1.5] tracking-[0.2em] uppercase text-paper/88">
+              The Heritage Collection
+            </p>
+            <a
+              href="#catalogue"
+              data-cursor=""
+              className="group mt-3 inline-flex flex-col items-end gap-1.5 text-[0.55rem] tracking-[0.22em] uppercase text-paper/60 transition-colors hover:text-paper"
+            >
+              <span>View All</span>
+              <ArrowRight
+                className="size-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1"
+                strokeWidth={1.1}
+              />
+            </a>
+          </aside>
+        </div>
       </div>
 
       {/* Bottom editorial information bar */}
