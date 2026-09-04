@@ -140,8 +140,5 @@ export const LOOKBOOK = [
 /** Full-bleed sculptural environment for the hero only. */
 export const HERO_ENVIRONMENT = "/hero/objekt-environment2.png";
 
-/** Transparent-cutout foreground figures for the hero only (desktop / tablet). */
+/** Transparent-cutout foreground figures for the hero only. */
 export const HERO_FIGURES = "/hero/objekt-figures.png";
-
-/** Mobile-only hero figures — classical carriers with collection objects. */
-export const HERO_FIGURES_MOBILE = "/hero/objekt-figures-mobile.png";

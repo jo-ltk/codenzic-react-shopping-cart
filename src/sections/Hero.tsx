@@ -1,7 +1,7 @@
 import { useRef, type ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { gsap, useGSAP, EASE_GSAP, prefersReducedMotion, isFinePointer } from "@/lib/motion";
-import { HERO_ENVIRONMENT, HERO_FIGURES, HERO_FIGURES_MOBILE } from "@/lib/data";
+import { HERO_ENVIRONMENT, HERO_FIGURES } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 function MaskLine({ children, className }: { children: ReactNode; className?: string }) {
@@ -127,17 +127,17 @@ export function Hero() {
       data-theme="ink"
       className="relative flex min-h-dvh flex-col overflow-hidden text-paper"
     >
-      {/* z-0 — full-bleed environment (desktop/tablet unchanged; mobile uses solid ink field) */}
+      {/* z-0 — full-bleed environment (unchanged) */}
       <div
         data-hero-env
         data-cursor="EXPLORE"
-        className="absolute inset-0 z-0 overflow-hidden bg-[#0b1310] sm:bg-transparent"
+        className="absolute inset-0 z-0 overflow-hidden"
       >
         <img
           src={HERO_ENVIRONMENT}
           alt=""
           draggable={false}
-          className="pointer-events-none absolute inset-0 hidden size-full scale-105 object-cover object-[center_42%] select-none sm:block"
+          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_35%] sm:object-[center_42%] select-none"
         />
       </div>
 
@@ -145,36 +145,21 @@ export function Hero() {
       <div
         data-hero-scrim
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(8,12,10,0.42)_0%,rgba(8,12,10,0.12)_30%,transparent_52%),linear-gradient(to_top,rgba(8,12,10,0.62)_0%,rgba(8,12,10,0.16)_26%,transparent_52%)] sm:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(8,12,10,0.52)_0%,rgba(8,12,10,0.18)_28%,transparent_50%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)] sm:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
       />
 
       {/* Stage above the foot bar — figures bottom flush with SCROLL */}
       <div className="relative z-[2] flex min-h-0 flex-1 flex-col">
-        {/* Mobile hero artwork */}
         <div
           data-hero-figures
           data-cursor="VIEW"
-          className="absolute inset-x-0 top-[12%] bottom-[6%] z-[2] flex items-end justify-center sm:hidden"
-        >
-          <img
-            src={HERO_FIGURES_MOBILE}
-            alt="Sculptural figures carrying the collection"
-            draggable={false}
-            className="pointer-events-none h-full w-full max-h-full origin-bottom scale-[1.06] object-contain object-bottom select-none"
-          />
-        </div>
-
-        {/* Desktop / tablet figures — approved cutout */}
-        <div
-          data-hero-figures
-          data-cursor="VIEW"
-          className="absolute inset-x-0 top-[8%] bottom-0 z-[2] hidden items-end justify-center sm:flex md:top-[6%] md:left-[18%] lg:left-[20%]"
+          className="absolute inset-x-0 top-[8%] bottom-[4%] z-[2] flex items-end justify-center sm:top-[8%] sm:bottom-0 md:top-[6%] md:left-[18%] lg:left-[20%]"
         >
           <img
             src={HERO_FIGURES}
             alt="Sculptural figures — Heritage Collection"
             draggable={false}
-            className="pointer-events-none h-full w-full max-h-full object-contain object-bottom select-none"
+            className="pointer-events-none h-full w-full max-h-full origin-bottom scale-[1.18] object-contain object-bottom select-none sm:scale-100"
           />
         </div>
 
