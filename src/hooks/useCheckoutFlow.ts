@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   EMPTY_SHIPPING,
   validateShipping,
@@ -8,17 +8,29 @@ import {
 } from "@/lib/checkout/shippingSchema";
 import type { CheckoutStep } from "@/components/checkout/CheckoutStepper";
 
+function createOrderReference() {
+  const stamp = Date.now().toString(36).toUpperCase();
+  const noise = Math.floor(Math.random() * 900 + 100);
+  return `OBJ-${stamp}-${noise}`;
+}
+
 export function useCheckoutFlow() {
   const [step, setStep] = useState<CheckoutStep>("review");
   const [shipping, setShipping] = useState<ShippingFormData>(EMPTY_SHIPPING);
   const [errors, setErrors] = useState<ShippingErrors>({});
   const [orderTotal, setOrderTotal] = useState(0);
+  const [orderReference, setOrderReference] = useState("");
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const placingLock = useRef(false);
 
   const resetCheckout = useCallback(() => {
+    placingLock.current = false;
+    setIsPlacingOrder(false);
     setStep("review");
     setShipping(EMPTY_SHIPPING);
     setErrors({});
     setOrderTotal(0);
+    setOrderReference("");
   }, []);
 
   const startCheckout = useCallback(() => {
@@ -52,21 +64,18 @@ export function useCheckoutFlow() {
     });
   }, []);
 
-  const blurField = useCallback(
-    (field: ShippingField) => {
-      setShipping((prev) => {
-        const fieldError = validateShipping(prev, field);
-        setErrors((errs) => {
-          const next = { ...errs };
-          if (fieldError[field]) next[field] = fieldError[field];
-          else delete next[field];
-          return next;
-        });
-        return prev;
+  const blurField = useCallback((field: ShippingField) => {
+    setShipping((prev) => {
+      const fieldError = validateShipping(prev, field);
+      setErrors((errs) => {
+        const next = { ...errs };
+        if (fieldError[field]) next[field] = fieldError[field];
+        else delete next[field];
+        return next;
       });
-    },
-    [],
-  );
+      return prev;
+    });
+  }, []);
 
   const submitShipping = useCallback(() => {
     const nextErrors = validateShipping(shipping);
@@ -76,16 +85,32 @@ export function useCheckoutFlow() {
     return true;
   }, [shipping]);
 
+  /**
+   * Complete the order once. Locks against double-clicks, stores total +
+   * reference in React state so the success screen survives cart.clear().
+   */
   const placeOrder = useCallback((finalTotal: number) => {
+    if (placingLock.current || isPlacingOrder) return false;
+
+    placingLock.current = true;
+    setIsPlacingOrder(true);
+
+    const reference = createOrderReference();
     setOrderTotal(finalTotal);
+    setOrderReference(reference);
     setStep("success");
-  }, []);
+    setIsPlacingOrder(false);
+
+    return true;
+  }, [isPlacingOrder]);
 
   return {
     step,
     shipping,
     errors,
     orderTotal,
+    orderReference,
+    isPlacingOrder,
     resetCheckout,
     startCheckout,
     beginCheckout,

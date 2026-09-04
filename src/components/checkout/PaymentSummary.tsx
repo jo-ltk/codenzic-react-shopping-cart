@@ -12,6 +12,7 @@ interface PaymentSummaryProps {
   items: CartItem[];
   totals: CartTotals;
   shipping: ShippingFormData;
+  isPlacingOrder?: boolean;
   onBack: () => void;
   onPlaceOrder: () => void;
 }
@@ -21,6 +22,7 @@ export function PaymentSummary({
   items,
   totals,
   shipping,
+  isPlacingOrder = false,
   onBack,
   onPlaceOrder,
 }: PaymentSummaryProps) {
@@ -112,19 +114,24 @@ export function PaymentSummary({
         <button
           type="button"
           onClick={onBack}
+          disabled={isPlacingOrder}
           data-cursor=""
-          className="meta inline-flex min-h-11 flex-1 items-center justify-center border border-charcoal/15 px-4 py-3 text-charcoal transition-colors duration-300 hover:border-accent hover:text-accent"
+          className="meta inline-flex min-h-11 flex-1 items-center justify-center border border-charcoal/15 px-4 py-3 text-charcoal transition-colors duration-300 hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
         >
           Back to shipping
         </button>
         <button
           type="button"
           onClick={onPlaceOrder}
-          disabled={items.length === 0 || !totals.canCheckout}
+          disabled={
+            items.length === 0 ||
+            !totals.canCheckout ||
+            isPlacingOrder
+          }
           data-cursor=""
           className="meta inline-flex min-h-11 flex-1 items-center justify-center bg-ink px-4 py-3 text-paper transition-colors duration-300 hover:bg-accent disabled:cursor-not-allowed disabled:bg-charcoal/15 disabled:text-charcoal/35"
         >
-          Place Order
+          {isPlacingOrder ? "Placing order…" : "Place Order"}
         </button>
       </div>
     </div>

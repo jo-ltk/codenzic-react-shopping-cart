@@ -135,16 +135,28 @@ export function CartDrawer() {
   }, [isOpen, closeCart]);
 
   const handlePlaceOrder = () => {
-    if (!canCheckout || items.length === 0) return;
+    if (
+      !canCheckout ||
+      items.length === 0 ||
+      checkout.isPlacingOrder ||
+      checkout.step === "success"
+    ) {
+      return;
+    }
+
     const finalTotal = summaryTotals.finalTotal;
-    // Capture total first, then clear — persist middleware writes [] to localStorage.
-    checkout.placeOrder(finalTotal);
-    clear();
+    // Keep total + reference in checkout state, then clear the bag.
+    // Zustand persist writes [] to localStorage automatically.
+    const placed = checkout.placeOrder(finalTotal);
+    if (placed) clear();
   };
 
-  const handleSuccessClose = () => {
+  const handleContinueShopping = () => {
     checkout.resetCheckout();
     closeCart();
+    requestAnimationFrame(() => {
+      document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+    });
   };
 
   const title =
@@ -256,6 +268,7 @@ export function CartDrawer() {
                 items={items}
                 totals={summaryTotals}
                 shipping={checkout.shipping}
+                isPlacingOrder={checkout.isPlacingOrder}
                 onBack={checkout.goToShipping}
                 onPlaceOrder={handlePlaceOrder}
               />
@@ -265,7 +278,8 @@ export function CartDrawer() {
           {checkout.step === "success" ? (
             <OrderSuccess
               orderTotal={checkout.orderTotal}
-              onClose={handleSuccessClose}
+              orderReference={checkout.orderReference}
+              onContinueShopping={handleContinueShopping}
             />
           ) : null}
         </div>
