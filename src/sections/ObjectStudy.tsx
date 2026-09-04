@@ -38,7 +38,7 @@ const ORBIT: OrbitItem[] = [
     src: STUDY.object.img,
     alt: `${STUDY.object.name} study`,
     desktop: { angle: 205, rx: 46, ry: 38, scale: 1 },
-    mobile: { angle: 200, rx: 36, ry: 44, scale: 0.58 },
+    mobile: { angle: 200, rx: 38, ry: 40, scale: 0.62 },
     className:
       "h-[min(36vmin,22rem)] w-[min(24vmin,15rem)] overflow-hidden rounded-[1.6rem] shadow-[0_20px_50px_-28px_rgba(23,20,15,0.45)] sm:rounded-[2rem] md:h-[min(42vmin,28rem)] md:w-[min(28vmin,19rem)] md:rounded-[2.4rem]",
   },
@@ -48,7 +48,7 @@ const ORBIT: OrbitItem[] = [
     src: LOOKBOOK[0].src,
     alt: "Object in situ",
     desktop: { angle: 25, rx: 44, ry: 36, scale: 1 },
-    mobile: { angle: 20, rx: 34, ry: 42, scale: 0.55 },
+    mobile: { angle: 18, rx: 36, ry: 38, scale: 0.58 },
     className:
       "h-[min(30vmin,18rem)] w-[min(21vmin,13rem)] overflow-hidden rounded-[1.4rem] shadow-[0_18px_46px_-26px_rgba(23,20,15,0.4)] sm:rounded-[1.8rem] md:h-[min(38vmin,24rem)] md:w-[min(26vmin,17rem)] md:rounded-[2.2rem]",
   },
@@ -56,7 +56,7 @@ const ORBIT: OrbitItem[] = [
     id: "forest",
     kind: "disc",
     desktop: { angle: 290, rx: 42, ry: 42, scale: 1 },
-    mobile: { angle: 285, rx: 30, ry: 46, scale: 0.72 },
+    mobile: { angle: 300, rx: 28, ry: 42, scale: 0.68 },
     className:
       "size-[min(12vmin,6.5rem)] rounded-full bg-[radial-gradient(circle_at_35%_30%,#2f5a45_0%,#163528_55%,#0f241c_100%)] shadow-[inset_0_0_24px_rgba(0,0,0,0.25)] md:size-[min(16vmin,9rem)]",
   },
@@ -64,7 +64,7 @@ const ORBIT: OrbitItem[] = [
     id: "stone",
     kind: "orb",
     desktop: { angle: 110, rx: 40, ry: 40, scale: 1 },
-    mobile: { angle: 105, rx: 28, ry: 44, scale: 0.8 },
+    mobile: { angle: 120, rx: 30, ry: 36, scale: 0.85 },
     className:
       "size-[min(6vmin,3.5rem)] rounded-full bg-[#6b5748] md:size-[min(8vmin,5rem)]",
   },
@@ -72,7 +72,7 @@ const ORBIT: OrbitItem[] = [
     id: "pill-sage",
     kind: "pill",
     desktop: { angle: 330, rx: 48, ry: 44, scale: 1 },
-    mobile: { angle: 325, rx: 32, ry: 48, scale: 0.78 },
+    mobile: { angle: 340, rx: 22, ry: 46, scale: 0.85 },
     className:
       "h-[min(3.5vmin,1.5rem)] w-[min(12vmin,8rem)] rounded-full bg-[linear-gradient(90deg,#7a9178_0%,#efe9df_100%)] md:h-7 md:w-40",
   },
@@ -80,7 +80,7 @@ const ORBIT: OrbitItem[] = [
     id: "pill-clay",
     kind: "pill",
     desktop: { angle: 150, rx: 46, ry: 42, scale: 1 },
-    mobile: { angle: 145, rx: 30, ry: 46, scale: 0.78 },
+    mobile: { angle: 155, rx: 24, ry: 44, scale: 0.85 },
     className:
       "h-[min(3vmin,1.25rem)] w-[min(11vmin,7rem)] rounded-full bg-[linear-gradient(90deg,#c4a484_0%,#efe9df_100%)] md:h-6 md:w-36",
   },
@@ -141,8 +141,6 @@ export function ObjectStudy() {
   const stage = useRef<HTMLDivElement>(null);
   const field = useRef<HTMLDivElement>(null);
   const counter = useRef<HTMLSpanElement>(null);
-  const discoverBtn = useRef<HTMLButtonElement>(null);
-  const discoverLabel = useRef<HTMLSpanElement>(null);
 
   useGSAP(
     () => {
@@ -191,62 +189,6 @@ export function ObjectStudy() {
           });
         });
       };
-
-      // ----- discovery dot hover (fine pointer only) -----
-      mm.add("(pointer: fine)", () => {
-        const btn = discoverBtn.current;
-        const label = discoverLabel.current;
-        if (!btn || !label) return;
-
-        gsap.set(btn, { scale: 14 / 72 });
-        gsap.set(label, { autoAlpha: 0, scale: 0.7 });
-
-        const expand = () => {
-          gsap.to(btn, {
-            scale: 1,
-            duration: 0.55,
-            ease: "power3.out",
-            overwrite: "auto",
-          });
-          gsap.to(label, {
-            autoAlpha: 1,
-            scale: 1,
-            duration: 0.4,
-            delay: 0.08,
-            ease: "power3.out",
-            overwrite: "auto",
-          });
-        };
-
-        const collapse = () => {
-          gsap.to(label, {
-            autoAlpha: 0,
-            scale: 0.7,
-            duration: 0.25,
-            ease: "power2.in",
-            overwrite: "auto",
-          });
-          gsap.to(btn, {
-            scale: 14 / 72,
-            duration: 0.45,
-            delay: 0.05,
-            ease: "power3.inOut",
-            overwrite: "auto",
-          });
-        };
-
-        btn.addEventListener("pointerenter", expand);
-        btn.addEventListener("pointerleave", collapse);
-        btn.addEventListener("focus", expand);
-        btn.addEventListener("blur", collapse);
-
-        return () => {
-          btn.removeEventListener("pointerenter", expand);
-          btn.removeEventListener("pointerleave", collapse);
-          btn.removeEventListener("focus", expand);
-          btn.removeEventListener("blur", collapse);
-        };
-      });
 
       // ----- scroll-driven continuous orbit -----
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -324,8 +266,6 @@ export function ObjectStudy() {
         gsap.set(copies[0], { autoAlpha: 1 });
         setCounter(0);
         layoutOrbit(0);
-        gsap.set(discoverBtn.current, { scale: 14 / 72 });
-        gsap.set(discoverLabel.current, { autoAlpha: 0 });
       });
     },
     { scope: root },
@@ -335,22 +275,22 @@ export function ObjectStudy() {
     <section ref={root} id="anatomy" data-theme="paper" className="relative">
       <div
         ref={stage}
-        className="relative flex h-dvh min-h-dvh w-full items-center justify-center overflow-hidden px-[4vw] py-[max(4rem,8vh)] md:px-[2vw] md:py-0"
+        className="relative flex h-dvh min-h-dvh w-full items-center justify-center overflow-hidden px-5 py-[max(5.5rem,10vh)] sm:px-[4vw] sm:py-[max(4rem,8vh)] md:px-[2vw] md:py-0"
       >
         {/* Section chrome */}
-        <div className="pointer-events-none absolute left-[4vw] top-[max(1.5rem,4vh)] z-20 md:left-[2.5vw] md:top-[max(2.5rem,6vh)]">
+        <div className="pointer-events-none absolute left-5 top-[max(4.75rem,9vh)] z-20 sm:left-[4vw] sm:top-[max(1.5rem,4vh)] md:left-[2.5vw] md:top-[max(2.5rem,6vh)]">
           <span className="meta text-fg/50">N°04 — Anatomy</span>
-          <div className="mt-3 flex items-baseline gap-1 font-display text-4xl font-light md:text-5xl">
+          <div className="mt-4 flex items-baseline gap-1 font-display text-[2.35rem] font-light leading-none sm:mt-3 sm:text-4xl md:text-5xl">
             <span ref={counter}>01</span>
-            <span className="text-lg text-fg/35 md:text-xl">
+            <span className="text-base text-fg/35 sm:text-lg md:text-xl">
               / {String(STATE_COUNT).padStart(2, "0")}
             </span>
           </div>
         </div>
 
-        <div className="pointer-events-none absolute right-[4vw] top-[max(1.5rem,4vh)] z-20 text-right md:right-[2.5vw] md:top-[max(2.5rem,6vh)]">
+        <div className="pointer-events-none absolute right-5 top-[max(4.75rem,9vh)] z-20 text-right sm:right-[4vw] sm:top-[max(1.5rem,4vh)] md:right-[2.5vw] md:top-[max(2.5rem,6vh)]">
           <span className="meta text-fg/45">OBJ-{STUDY.object.index}</span>
-          <p className="mt-2 font-display text-lg font-light text-fg/70 md:text-xl">
+          <p className="mt-4 max-w-[9.5rem] ml-auto font-display text-base font-light leading-snug text-fg/70 sm:mt-2 sm:max-w-none sm:text-lg md:text-xl">
             {STUDY.object.name}
           </p>
         </div>
@@ -392,30 +332,13 @@ export function ObjectStudy() {
             </div>
           ))}
 
-          {/* Discover stays fixed at center — not part of the orbital path */}
-          <div className="absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
-            <button
-              ref={discoverBtn}
-              type="button"
-              aria-label="Explore object detail"
-              className="flex size-[4.5rem] items-center justify-center overflow-hidden rounded-full bg-accent will-change-transform"
-            >
-              <span
-                ref={discoverLabel}
-                className="meta pointer-events-none select-none text-[0.55rem] leading-none tracking-[0.2em] text-paper"
-              >
-                Explore
-              </span>
-            </button>
-          </div>
-
           {/* Central editorial statements — constrained so orbit clears the copy */}
-          <div className="relative z-10 mx-auto w-[min(78%,17.5rem)] sm:w-[min(70%,22rem)] md:w-[min(38vw,36rem)] lg:w-[min(34vw,40rem)]">
+          <div className="relative z-10 mx-auto w-[min(86%,19rem)] sm:w-[min(70%,22rem)] md:w-[min(38vw,36rem)] lg:w-[min(34vw,40rem)]">
             {STATES.map((state) => (
               <p
                 key={state.id}
                 data-study-copy
-                className="absolute inset-0 flex items-center justify-center text-center font-display text-[1.45rem] leading-[1.3] font-light tracking-[-0.01em] sm:text-[1.65rem] sm:leading-[1.28] md:text-4xl md:leading-[1.3] lg:text-[2.75rem]"
+                className="absolute inset-0 flex items-center justify-center text-center font-display text-[1.35rem] leading-[1.32] font-light tracking-[-0.01em] sm:text-[1.65rem] sm:leading-[1.28] md:text-4xl md:leading-[1.3] lg:text-[2.75rem]"
               >
                 <span>
                   {state.parts.map((part, i) => (
@@ -431,7 +354,7 @@ export function ObjectStudy() {
             ))}
             <p
               aria-hidden
-              className="invisible text-center font-display text-[1.45rem] leading-[1.3] font-light sm:text-[1.65rem] sm:leading-[1.28] md:text-4xl md:leading-[1.3] lg:text-[2.75rem]"
+              className="invisible text-center font-display text-[1.35rem] leading-[1.32] font-light sm:text-[1.65rem] sm:leading-[1.28] md:text-4xl md:leading-[1.3] lg:text-[2.75rem]"
             >
               {STATES[0].parts.map((p) => p.text).join("")}
             </p>

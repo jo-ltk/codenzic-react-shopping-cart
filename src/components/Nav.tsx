@@ -48,7 +48,7 @@ export function Nav() {
             <Search className="size-3.5 opacity-90" strokeWidth={1.1} />
           </a>
 
-          <span aria-hidden className="h-3.5 w-px bg-white/28" />
+          <span aria-hidden className="h-3.5 w-px bg-white/45 sm:bg-white/28" />
 
           <a
             href="#footer"

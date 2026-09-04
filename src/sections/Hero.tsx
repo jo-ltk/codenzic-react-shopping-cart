@@ -137,7 +137,7 @@ export function Hero() {
           src={HERO_ENVIRONMENT}
           alt=""
           draggable={false}
-          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_28%] md:object-[center_42%] select-none"
+          className="pointer-events-none absolute inset-0 size-full scale-105 object-cover object-[center_35%] sm:object-[center_42%] select-none"
         />
       </div>
 
@@ -145,7 +145,7 @@ export function Hero() {
       <div
         data-hero-scrim
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(8,12,10,0.55)_0%,rgba(8,12,10,0.22)_32%,transparent_52%),linear-gradient(to_top,rgba(8,12,10,0.72)_0%,rgba(8,12,10,0.2)_22%,transparent_48%)] md:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(8,12,10,0.52)_0%,rgba(8,12,10,0.18)_28%,transparent_50%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)] sm:bg-[linear-gradient(90deg,rgba(8,12,10,0.48)_0%,rgba(8,12,10,0.14)_24%,transparent_46%),linear-gradient(to_top,rgba(8,12,10,0.7)_0%,rgba(8,12,10,0.18)_24%,transparent_50%)]"
       />
 
       {/* Stage above the foot bar — figures bottom flush with SCROLL */}
@@ -153,13 +153,13 @@ export function Hero() {
         <div
           data-hero-figures
           data-cursor="VIEW"
-          className="absolute inset-x-0 top-[6%] bottom-0 z-[2] flex items-end justify-center sm:top-[8%] md:top-[6%] md:left-[18%] lg:left-[20%]"
+          className="absolute inset-x-0 top-[8%] bottom-[4%] z-[2] flex items-end justify-center sm:top-[8%] sm:bottom-0 md:top-[6%] md:left-[18%] lg:left-[20%]"
         >
           <img
             src={HERO_FIGURES}
             alt="Sculptural figures — Heritage Collection"
             draggable={false}
-            className="pointer-events-none h-full w-full max-h-full scale-[1.12] object-cover object-[center_18%] select-none sm:scale-100 sm:object-contain sm:object-bottom md:object-contain md:object-bottom"
+            className="pointer-events-none h-full w-full max-h-full origin-bottom scale-[1.18] object-contain object-bottom select-none sm:scale-100"
           />
         </div>
 
@@ -167,22 +167,22 @@ export function Hero() {
         <div className="pointer-events-none relative z-[3] flex flex-1 flex-col px-5 pt-[4.75rem] sm:px-6 sm:pt-28 md:px-12 md:pt-32 lg:px-14">
           <div
             data-hero-copy
-            className="mt-3 flex max-w-xl flex-1 flex-col sm:mt-[min(14vh,7rem)] sm:flex-none md:mt-[min(16vh,8.5rem)]"
+            className="mt-2 flex max-w-xl flex-1 flex-col sm:mt-[min(14vh,7rem)] sm:flex-none md:mt-[min(16vh,8.5rem)]"
           >
             <div
               data-hero-eyebrow
-              className="mb-7 flex flex-col items-start gap-3 sm:mb-8 sm:gap-3.5 md:mb-10"
+              className="mb-8 flex flex-col items-start gap-3 sm:mb-8 sm:gap-3.5 md:mb-10"
             >
               {/* Mobile: short horizontal rule; desktop: vertical rule */}
               <span
                 aria-hidden
-                className="block h-px w-7 bg-paper/45 sm:hidden"
+                className="block h-px w-7 bg-paper/50 sm:hidden"
               />
               <span
                 aria-hidden
                 className="hidden h-6 w-px bg-paper/40 sm:block"
               />
-              <p className="text-[0.55rem] leading-[1.55] tracking-[0.34em] uppercase text-paper/60 sm:leading-normal">
+              <p className="text-[0.55rem] leading-[1.65] tracking-[0.34em] uppercase text-paper/65 sm:leading-normal sm:text-paper/60">
                 <span className="block sm:inline">Objects</span>
                 <span className="block sm:inline">
                   <span className="hidden sm:inline"> </span>
@@ -195,10 +195,10 @@ export function Hero() {
               </p>
             </div>
 
-            <div className="relative flex items-start gap-4 sm:gap-5 md:gap-8">
+            <div className="relative flex items-start gap-3.5 sm:gap-5 md:gap-8">
               <ol
                 aria-label="Collection sequence"
-                className="mt-3 flex shrink-0 flex-col items-center sm:mt-2.5 sm:items-start sm:gap-2"
+                className="mt-4 flex shrink-0 flex-col items-center sm:mt-2.5 sm:items-start sm:gap-2"
               >
                 {SLIDES.map((n, i) => (
                   <li
@@ -206,7 +206,7 @@ export function Hero() {
                     data-hero-index
                     className={cn(
                       "flex flex-col items-center text-[0.58rem] tracking-[0.18em] tabular-nums sm:flex-row sm:gap-2.5",
-                      i === 0 ? "text-paper" : "text-paper/28",
+                      i === 0 ? "text-paper" : "text-paper/40 sm:text-paper/28",
                     )}
                   >
                     {i === 0 && (
@@ -225,7 +225,7 @@ export function Hero() {
                     {i < SLIDES.length - 1 && (
                       <span
                         aria-hidden
-                        className="my-1 block h-2.5 w-px bg-paper/28 sm:hidden"
+                        className="my-1.5 block h-3 w-px bg-paper/30 sm:hidden"
                       />
                     )}
                   </li>
@@ -233,7 +233,7 @@ export function Hero() {
               </ol>
 
               <div className="min-w-0 flex-1 pt-1 sm:pt-0">
-                <h1 className="font-editorial text-[17vw] leading-[0.86] font-normal tracking-[-0.015em] text-paper uppercase sm:text-[12.5vw] sm:leading-[0.88] sm:tracking-[-0.01em] md:text-[6.4vw] lg:text-[5.4vw]">
+                <h1 className="font-editorial text-[15.5vw] leading-[0.88] font-normal tracking-[-0.01em] text-paper uppercase sm:text-[12.5vw] md:text-[6.4vw] lg:text-[5.4vw]">
                   <MaskLine>Art</MaskLine>
                   <MaskLine>Lives</MaskLine>
                   <MaskLine>With</MaskLine>
@@ -247,7 +247,7 @@ export function Hero() {
 
                 <p
                   data-hero-sub
-                  className="mt-6 text-[0.55rem] leading-[1.7] tracking-[0.3em] uppercase text-paper/55 sm:mt-8 sm:leading-normal md:mt-10"
+                  className="mt-5 text-[0.55rem] leading-[1.7] tracking-[0.3em] uppercase text-paper/60 sm:mt-8 sm:leading-normal sm:text-paper/55 md:mt-10"
                 >
                   <span className="block sm:inline">Curated objects</span>
                   <span className="block sm:inline">
@@ -263,9 +263,9 @@ export function Hero() {
               href="#catalogue"
               data-hero-cta
               data-cursor=""
-              className="pointer-events-auto mt-auto mb-6 inline-flex w-fit items-center gap-4 pt-10 sm:mt-16 sm:mb-0 sm:gap-5 sm:pt-0 md:mt-20"
+              className="pointer-events-auto mt-auto mb-5 inline-flex w-fit items-center gap-4 pt-8 sm:mt-16 sm:mb-0 sm:gap-5 sm:pt-0 md:mt-20"
             >
-              <span className="flex size-[3.75rem] items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.05] sm:size-16 md:size-[4.25rem]">
+              <span className="flex size-14 items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.05] sm:size-16 md:size-[4.25rem]">
                 <ArrowRight className="size-4" strokeWidth={1.05} />
               </span>
               <span className="flex flex-col gap-1 text-[0.58rem] leading-none tracking-[0.28em] uppercase text-paper/80">
