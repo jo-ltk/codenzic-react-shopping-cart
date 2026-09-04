@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
   CART_MAX_QTY,
   CART_MIN_QTY,
@@ -37,6 +37,7 @@ export interface CartItem {
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
+  hasHydrated: boolean;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
@@ -46,14 +47,27 @@ interface CartState {
   decreaseQuantity: (id: number) => void;
   clear: () => void;
   getTotals: () => CartTotals;
+  setHasHydrated: (value: boolean) => void;
 }
 
 function normalizeItems(items: CartItem[]): CartItem[] {
-  return items.map((item) => ({
-    ...item,
-    quantity: clampQuantity(item.quantity),
-    price: Number.isFinite(item.price) && item.price >= 0 ? item.price : 0,
-  }));
+  if (!Array.isArray(items)) return [];
+  return items
+    .filter(
+      (item) =>
+        item &&
+        typeof item.id === "number" &&
+        typeof item.title === "string" &&
+        typeof item.thumbnail === "string",
+    )
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      thumbnail: item.thumbnail,
+      category: typeof item.category === "string" ? item.category : "objects",
+      quantity: clampQuantity(item.quantity),
+      price: Number.isFinite(item.price) && item.price >= 0 ? item.price : 0,
+    }));
 }
 
 export const useCartStore = create<CartState>()(
@@ -61,6 +75,9 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       isOpen: false,
+      hasHydrated: false,
+
+      setHasHydrated: (value) => set({ hasHydrated: value }),
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
@@ -122,11 +139,19 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "objekt-cart",
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ items: state.items }),
       merge: (persisted, current) => {
         const raw = persisted as Partial<CartState> | undefined;
-        const items = Array.isArray(raw?.items) ? normalizeItems(raw.items) : [];
-        return { ...current, ...raw, items, isOpen: false };
+        const items = normalizeItems(raw?.items ?? []);
+        return {
+          ...current,
+          items,
+          isOpen: false,
+        };
+      },
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
       },
     },
   ),
