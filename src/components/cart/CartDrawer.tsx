@@ -188,7 +188,7 @@ export function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label="Shopping cart"
-        className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-paper text-charcoal shadow-[-24px_0_60px_-40px_rgba(10,22,16,0.45)] sm:max-w-lg"
+        className="absolute right-0 bottom-0 flex w-full max-w-md flex-col bg-paper text-charcoal shadow-[-24px_0_60px_-40px_rgba(10,22,16,0.45)] top-[var(--nav-h,4.5rem)] sm:max-w-lg"
       >
         <header className="flex items-start justify-between gap-4 border-b border-charcoal/10 px-5 py-5 sm:px-7 sm:py-6">
           <div className="min-w-0">

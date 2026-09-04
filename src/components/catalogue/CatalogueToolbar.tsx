@@ -31,12 +31,15 @@ export function CatalogueToolbar({
   onViewChange,
 }: CatalogueToolbarProps) {
   return (
-    <div className="mb-8 flex flex-col gap-4 border-b border-fg/10 pb-6 sm:mb-10 sm:flex-row sm:items-center sm:justify-between md:mb-12">
-      <p className="meta text-fg/45">
-        {total === 0
-          ? "No editions found"
-          : `Showing ${rangeStart}–${rangeEnd} of ${total}`}
-      </p>
+    <div className="mb-8 flex flex-col gap-5 border-b border-fg/12 pb-6 sm:mb-10 sm:flex-row sm:items-end sm:justify-between md:mb-12 md:pb-8">
+      <div>
+        <p className="meta text-fg/45">Plates in view</p>
+        <p className="meta mt-2 text-fg/70">
+          {total === 0
+            ? "No editions found"
+            : `${String(rangeStart).padStart(2, "0")}–${String(rangeEnd).padStart(2, "0")} of ${String(total).padStart(2, "0")}`}
+        </p>
+      </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <label className="sr-only" htmlFor="catalogue-sort">

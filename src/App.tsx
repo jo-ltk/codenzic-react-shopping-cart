@@ -10,11 +10,12 @@ import { CataloguePage } from "@/pages/CataloguePage";
 import { ProductPage } from "@/pages/ProductPage";
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
+    if (hash) return;
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [pathname, hash]);
 
   return null;
 }

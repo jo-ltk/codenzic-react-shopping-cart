@@ -50,12 +50,14 @@ function ProductStudySkeleton() {
       aria-hidden
       className="grid grid-cols-1 gap-10 border-t border-fg/15 px-5 pt-6 pb-16 sm:px-8 md:px-10 md:pt-8 lg:grid-cols-12 lg:gap-x-10 lg:px-14 xl:gap-x-14 xl:px-16"
     >
-      <div className="flex flex-col gap-3 lg:col-span-7 lg:flex-row-reverse lg:gap-4">
-        <div className="aspect-[4/5] w-full animate-pulse border border-fg/10 bg-fg/[0.04] md:aspect-[4/3] lg:aspect-auto lg:h-[calc(100svh-8.5rem)] lg:min-h-[34rem]" />
-        <div className="flex gap-2 lg:w-16 lg:flex-col">
-          {Array.from({ length: 3 }, (_, i) => (
-            <div key={i} className="aspect-[4/5] w-14 animate-pulse bg-fg/[0.05] sm:w-16 lg:w-full" />
-          ))}
+      <div className="min-w-0 lg:col-span-7 lg:relative lg:min-h-[22rem]">
+        <div className="flex flex-col gap-3 lg:absolute lg:inset-0 lg:flex-row-reverse lg:gap-4">
+          <div className="aspect-[4/5] w-full animate-pulse border border-fg/10 bg-fg/[0.04] md:aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-0 lg:flex-1" />
+          <div className="flex gap-2 lg:w-16 lg:flex-col">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className="aspect-[4/5] w-14 animate-pulse bg-fg/[0.05] sm:w-16 lg:w-full" />
+            ))}
+          </div>
         </div>
       </div>
       <div className="animate-pulse space-y-6 lg:col-span-5">

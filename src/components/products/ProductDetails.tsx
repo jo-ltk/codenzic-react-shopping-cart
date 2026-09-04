@@ -215,13 +215,17 @@ export function ProductDetails({ product, related = [] }: ProductDetailsProps) {
         ref={heroRef}
         className="relative grid grid-cols-1 gap-10 border-t border-fg/15 px-5 pt-6 pb-16 sm:px-8 md:px-10 md:pt-8 md:pb-24 lg:grid-cols-12 lg:gap-x-10 lg:px-14 xl:gap-x-14 xl:px-16"
       >
-        <div className="min-w-0 lg:col-span-7 lg:sticky lg:top-24 lg:self-start">
-          <ProductGallery
-            key={product.id}
-            images={gallery}
-            title={product.title}
-            objectIndex={objectIndex}
-          />
+        {/* On lg, gallery fills a cell sized by the details column (absolute + stretch). */}
+        <div className="min-w-0 lg:col-span-7 lg:relative lg:min-h-[22rem]">
+          <div className="lg:absolute lg:inset-0">
+            <ProductGallery
+              key={product.id}
+              images={gallery}
+              title={product.title}
+              objectIndex={objectIndex}
+              className="lg:h-full"
+            />
+          </div>
         </div>
 
         <div className="relative min-w-0 lg:col-span-5">

@@ -132,18 +132,21 @@ export function ProductGallery({
   return (
     <div
       ref={root}
-      className={cn("relative flex flex-col gap-3 lg:flex-row-reverse lg:gap-4", className)}
+      className={cn(
+        "relative flex flex-col gap-3 lg:h-full lg:min-h-0 lg:flex-row-reverse lg:gap-4",
+        className,
+      )}
       aria-roledescription="carousel"
       aria-label={`${title} photography`}
     >
-      {/* Main plate */}
+      {/* Main plate — on lg, height tracks the product details column */}
       <div
         data-gallery-stage
         data-cursor="ZOOM"
         onClick={() => setZoomed(true)}
         className={cn(
           "group relative min-w-0 flex-1 overflow-hidden border border-fg/10",
-          "aspect-[4/5] md:aspect-[4/3] lg:aspect-auto lg:h-[calc(100svh-8.5rem)] lg:min-h-[34rem]",
+          "aspect-[4/5] md:aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-0",
           STUDIO_BACKDROP,
         )}
       >
@@ -237,7 +240,7 @@ export function ProductGallery({
 
       {/* Filmstrip */}
       {canNavigate ? (
-        <div className="flex gap-2 overflow-x-auto overscroll-x-contain pb-1 lg:w-16 lg:flex-col lg:gap-2.5 lg:overflow-visible lg:pb-0">
+        <div className="flex gap-2 overflow-x-auto overscroll-x-contain pb-1 lg:max-h-full lg:w-16 lg:flex-col lg:gap-2.5 lg:overflow-y-auto lg:overflow-x-visible lg:pb-0">
           {images.map((src, i) => (
             <button
               key={src}

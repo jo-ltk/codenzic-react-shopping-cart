@@ -1,38 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { useCartStore } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
 
-type NavLink = {
-  label: string;
-  to: string;
-  index: string;
-  note: string;
-};
+type NavLink = { label: string; to: string };
 
 function buildLinks(isHome: boolean): NavLink[] {
   return [
-    { label: "Shop", to: "/catalogue", index: "01", note: "The archive" },
-    {
-      label: "Collections",
-      to: isHome ? "#index" : "/#index",
-      index: "02",
-      note: "The index",
-    },
-    {
-      label: "About",
-      to: isHome ? "#manifesto" : "/#manifesto",
-      index: "03",
-      note: "The manifesto",
-    },
-    {
-      label: "Journal",
-      to: isHome ? "#anatomy" : "/#anatomy",
-      index: "04",
-      note: "Field notes",
-    },
+    { label: "Shop", to: "/catalogue" },
+    { label: "Collections", to: isHome ? "#index" : "/#index" },
+    { label: "About", to: isHome ? "#manifesto" : "/#manifesto" },
+    { label: "Journal", to: isHome ? "#anatomy" : "/#anatomy" },
   ];
 }
 
@@ -40,10 +20,12 @@ function isShopActive(pathname: string) {
   return pathname === "/catalogue" || pathname.startsWith("/catalogue/");
 }
 
+const SCROLL_DELTA = 6;
+const SCROLL_TOP_SHOW = 24;
+
 /**
- * Editorial navigation — asymmetric chrome, numbered index overlay,
- * and a purpose-built mobile experience. Keeps mix-blend difference
- * for legibility across paper/ink worlds when the menu is closed.
+ * Solid ink navigation — bold wordmark, chunky links, opaque bar.
+ * Hides on scroll-down, reveals on scroll-up; stays put while menu/cart is open.
  */
 export function Nav() {
   const { pathname } = useLocation();
@@ -52,22 +34,92 @@ export function Nav() {
   const cartCount = useCartStore((s) =>
     s.items.reduce((sum, item) => sum + item.quantity, 0),
   );
+  const cartOpen = useCartStore((s) => s.isOpen);
   const openCart = useCartStore((s) => s.openCart);
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLSpanElement>(null);
   const prevCount = useRef(cartCount);
   const wasMenuOpen = useRef(false);
+  const lastScrollY = useRef(0);
+  const navHidden = useRef(false);
+  const introDone = useRef(false);
 
-  // Close index on route change.
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
-  // Escape closes the index.
+  // Publish live nav height so drawers/overlays clear the fixed bar.
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const publish = () => {
+      document.documentElement.style.setProperty(
+        "--nav-h",
+        `${header.offsetHeight}px`,
+      );
+    };
+    publish();
+
+    const ro = new ResizeObserver(publish);
+    ro.observe(header);
+    return () => {
+      ro.disconnect();
+      document.documentElement.style.removeProperty("--nav-h");
+    };
+  }, []);
+
+  const setNavHidden = (hidden: boolean) => {
+    if (navHidden.current === hidden) return;
+    navHidden.current = hidden;
+    const header = headerRef.current;
+    if (!header || !introDone.current) return;
+
+    if (prefersReducedMotion()) {
+      gsap.set(header, { yPercent: hidden ? -100 : 0 });
+      return;
+    }
+
+    gsap.to(header, {
+      yPercent: hidden ? -100 : 0,
+      duration: 0.45,
+      ease: hidden ? "power3.in" : "power3.out",
+      overwrite: true,
+    });
+  };
+
+  // Hide on scroll down / show on scroll up (paused while overlays are open).
+  useEffect(() => {
+    if (menuOpen || cartOpen) {
+      setNavHidden(false);
+      return;
+    }
+
+    lastScrollY.current = window.scrollY;
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastScrollY.current;
+
+      if (y <= SCROLL_TOP_SHOW) {
+        setNavHidden(false);
+      } else if (delta > SCROLL_DELTA) {
+        setNavHidden(true);
+      } else if (delta < -SCROLL_DELTA) {
+        setNavHidden(false);
+      }
+
+      lastScrollY.current = y;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [menuOpen, cartOpen]);
+
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -77,15 +129,18 @@ export function Nav() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  // Subtle scroll signal for a hairline rule — no heavy sticky chrome.
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  // Initial closed state — GSAP owns transforms (no React inline transform).
+  useGSAP(
+    () => {
+      const overlay = overlayRef.current;
+      const panel = panelRef.current;
+      if (!overlay || !panel) return;
+      gsap.set(overlay, { autoAlpha: 0, pointerEvents: "none" });
+      gsap.set(panel, { yPercent: -100 });
+    },
+    { scope: overlayRef },
+  );
 
-  // Cart count tick.
   useGSAP(
     () => {
       if (prevCount.current === cartCount || !countRef.current) {
@@ -96,100 +151,101 @@ export function Nav() {
       if (prefersReducedMotion()) return;
       gsap.fromTo(
         countRef.current,
-        { yPercent: 40, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" },
+        { scale: 0.7, autoAlpha: 0 },
+        { scale: 1, autoAlpha: 1, duration: 0.4, ease: "back.out(2)" },
       );
     },
     { dependencies: [cartCount] },
   );
 
-  // Index overlay open / close.
-  useGSAP(
-    () => {
-      const overlay = overlayRef.current;
-      if (!overlay) return;
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    const panel = panelRef.current;
+    if (!overlay || !panel) return;
 
-      const panel = overlay.querySelector<HTMLElement>("[data-nav-panel]");
-      const items = overlay.querySelectorAll<HTMLElement>("[data-nav-item]");
-      const foot = overlay.querySelectorAll<HTMLElement>("[data-nav-foot]");
+    const items = overlay.querySelectorAll<HTMLElement>("[data-nav-item]");
+    const foot = overlay.querySelectorAll<HTMLElement>("[data-nav-foot]");
 
-      if (prefersReducedMotion()) {
-        overlay.style.pointerEvents = menuOpen ? "auto" : "none";
-        overlay.style.visibility = menuOpen ? "visible" : "hidden";
-        if (panel) {
-          panel.style.opacity = menuOpen ? "1" : "0";
-          panel.style.clipPath = menuOpen ? "inset(0 0 0% 0)" : "inset(0 0 100% 0)";
-        }
-        document.documentElement.style.overflow = menuOpen ? "hidden" : "";
-        wasMenuOpen.current = menuOpen;
-        return;
-      }
-
-      if (menuOpen) {
-        overlay.style.pointerEvents = "auto";
-        overlay.style.visibility = "visible";
-        document.documentElement.style.overflow = "hidden";
-
-        const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-        tl.fromTo(
-          panel,
-          { clipPath: "inset(0 0 100% 0)" },
-          { clipPath: "inset(0 0 0% 0)", duration: 0.85 },
-          0,
-        )
-          .fromTo(
-            items,
-            { yPercent: 110, autoAlpha: 0 },
-            { yPercent: 0, autoAlpha: 1, duration: 0.9, stagger: 0.07 },
-            0.28,
-          )
-          .fromTo(
-            foot,
-            { y: 18, autoAlpha: 0 },
-            { y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.06 },
-            0.55,
-          );
-
-        wasMenuOpen.current = true;
-        return () => {
-          tl.kill();
-        };
-      }
-
-      if (!wasMenuOpen.current) return;
-
-      const tl = gsap.timeline({
-        defaults: { ease: "power2.inOut" },
-        onComplete: () => {
-          overlay.style.pointerEvents = "none";
-          overlay.style.visibility = "hidden";
-          document.documentElement.style.overflow = "";
-          wasMenuOpen.current = false;
-        },
+    if (prefersReducedMotion()) {
+      gsap.set(overlay, {
+        autoAlpha: menuOpen ? 1 : 0,
+        pointerEvents: menuOpen ? "auto" : "none",
       });
-      tl.to(items, { yPercent: -30, autoAlpha: 0, duration: 0.35, stagger: 0.03 }, 0)
-        .to(foot, { autoAlpha: 0, duration: 0.25 }, 0)
-        .to(panel, { clipPath: "inset(0 0 100% 0)", duration: 0.55 }, 0.05);
+      gsap.set(panel, { yPercent: menuOpen ? 0 : -100 });
+      gsap.set([items, foot], { clearProps: "all" });
+      document.documentElement.style.overflow = menuOpen ? "hidden" : "";
+      wasMenuOpen.current = menuOpen;
+      return;
+    }
 
+    if (menuOpen) {
+      document.documentElement.style.overflow = "hidden";
+      gsap.set(overlay, { pointerEvents: "auto" });
+
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      tl.to(overlay, { autoAlpha: 1, duration: 0.2 }, 0)
+        .fromTo(panel, { yPercent: -100 }, { yPercent: 0, duration: 0.65 }, 0)
+        .fromTo(
+          items,
+          { y: 40, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.05 },
+          0.2,
+        )
+        .fromTo(
+          foot,
+          { y: 16, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.4, stagger: 0.04 },
+          0.35,
+        );
+
+      wasMenuOpen.current = true;
       return () => {
         tl.kill();
       };
-    },
-    { dependencies: [menuOpen] },
-  );
+    }
 
-  // Entrance for the chrome itself.
+    if (!wasMenuOpen.current) return;
+
+    const tl = gsap.timeline({
+      defaults: { ease: "power3.in" },
+      onComplete: () => {
+        gsap.set(overlay, { pointerEvents: "none", autoAlpha: 0 });
+        document.documentElement.style.overflow = "";
+        wasMenuOpen.current = false;
+      },
+    });
+    tl.to(items, { y: -20, autoAlpha: 0, duration: 0.22, stagger: 0.02 }, 0)
+      .to(foot, { autoAlpha: 0, duration: 0.18 }, 0)
+      .to(panel, { yPercent: -100, duration: 0.4 }, 0.05)
+      .to(overlay, { autoAlpha: 0, duration: 0.2 }, 0.25);
+
+    return () => {
+      tl.kill();
+    };
+  }, [menuOpen]);
+
   useGSAP(
     () => {
       const header = headerRef.current;
-      if (!header || prefersReducedMotion()) return;
-      gsap.from(header.querySelectorAll("[data-nav-chrome]"), {
-        y: -18,
-        autoAlpha: 0,
-        duration: 1,
-        stagger: 0.06,
-        ease: "expo.out",
-        delay: 0.15,
+      if (!header) {
+        introDone.current = true;
+        return;
+      }
+      if (prefersReducedMotion()) {
+        introDone.current = true;
+        return;
+      }
+      gsap.from(header, {
+        yPercent: -100,
+        duration: 0.8,
+        ease: "power4.out",
+        delay: 0.05,
+        onComplete: () => {
+          introDone.current = true;
+          if (navHidden.current) {
+            gsap.set(header, { yPercent: -100 });
+          }
+        },
       });
     },
     { scope: headerRef },
@@ -201,39 +257,22 @@ export function Nav() {
     <>
       <header
         ref={headerRef}
-        className={cn(
-          "fixed inset-x-0 top-0 z-[80] transition-[background-color,backdrop-filter,border-color] duration-500",
-          menuOpen
-            ? "border-b border-transparent text-paper"
-            : "mix-blend-difference text-white",
-          !menuOpen && scrolled ? "border-b border-white/10" : "border-b border-transparent",
-        )}
+        className="fixed inset-x-0 top-0 z-[100] border-b-2 border-ink bg-ink text-paper will-change-transform"
       >
-        <div className="flex items-center justify-between gap-4 px-5 py-4 sm:px-8 md:px-10 md:py-5 lg:px-14 xl:px-16">
-          {/* Brand */}
-          <div data-nav-chrome className="flex min-w-0 items-center gap-4 md:gap-6">
-            <Link
-              to={homeTo}
-              data-cursor=""
-              onClick={() => setMenuOpen(false)}
-              className="group relative text-[0.78rem] font-medium tracking-[0.38em] uppercase md:text-[0.82rem]"
-            >
-              Objekt
-              <sup className="ml-px text-[0.5em] tracking-normal">®</sup>
-              <span
-                aria-hidden
-                className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
-              />
-            </Link>
-            <span className="meta hidden text-current/40 lg:inline">Issue 06</span>
-          </div>
-
-          {/* Desktop index links — numbered, editorial */}
-          <nav
-            data-nav-chrome
-            aria-label="Primary"
-            className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex"
+        <div className="flex items-stretch">
+          <Link
+            to={homeTo}
+            data-cursor=""
+            onClick={() => setMenuOpen(false)}
+            className="flex shrink-0 items-center border-r-2 border-paper/15 bg-ink px-5 py-4 transition-colors duration-300 hover:bg-botanical sm:px-7 md:px-8 md:py-5 lg:px-10"
           >
+            <span className="text-base font-medium tracking-[0.28em] uppercase sm:text-lg md:tracking-[0.32em]">
+              Objekt
+              <sup className="ml-0.5 text-[0.45em] font-medium tracking-normal">®</sup>
+            </span>
+          </Link>
+
+          <nav aria-label="Primary" className="hidden flex-1 items-stretch md:flex">
             {links.map((link) => {
               const active = link.to === "/catalogue" && isShopActive(pathname);
               return (
@@ -243,40 +282,28 @@ export function Nav() {
                   data-cursor=""
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "group relative px-3.5 py-2 text-[0.7rem] font-light tracking-[0.06em] transition-colors duration-300",
-                    active ? "text-white" : "text-white/70 hover:text-white",
+                    "group relative flex flex-1 items-center justify-center border-r-2 border-paper/15 px-4 text-sm font-medium tracking-[0.14em] uppercase transition-colors duration-300",
+                    active
+                      ? "bg-paper text-ink"
+                      : "text-paper hover:bg-accent hover:text-paper",
                   )}
                 >
-                  <span className="meta mr-2 inline-block text-[0.55rem] text-current/35 transition-colors duration-300 group-hover:text-current/70">
-                    {link.index}
-                  </span>
                   {link.label}
-                  <span
-                    aria-hidden
-                    className={cn(
-                      "absolute inset-x-3.5 -bottom-0.5 h-px origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                      active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
-                    )}
-                  />
                 </Link>
               );
             })}
           </nav>
 
-          {/* Utilities */}
-          <div data-nav-chrome className="flex items-center justify-end gap-1 sm:gap-2">
+          <div className="ml-auto flex items-stretch">
             <Link
               to="/catalogue"
               data-cursor=""
               aria-label="Search catalogue"
               onClick={() => setMenuOpen(false)}
-              className="group relative hidden items-center gap-2 px-3 py-2 text-[0.68rem] font-light tracking-[0.04em] text-white/80 transition-colors duration-300 hover:text-white sm:inline-flex"
+              className="hidden items-center gap-2.5 border-l-2 border-paper/15 px-5 text-sm font-medium tracking-[0.12em] uppercase transition-colors duration-300 hover:bg-paper hover:text-ink sm:flex md:px-6"
             >
-              <span>Search</span>
-              <Search
-                className="size-3.5 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-12"
-                strokeWidth={1.15}
-              />
+              Search
+              <Search className="size-4" strokeWidth={1.5} />
             </Link>
 
             <button
@@ -287,13 +314,14 @@ export function Nav() {
               }}
               data-cursor=""
               aria-label={`Open cart, ${cartCount} items`}
-              className="group relative inline-flex items-center gap-2 px-3 py-2 text-[0.68rem] font-light tracking-[0.04em] text-white/80 transition-colors duration-300 hover:text-white"
+              className="inline-flex items-center gap-2.5 border-l-2 border-paper/15 px-4 text-sm font-medium tracking-[0.12em] uppercase transition-colors duration-300 hover:bg-accent hover:text-paper sm:px-5 md:px-6"
             >
               <span className="hidden sm:inline">Cart</span>
-              <span className="relative inline-flex min-w-[1.6rem] items-center justify-center overflow-hidden border border-current/25 px-1.5 py-0.5 font-mono text-[0.62rem] tracking-[0.12em] transition-colors duration-300 group-hover:border-current/60 group-hover:bg-white group-hover:text-ink">
-                <span ref={countRef} className="inline-block">
-                  {String(cartCount).padStart(2, "0")}
-                </span>
+              <span
+                ref={countRef}
+                className="inline-flex min-w-7 items-center justify-center bg-paper px-1.5 py-0.5 font-mono text-xs font-medium tracking-wider text-ink"
+              >
+                {cartCount}
               </span>
             </button>
 
@@ -302,33 +330,33 @@ export function Nav() {
               onClick={() => setMenuOpen((v) => !v)}
               data-cursor=""
               aria-expanded={menuOpen}
-              aria-controls="nav-index"
+              aria-controls="nav-menu"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               className={cn(
-                "group relative ml-1 inline-flex min-h-10 items-center gap-2.5 px-2 py-2 transition-colors duration-300",
-                menuOpen ? "text-paper" : "text-white/85 hover:text-white",
+                "inline-flex items-center gap-3 border-l-2 border-paper/15 px-4 text-sm font-medium tracking-[0.14em] uppercase transition-colors duration-300 md:px-6",
+                menuOpen
+                  ? "bg-paper text-ink"
+                  : "text-paper hover:bg-paper hover:text-ink",
               )}
             >
-              <span className="meta hidden tracking-[0.2em] sm:inline">
-                {menuOpen ? "Close" : "Index"}
-              </span>
+              <span className="hidden sm:inline">{menuOpen ? "Close" : "Menu"}</span>
               <span className="relative flex h-3.5 w-5 flex-col justify-between" aria-hidden>
                 <span
                   className={cn(
-                    "block h-px w-full origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    menuOpen && "translate-y-[6.5px] rotate-45",
+                    "block h-0.5 w-full origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                    menuOpen && "translate-y-[6px] rotate-45",
                   )}
                 />
                 <span
                   className={cn(
-                    "block h-px w-full bg-current transition-opacity duration-300",
+                    "block h-0.5 w-full bg-current transition-opacity duration-200",
                     menuOpen && "opacity-0",
                   )}
                 />
                 <span
                   className={cn(
-                    "block h-px w-full origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    menuOpen ? "w-full -translate-y-[6.5px] -rotate-45" : "w-3.5 self-end group-hover:w-full",
+                    "block h-0.5 w-full origin-center bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                    menuOpen && "-translate-y-[6px] -rotate-45",
                   )}
                 />
               </span>
@@ -337,37 +365,30 @@ export function Nav() {
         </div>
       </header>
 
-      {/* Full-viewport Index — desktop + mobile destination */}
       <div
         ref={overlayRef}
-        id="nav-index"
+        id="nav-menu"
         role="dialog"
         aria-modal="true"
-        aria-label="Site index"
+        aria-label="Menu"
         aria-hidden={!menuOpen}
-        className="fixed inset-0 z-[75] invisible"
-        style={{ pointerEvents: "none" }}
+        className="fixed inset-0 z-[90]"
       >
         <div
+          ref={panelRef}
           data-nav-panel
-          className="absolute inset-0 flex flex-col bg-ink text-paper"
-          style={{ clipPath: "inset(0 0 100% 0)" }}
+          className="absolute inset-0 flex flex-col bg-ink text-paper will-change-transform"
         >
           <div className="flex flex-1 flex-col px-5 pt-28 pb-10 sm:px-8 md:px-10 md:pt-32 lg:px-14 xl:px-16">
-            <div className="mb-8 flex items-end justify-between gap-6 border-b border-paper/15 pb-6 md:mb-12 md:pb-8">
-              <div data-nav-foot>
-                <p className="meta text-paper/45">Site index</p>
-                <p className="mt-2 font-display text-2xl font-light tracking-[-0.01em] md:text-3xl">
-                  Where to next.
-                </p>
-              </div>
-              <p data-nav-foot className="meta hidden text-paper/40 sm:block">
-                Esc to close
-              </p>
-            </div>
+            <p
+              data-nav-foot
+              className="mb-8 text-xs font-medium tracking-[0.28em] uppercase text-paper/50 md:mb-12"
+            >
+              Menu
+            </p>
 
-            <nav aria-label="Index" className="flex flex-1 flex-col justify-center">
-              <ul className="space-y-1 md:space-y-2">
+            <nav aria-label="Menu links" className="flex flex-1 flex-col justify-center">
+              <ul className="grid gap-3 sm:gap-4 md:grid-cols-2 md:gap-5">
                 {links.map((link) => {
                   const active = link.to === "/catalogue" && isShopActive(pathname);
                   return (
@@ -378,23 +399,21 @@ export function Nav() {
                         data-cursor=""
                         aria-current={active ? "page" : undefined}
                         onClick={() => setMenuOpen(false)}
-                        className="group flex items-baseline justify-between gap-6 border-b border-paper/10 py-4 transition-colors duration-500 hover:border-accent/50 md:py-5"
+                        className={cn(
+                          "group flex min-h-[4.5rem] items-center justify-between border-2 px-5 py-5 transition-colors duration-300 sm:min-h-[5.5rem] sm:px-7 md:min-h-[6.5rem] md:px-8",
+                          active
+                            ? "border-paper bg-paper text-ink"
+                            : "border-paper/25 text-paper hover:border-accent hover:bg-accent",
+                        )}
                       >
-                        <span className="flex min-w-0 items-baseline gap-4 md:gap-8">
-                          <span className="meta shrink-0 text-paper/35 transition-colors duration-500 group-hover:text-accent">
-                            {link.index}
-                          </span>
-                          <span
-                            className={cn(
-                              "font-display text-[clamp(2.4rem,8vw,6.5rem)] leading-[0.95] font-light tracking-[-0.02em] transition-colors duration-500",
-                              active ? "text-accent" : "text-paper group-hover:text-accent",
-                            )}
-                          >
-                            {link.label}
-                          </span>
+                        <span className="font-display text-4xl font-normal leading-none tracking-[-0.02em] sm:text-5xl md:text-6xl lg:text-7xl">
+                          {link.label}
                         </span>
-                        <span className="meta hidden shrink-0 text-paper/35 transition-colors duration-500 group-hover:text-paper/70 sm:inline">
-                          {link.note}
+                        <span
+                          aria-hidden
+                          className="text-2xl font-medium transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1 sm:text-3xl"
+                        >
+                          →
                         </span>
                       </Link>
                     </li>
@@ -403,50 +422,32 @@ export function Nav() {
               </ul>
             </nav>
 
-            <div className="mt-10 flex flex-col gap-6 border-t border-paper/15 pt-8 sm:mt-12 sm:flex-row sm:items-center sm:justify-between md:pt-10">
-              <div data-nav-foot className="flex flex-wrap items-center gap-3">
-                <Link
-                  to="/catalogue"
-                  data-cursor=""
-                  onClick={() => setMenuOpen(false)}
-                  className="meta inline-flex min-h-11 items-center gap-2 border border-paper/20 px-4 py-2.5 text-paper/80 transition-colors duration-300 hover:border-accent hover:text-accent"
-                >
-                  <Search className="size-3.5" strokeWidth={1.25} />
-                  Search archive
-                </Link>
-                <button
-                  type="button"
-                  data-cursor=""
-                  onClick={() => {
-                    setMenuOpen(false);
-                    openCart();
-                  }}
-                  className="meta inline-flex min-h-11 items-center gap-2 bg-paper px-4 py-2.5 text-ink transition-colors duration-300 hover:bg-accent hover:text-paper"
-                >
-                  Open cart
-                  <span className="font-mono tracking-[0.12em]">
-                    ({String(cartCount).padStart(2, "0")})
-                  </span>
-                </button>
-              </div>
-
-              <p data-nav-foot className="meta text-paper/40">
-                OBJEKT
-                <span className="mx-2 text-paper/20">·</span>
-                Current issue
-              </p>
+            <div className="mt-10 flex flex-col gap-4 border-t-2 border-paper/20 pt-8 sm:mt-14 sm:flex-row sm:items-stretch md:pt-10">
+              <Link
+                to="/catalogue"
+                data-nav-foot
+                data-cursor=""
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex min-h-14 flex-1 items-center justify-center gap-3 border-2 border-paper/30 px-6 text-sm font-medium tracking-[0.16em] uppercase transition-colors duration-300 hover:border-paper hover:bg-paper hover:text-ink"
+              >
+                <Search className="size-4" strokeWidth={1.5} />
+                Search
+              </Link>
+              <button
+                type="button"
+                data-nav-foot
+                data-cursor=""
+                onClick={() => {
+                  setMenuOpen(false);
+                  openCart();
+                }}
+                className="inline-flex min-h-14 flex-1 items-center justify-center gap-3 bg-paper px-6 text-sm font-medium tracking-[0.16em] uppercase text-ink transition-colors duration-300 hover:bg-accent hover:text-paper"
+              >
+                Cart
+                <span className="font-mono tracking-wider">({cartCount})</span>
+              </button>
             </div>
           </div>
-
-          <button
-            type="button"
-            data-cursor=""
-            aria-label="Close menu"
-            onClick={() => setMenuOpen(false)}
-            className="absolute top-5 right-5 inline-flex size-11 items-center justify-center text-paper/70 transition-colors duration-300 hover:text-accent sm:top-6 sm:right-8 md:right-10 lg:right-14"
-          >
-            <X className="size-5" strokeWidth={1.15} />
-          </button>
         </div>
       </div>
     </>

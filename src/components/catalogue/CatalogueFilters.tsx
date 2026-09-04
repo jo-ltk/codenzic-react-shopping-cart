@@ -227,8 +227,8 @@ function FilterFields({
 function FilterSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <span className="meta text-fg/45">{title}</span>
-      <div className="mt-4">{children}</div>
+      <p className="meta text-fg/45">{title}</p>
+      <div className="mt-6 border-t border-fg/12 pt-6">{children}</div>
     </div>
   );
 }
@@ -236,27 +236,26 @@ function FilterSection({ title, children }: { title: string; children: ReactNode
 /**
  * Archive filters: permanent sidebar on lg+, compact panel on tablet,
  * drawer-style panel behind a Filter button on mobile.
- * Layout uses Tailwind breakpoints only — no viewport JS.
  */
 export function CatalogueFilters({ filters }: CatalogueFiltersProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <aside className="hidden lg:block lg:w-64 xl:w-72">
+      <aside className="hidden lg:col-span-3 lg:block lg:sticky lg:top-28 lg:self-start">
         <FilterSection title="Refine">
           <FilterFields filters={filters} idPrefix="desk" />
         </FilterSection>
       </aside>
 
-      <div className="mb-8 lg:hidden">
-        <div className="flex items-center justify-between gap-3">
+      <div className="lg:hidden">
+        <div className="flex items-center justify-between gap-3 border-b border-fg/10 pb-5">
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
             data-cursor=""
             aria-expanded={open}
-            className="meta inline-flex min-h-11 items-center gap-2 border border-fg/20 px-3.5 py-2.5 text-fg transition-colors duration-300 hover:border-accent hover:text-accent"
+            className="meta inline-flex min-h-11 items-center gap-2 border border-fg/15 px-3.5 py-2.5 text-fg transition-colors duration-300 hover:border-accent hover:text-accent"
           >
             <SlidersHorizontal className="size-3.5" strokeWidth={1.5} />
             Filters
@@ -283,7 +282,7 @@ export function CatalogueFilters({ filters }: CatalogueFiltersProps) {
           </div>
         ) : null}
 
-        <div className="mt-6 hidden md:block lg:hidden">
+        <div className="mt-5 hidden md:block lg:hidden">
           <div className="relative">
             <Search
               className="pointer-events-none absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-fg/40"

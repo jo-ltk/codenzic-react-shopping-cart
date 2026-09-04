@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/motion";
 import type { Product } from "@/lib/api/products";
-import { ProductCard } from "@/components/products/ProductCard";
+import { ProductCard, type ProductCardLayout } from "@/components/products/ProductCard";
 import { cn } from "@/lib/utils";
 
 interface ProductGridProps {
@@ -13,6 +13,8 @@ interface ProductGridProps {
   indexOffset?: number;
   /** Skip scroll trigger — used when the grid is already in view. */
   immediate?: boolean;
+  /** Grid plates or horizontal study rows. */
+  layout?: ProductCardLayout;
 }
 
 export function ProductGrid({
@@ -21,6 +23,7 @@ export function ProductGrid({
   className,
   indexOffset = 0,
   immediate = false,
+  layout = "grid",
 }: ProductGridProps) {
   const root = useRef<HTMLDivElement>(null);
   const hasEntered = useRef(false);
@@ -84,6 +87,7 @@ export function ProductGrid({
           key={product.id}
           product={product}
           index={indexOffset + index}
+          layout={layout}
         />
       ))}
     </div>

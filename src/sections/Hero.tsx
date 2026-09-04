@@ -87,7 +87,47 @@ export function Hero() {
       });
 
       const explore = exploreRef.current;
-      if (!explore || !isFinePointer() || !contextSafe) return;
+      if (!explore) return;
+
+      const circle = explore.querySelector<HTMLElement>("[data-hero-cta-circle]");
+      const arrow = explore.querySelector<HTMLElement>("[data-hero-cta-arrow]");
+      const ring = explore.querySelector<HTMLElement>("[data-hero-cta-ring]");
+
+      if (circle) {
+        gsap.to(circle, {
+          scale: 1.045,
+          duration: 2.4,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        });
+      }
+      if (arrow) {
+        gsap.to(arrow, {
+          x: 5,
+          duration: 1.5,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          delay: 0.2,
+        });
+      }
+      if (ring) {
+        gsap.fromTo(
+          ring,
+          { scale: 1, autoAlpha: 0.4 },
+          {
+            scale: 1.45,
+            autoAlpha: 0,
+            duration: 2.6,
+            ease: "power1.out",
+            repeat: -1,
+            transformOrigin: "50% 50%",
+          },
+        );
+      }
+
+      if (!isFinePointer() || !contextSafe) return;
 
       const onMove = contextSafe((e: MouseEvent) => {
         const rect = explore.getBoundingClientRect();
@@ -265,8 +305,22 @@ export function Hero() {
               data-cursor=""
               className="pointer-events-auto mt-auto mb-5 inline-flex w-fit items-center gap-4 pt-8 sm:mt-16 sm:mb-0 sm:gap-5 sm:pt-0 md:mt-20"
             >
-              <span className="flex size-14 items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.05] sm:size-16 md:size-[4.25rem]">
-                <ArrowRight className="size-4" strokeWidth={1.05} />
+              <span className="relative flex size-[4.75rem] shrink-0 items-center justify-center sm:size-[5.5rem] md:size-[6.75rem]">
+                <span
+                  data-hero-cta-ring
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 rounded-full border border-paper/35"
+                />
+                <span
+                  data-hero-cta-circle
+                  className="relative z-[1] flex size-full items-center justify-center rounded-full bg-paper text-ink shadow-[0_0_0_1px_rgba(239,233,223,0.08)] will-change-transform"
+                >
+                  <ArrowRight
+                    data-hero-cta-arrow
+                    className="size-5 will-change-transform sm:size-6 md:size-7"
+                    strokeWidth={1.05}
+                  />
+                </span>
               </span>
               <span className="flex flex-col gap-1 text-[0.58rem] leading-none tracking-[0.28em] uppercase text-paper/80">
                 <span>Explore</span>
