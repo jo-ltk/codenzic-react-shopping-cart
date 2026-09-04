@@ -1,19 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/motion";
-import {
-  fetchProducts,
-  productsQueryKey,
-  type Product,
-} from "@/lib/api/products";
-import { useCartStore } from "@/lib/store/cart";
+import { fetchProducts, productsQueryKey } from "@/lib/api/products";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { ProductSkeleton } from "@/components/products/ProductSkeleton";
 import { ProductError } from "@/components/products/ProductError";
 import { ProductEmpty } from "@/components/products/ProductEmpty";
-import { ProductDetails } from "@/components/products/ProductDetails";
 
 const HOME_SELECTION = 6;
 
@@ -23,8 +17,6 @@ const HOME_SELECTION = 6;
  */
 export function ProductCatalogue() {
   const root = useRef<HTMLElement>(null);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const isCartOpen = useCartStore((s) => s.isOpen);
 
   const { data, isPending, isError, error, refetch, isFetching } = useQuery({
     queryKey: productsQueryKey,
@@ -33,18 +25,6 @@ export function ProductCatalogue() {
 
   const products = data ?? [];
   const curated = products.slice(0, HOME_SELECTION);
-
-  const openDetails = useCallback((product: Product) => {
-    setSelectedProduct(product);
-  }, []);
-
-  const closeDetails = useCallback(() => {
-    setSelectedProduct(null);
-  }, []);
-
-  useEffect(() => {
-    if (isCartOpen) setSelectedProduct(null);
-  }, [isCartOpen]);
 
   useGSAP(
     () => {
@@ -123,7 +103,7 @@ export function ProductCatalogue() {
 
       {showInventory ? (
         <div className={isFetching ? "opacity-90 transition-opacity duration-300" : undefined}>
-          <ProductGrid products={curated} animateKey="home-selection" onOpenDetails={openDetails} />
+          <ProductGrid products={curated} animateKey="home-selection" />
 
           <div className="mt-16 flex justify-center md:mt-20">
             <Link
@@ -136,10 +116,6 @@ export function ProductCatalogue() {
             </Link>
           </div>
         </div>
-      ) : null}
-
-      {selectedProduct ? (
-        <ProductDetails product={selectedProduct} onClose={closeDetails} />
       ) : null}
     </section>
   );

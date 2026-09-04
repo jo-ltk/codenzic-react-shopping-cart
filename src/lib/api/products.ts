@@ -123,6 +123,42 @@ export async function fetchProducts(): Promise<Product[]> {
   return products;
 }
 
+export class ProductNotFoundError extends Error {
+  constructor(id: number) {
+    super(`Object ${id} was not found in the catalogue.`);
+    this.name = "ProductNotFoundError";
+  }
+}
+
+/**
+ * Fetch a single DummyJSON product by id and validate with the same Zod schema.
+ */
+export async function fetchProductById(id: number): Promise<Product> {
+  const response = await fetch(`${API_BASE}/products/${id}`);
+
+  if (response.status === 404) {
+    throw new ProductNotFoundError(id);
+  }
+
+  if (!response.ok) {
+    throw new Error(`Product request failed (${response.status})`);
+  }
+
+  let json: unknown;
+  try {
+    json = await response.json();
+  } catch {
+    throw new Error("Product response was not valid JSON");
+  }
+
+  const parsed = ProductSchema.safeParse(json);
+  if (!parsed.success) {
+    throw new Error("Product response failed validation");
+  }
+
+  return parsed.data;
+}
+
 /**
  * All DummyJSON category slugs — used for the category filter
  * so options are not hardcoded and stay in sync with the API.
@@ -151,3 +187,4 @@ export async function fetchCategories(): Promise<string[]> {
 
 export const productsQueryKey = ["products", "dummyjson"] as const;
 export const categoriesQueryKey = ["products", "categories", "dummyjson"] as const;
+export const productQueryKey = (id: number) => ["products", "dummyjson", id] as const;

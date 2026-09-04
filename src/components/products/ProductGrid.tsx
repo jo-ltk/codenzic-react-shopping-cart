@@ -8,7 +8,6 @@ interface ProductGridProps {
   products: Product[];
   /** Changes when filters update so entrance motion can re-run gently. */
   animateKey?: string;
-  onOpenDetails?: (product: Product) => void;
   className?: string;
   /** Offset for editorial index numbers across paginated pages. */
   indexOffset?: number;
@@ -19,7 +18,6 @@ interface ProductGridProps {
 export function ProductGrid({
   products,
   animateKey = "all",
-  onOpenDetails,
   className,
   indexOffset = 0,
   immediate = false,
@@ -86,7 +84,6 @@ export function ProductGrid({
           key={product.id}
           product={product}
           index={indexOffset + index}
-          onOpenDetails={onOpenDetails}
         />
       ))}
     </div>

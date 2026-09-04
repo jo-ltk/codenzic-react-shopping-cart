@@ -1,4 +1,5 @@
 import { useState, type MouseEvent } from "react";
+import { Link } from "react-router";
 import { Star } from "lucide-react";
 import type { Product } from "@/lib/api/products";
 import { formatMoney } from "@/lib/cart/calculations";
@@ -9,7 +10,6 @@ interface ProductCardProps {
   product: Product;
   index: number;
   className?: string;
-  onOpenDetails?: (product: Product) => void;
 }
 
 function formatCategory(category: string) {
@@ -20,7 +20,6 @@ export function ProductCard({
   product,
   index,
   className,
-  onOpenDetails,
 }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
   const quantityInCart = useCartStore(
@@ -45,8 +44,6 @@ export function ProductCard({
     window.setTimeout(() => setJustAdded(false), 1600);
   };
 
-  const openDetails = () => onOpenDetails?.(product);
-
   return (
     <article
       data-product-card
@@ -62,9 +59,8 @@ export function ProductCard({
         {pad}
       </span>
 
-      <button
-        type="button"
-        onClick={openDetails}
+      <Link
+        to={`/catalogue/${product.id}`}
         data-cursor="VIEW"
         className="relative z-10 mt-10 block w-full overflow-hidden border border-fg/10 text-left md:mt-12"
       >
@@ -81,12 +77,11 @@ export function ProductCard({
         </div>
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/35 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-      </button>
+      </Link>
 
       <div className="relative z-10 mt-5 flex flex-1 flex-col">
-        <button
-          type="button"
-          onClick={openDetails}
+        <Link
+          to={`/catalogue/${product.id}`}
           className="text-left"
           data-cursor=""
         >
@@ -94,7 +89,7 @@ export function ProductCard({
           <h3 className="mt-1.5 font-display text-xl leading-snug font-normal break-words md:text-2xl">
             {product.title}
           </h3>
-        </button>
+        </Link>
 
         <div className="meta mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-fg/50">
           <span className="capitalize">{formatCategory(product.category)}</span>

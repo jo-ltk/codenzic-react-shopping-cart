@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Outlet, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { THEME } from "@/lib/motion";
 import {
@@ -6,11 +7,9 @@ import {
   fetchCategories,
   fetchProducts,
   productsQueryKey,
-  type Product,
 } from "@/lib/api/products";
 import { useProductFilters } from "@/hooks/useProductFilters";
 import { useProductPagination } from "@/hooks/useProductPagination";
-import { useCartStore } from "@/lib/store/cart";
 import { CatalogueFilters } from "@/components/catalogue/CatalogueFilters";
 import { CatalogueToolbar, type CatalogueView } from "@/components/catalogue/CatalogueToolbar";
 import { CataloguePagination } from "@/components/catalogue/CataloguePagination";
@@ -19,7 +18,6 @@ import { ProductSkeleton } from "@/components/products/ProductSkeleton";
 import { ProductError } from "@/components/products/ProductError";
 import { ProductEmpty } from "@/components/products/ProductEmpty";
 import { ProductFilterEmpty } from "@/components/products/ProductFilterEmpty";
-import { ProductDetails } from "@/components/products/ProductDetails";
 import { Footer } from "@/sections/Footer";
 
 const PAGE_SIZE = 8;
@@ -29,9 +27,8 @@ const PAGE_SIZE = 8;
  * Reuses the DummyJSON query + useProductFilters — no second data source.
  */
 export function CataloguePage() {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { productId } = useParams();
   const [view, setView] = useState<CatalogueView>("grid");
-  const isCartOpen = useCartStore((s) => s.isOpen);
 
   const { data, isPending, isError, error, refetch, isFetching } = useQuery({
     queryKey: productsQueryKey,
@@ -52,18 +49,6 @@ export function CataloguePage() {
     filters.filterKey,
   );
 
-  const openDetails = useCallback((product: Product) => {
-    setSelectedProduct(product);
-  }, []);
-
-  const closeDetails = useCallback(() => {
-    setSelectedProduct(null);
-  }, []);
-
-  useEffect(() => {
-    if (isCartOpen) setSelectedProduct(null);
-  }, [isCartOpen]);
-
   useEffect(() => {
     document.documentElement.style.setProperty("--bg", THEME.paper.bg);
     document.documentElement.style.setProperty("--fg", THEME.paper.fg);
@@ -79,6 +64,11 @@ export function CataloguePage() {
   const showFilterEmpty =
     showInventory && filters.hasActiveFilters && filters.filteredProducts.length === 0;
   const showGrid = showInventory && pagination.pageItems.length > 0;
+
+  // Nested /catalogue/:id keeps this page mounted so filters/pagination survive back.
+  if (productId) {
+    return <Outlet />;
+  }
 
   return (
     <>
@@ -160,7 +150,6 @@ export function CataloguePage() {
                     indexOffset={(pagination.page - 1) * PAGE_SIZE}
                     animateKey={`${filters.filterKey}|${pagination.page}|${view}`}
                     immediate
-                    onOpenDetails={openDetails}
                     className={
                       view === "list"
                         ? "grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1"
@@ -178,10 +167,6 @@ export function CataloguePage() {
               ) : null}
             </div>
           </div>
-        ) : null}
-
-        {selectedProduct ? (
-          <ProductDetails product={selectedProduct} onClose={closeDetails} />
         ) : null}
       </main>
       <Footer />
