@@ -46,19 +46,33 @@ function BackToObjects() {
 
 function ProductStudySkeleton() {
   return (
-    <div aria-hidden className="grid grid-cols-1 border-y border-fg/15 lg:grid-cols-2">
-      <div className="aspect-[3/4] w-full animate-pulse bg-fg/[0.05] lg:aspect-auto lg:min-h-[calc(100svh-8.5rem)]" />
-      <div className="animate-pulse space-y-5 px-5 py-10 sm:px-8 lg:px-12 lg:py-12">
-        <div className="h-2 w-24 bg-fg/10" />
-        <div className="h-12 w-4/5 max-w-sm bg-fg/[0.08]" />
-        <div className="h-2 w-32 bg-fg/10" />
-        <div className="h-8 w-28 bg-fg/[0.08]" />
-        <div className="space-y-2 pt-4">
-          <div className="h-3 w-full bg-fg/10" />
-          <div className="h-3 w-5/6 bg-fg/10" />
-          <div className="h-3 w-2/3 bg-fg/10" />
+    <div
+      aria-hidden
+      className="grid grid-cols-1 gap-10 border-t border-fg/15 px-5 pt-6 pb-16 sm:px-8 md:px-10 md:pt-8 lg:grid-cols-12 lg:gap-x-10 lg:px-14 xl:gap-x-14 xl:px-16"
+    >
+      <div className="flex flex-col gap-3 lg:col-span-7 lg:flex-row-reverse lg:gap-4">
+        <div className="aspect-[4/5] w-full animate-pulse border border-fg/10 bg-fg/[0.04] md:aspect-[4/3] lg:aspect-auto lg:h-[calc(100svh-8.5rem)] lg:min-h-[34rem]" />
+        <div className="flex gap-2 lg:w-16 lg:flex-col">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="aspect-[4/5] w-14 animate-pulse bg-fg/[0.05] sm:w-16 lg:w-full" />
+          ))}
         </div>
-        <div className="mt-8 h-24 w-full border border-fg/10 bg-fg/[0.03]" />
+      </div>
+      <div className="animate-pulse space-y-6 lg:col-span-5">
+        <div className="h-2 w-40 bg-fg/10" />
+        <div className="space-y-3 pt-2">
+          <div className="h-12 w-11/12 bg-fg/[0.08]" />
+          <div className="h-12 w-3/5 bg-fg/[0.08]" />
+        </div>
+        <div className="h-4 w-32 bg-fg/10" />
+        <div className="h-2 w-48 bg-fg/10" />
+        <div className="h-10 w-36 bg-fg/[0.08]" />
+        <div className="space-y-2 pt-2">
+          <div className="h-3 w-full max-w-md bg-fg/10" />
+          <div className="h-3 w-5/6 max-w-md bg-fg/10" />
+          <div className="h-3 w-2/3 max-w-md bg-fg/10" />
+        </div>
+        <div className="mt-4 h-32 w-full border border-fg/10 bg-fg/[0.03]" />
       </div>
     </div>
   );
@@ -131,14 +145,14 @@ export function ProductPage() {
         data-theme="paper"
         className="relative overflow-x-clip pt-24 pb-0 sm:pt-28 md:pt-32"
       >
-        <div className="flex flex-col gap-4 px-5 py-6 sm:px-8 sm:py-8 md:flex-row md:items-end md:justify-between md:px-10 lg:px-14">
+        <div className="flex flex-col gap-4 px-5 pt-4 pb-6 sm:px-8 sm:pb-8 md:flex-row md:items-end md:justify-between md:px-10 lg:px-14 xl:px-16">
           <div className="min-w-0">
             <BackToObjects />
-            <p className="meta mt-4 text-fg/45">
+            <p className="meta mt-4 truncate text-fg/45">
               <Link to="/" data-cursor="" className="transition-colors duration-300 hover:text-accent">
                 Home
               </Link>
-              {" / "}
+              <span className="mx-2 text-fg/25">/</span>
               <Link
                 to="/catalogue"
                 data-cursor=""
@@ -146,9 +160,21 @@ export function ProductPage() {
               >
                 Catalogue
               </Link>
-              {data && !isNotFound ? ` / ${data.title}` : ""}
+              {data && !isNotFound ? (
+                <>
+                  <span className="mx-2 text-fg/25">/</span>
+                  <span className="text-fg/70">{data.title}</span>
+                </>
+              ) : null}
             </p>
           </div>
+          {data && !isNotFound ? (
+            <p className="meta hidden text-fg/40 md:block">
+              Object study
+              <span className="mx-2 text-fg/25">·</span>
+              N° {String(data.id).padStart(3, "0")}
+            </p>
+          ) : null}
         </div>
 
         {id !== null && isLoading && !data ? <ProductStudySkeleton /> : null}
