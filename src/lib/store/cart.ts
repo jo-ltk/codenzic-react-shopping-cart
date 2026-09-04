@@ -7,6 +7,14 @@ import {
   clampQuantity,
   type CartTotals,
 } from "@/lib/cart/calculations";
+import {
+  CART_STORAGE_KEY,
+  createCartStorage,
+  normalizePersistedCart,
+  type CartItem,
+} from "@/lib/store/cartPersist";
+
+export type { CartItem };
 
 export {
   CART_MIN_QTY,
@@ -25,15 +33,6 @@ export {
 /** @deprecated Prefer calculateCartTotals — kept as a thin alias. */
 export const computeCartTotals = calculateCartTotals;
 
-export interface CartItem {
-  id: number;
-  title: string;
-  price: number;
-  thumbnail: string;
-  category: string;
-  quantity: number;
-}
-
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
@@ -50,26 +49,11 @@ interface CartState {
   setHasHydrated: (value: boolean) => void;
 }
 
-function normalizeItems(items: CartItem[]): CartItem[] {
-  if (!Array.isArray(items)) return [];
-  return items
-    .filter(
-      (item) =>
-        item &&
-        typeof item.id === "number" &&
-        typeof item.title === "string" &&
-        typeof item.thumbnail === "string",
-    )
-    .map((item) => ({
-      id: item.id,
-      title: item.title,
-      thumbnail: item.thumbnail,
-      category: typeof item.category === "string" ? item.category : "objects",
-      quantity: clampQuantity(item.quantity),
-      price: Number.isFinite(item.price) && item.price >= 0 ? item.price : 0,
-    }));
-}
-
+/**
+ * OBJEKT cart store.
+ * Product lists stay in TanStack Query — Zustand only holds bag lines.
+ * `persist` writes `items` to localStorage under CART_STORAGE_KEY.
+ */
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
@@ -104,7 +88,10 @@ export const useCartStore = create<CartState>()(
             items: [
               ...state.items,
               {
-                ...item,
+                id: item.id,
+                title: item.title,
+                thumbnail: item.thumbnail,
+                category: item.category,
                 price: Number.isFinite(item.price) && item.price >= 0 ? item.price : 0,
                 quantity: CART_MIN_QTY,
               },
@@ -133,24 +120,45 @@ export const useCartStore = create<CartState>()(
           }),
         })),
 
+      /** Empties the bag — persist middleware writes [] to localStorage. */
       clear: () => set({ items: [] }),
 
       getTotals: () => calculateCartTotals(get().items),
     }),
     {
-      name: "objekt-cart",
-      storage: createJSONStorage(() => localStorage),
+      name: CART_STORAGE_KEY,
+      version: 1,
+      storage: createJSONStorage(createCartStorage),
+      // Only cart lines are persisted — UI flags stay ephemeral.
       partialize: (state) => ({ items: state.items }),
       merge: (persisted, current) => {
-        const raw = persisted as Partial<CartState> | undefined;
-        const items = normalizeItems(raw?.items ?? []);
-        return {
-          ...current,
-          items,
-          isOpen: false,
-        };
+        try {
+          const raw = persisted as { items?: unknown } | null | undefined;
+          const items = normalizePersistedCart(raw?.items);
+          return {
+            ...current,
+            items,
+            isOpen: false,
+          };
+        } catch {
+          // Corrupt payload → start empty rather than crash.
+          return {
+            ...current,
+            items: [],
+            isOpen: false,
+          };
+        }
       },
-      onRehydrateStorage: () => (state) => {
+      migrate: (persisted) => {
+        // Future schema bumps can transform here; v1 is a pass-through.
+        return persisted as CartState;
+      },
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          // Failed rehydrate — keep an empty cart and mark ready.
+          useCartStore.setState({ items: [], hasHydrated: true, isOpen: false });
+          return;
+        }
         state?.setHasHydrated(true);
       },
     },
