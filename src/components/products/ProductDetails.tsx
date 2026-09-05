@@ -47,6 +47,7 @@ export function ProductDetails({ product, related = [] }: ProductDetailsProps) {
   const purchaseRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore((s) => s.addItem);
+  const openCheckout = useCartStore((s) => s.openCheckout);
   const quantityInCart = useCartStore(
     (s) => s.items.find((i) => i.id === product.id)?.quantity ?? 0,
   );
@@ -206,6 +207,7 @@ export function ProductDetails({ product, related = [] }: ProductDetailsProps) {
     onDecrease: () => setQuantity((q) => clampQuantity(q - 1)),
     onIncrease: () => setQuantity((q) => clampQuantity(Math.min(q + 1, remaining))),
     onAdd,
+    onCheckout: openCheckout,
   };
 
   return (
@@ -500,6 +502,7 @@ function PurchaseBlock({
   onDecrease,
   onIncrease,
   onAdd,
+  onCheckout,
 }: {
   quantity: number;
   canDecrease: boolean;
@@ -515,6 +518,7 @@ function PurchaseBlock({
   onDecrease: () => void;
   onIncrease: () => void;
   onAdd: () => void;
+  onCheckout: () => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLButtonElement>(null);
@@ -653,11 +657,28 @@ function PurchaseBlock({
     </button>
   );
 
+  const checkoutBtn =
+    quantityInCart > 0 ? (
+      <button
+        type="button"
+        onClick={onCheckout}
+        data-cursor=""
+        aria-label="Proceed to checkout"
+        className={cn(
+          "meta inline-flex items-center justify-center border border-fg/20 bg-transparent text-fg transition-colors duration-300 hover:border-accent hover:text-accent",
+          compact ? "min-h-11 shrink-0 px-3.5" : "min-h-11 w-full sm:min-h-12",
+        )}
+      >
+        Checkout
+      </button>
+    ) : null;
+
   if (compact) {
     return (
       <div ref={root} className="flex shrink-0 items-center gap-2">
         {stepper}
         {cta}
+        {checkoutBtn}
       </div>
     );
   }
@@ -668,6 +689,8 @@ function PurchaseBlock({
         {stepper}
         {cta}
       </div>
+
+      {checkoutBtn ? <div className="mt-3">{checkoutBtn}</div> : null}
 
       <p className="meta mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-fg/45">
         <span className="inline-flex items-center gap-2">
@@ -697,6 +720,15 @@ function PurchaseBlock({
         >
           Added to your selection.
           {quantityInCart > 0 ? ` ${quantityInCart} of ${CART_MAX_QTY} in bag.` : null}
+          {" "}
+          <button
+            type="button"
+            onClick={onCheckout}
+            data-cursor=""
+            className="text-accent underline decoration-accent/40 underline-offset-2 transition-colors hover:decoration-accent"
+          >
+            Checkout
+          </button>
         </p>
       ) : null}
 
