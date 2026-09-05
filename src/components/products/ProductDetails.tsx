@@ -624,7 +624,9 @@ function PurchaseBlock({
     </div>
   );
 
-  const cta = (
+  const showCheckout = quantityInCart > 0;
+
+  const addCta = (
     <button
       ref={ctaRef}
       type="button"
@@ -632,14 +634,19 @@ function PurchaseBlock({
       disabled={atCartMax}
       data-cursor=""
       className={cn(
-        "meta group relative inline-flex items-center justify-center overflow-hidden bg-ink text-paper transition-colors duration-500 disabled:cursor-not-allowed disabled:bg-charcoal/10 disabled:text-charcoal/35",
+        "meta group relative inline-flex items-center justify-center overflow-hidden transition-colors duration-500",
+        atCartMax
+          ? "cursor-not-allowed bg-charcoal/10 text-charcoal/35"
+          : "bg-ink text-paper",
         compact ? "min-h-11 shrink-0 px-5" : "min-h-12 w-full flex-1 px-6 sm:min-h-14",
       )}
     >
-      <span
-        aria-hidden
-        className="absolute inset-0 translate-y-full bg-accent transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-disabled:hidden"
-      />
+      {!atCartMax ? (
+        <span
+          aria-hidden
+          className="absolute inset-0 translate-y-full bg-accent transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0"
+        />
+      ) : null}
       <span className="relative z-10 inline-flex items-center gap-2">
         {atCartMax ? (
           compact ? "In bag" : `In bag (max ${CART_MAX_QTY})`
@@ -657,28 +664,36 @@ function PurchaseBlock({
     </button>
   );
 
-  const checkoutBtn =
-    quantityInCart > 0 ? (
-      <button
-        type="button"
-        onClick={onCheckout}
-        data-cursor=""
-        aria-label="Proceed to checkout"
-        className={cn(
-          "meta inline-flex items-center justify-center border border-fg/20 bg-transparent text-fg transition-colors duration-300 hover:border-accent hover:text-accent",
-          compact ? "min-h-11 shrink-0 px-3.5" : "min-h-11 w-full sm:min-h-12",
-        )}
-      >
-        Checkout
-      </button>
-    ) : null;
+  /** Solid ink CTA — obvious next step once anything is in the bag. */
+  const checkoutCta = showCheckout ? (
+    <button
+      type="button"
+      onClick={onCheckout}
+      data-cursor=""
+      aria-label="Proceed to checkout"
+      className={cn(
+        "meta inline-flex items-center justify-center bg-ink text-paper transition-colors duration-300 hover:bg-accent",
+        compact ? "min-h-11 shrink-0 px-4" : "min-h-12 w-full sm:min-h-14",
+      )}
+    >
+      Checkout
+    </button>
+  ) : null;
 
   if (compact) {
+    // Sticky bar: once in bag, Checkout is the primary action (In bag is not useful).
+    if (atCartMax && checkoutCta) {
+      return (
+        <div ref={root} className="flex shrink-0 items-center gap-2">
+          {checkoutCta}
+        </div>
+      );
+    }
     return (
       <div ref={root} className="flex shrink-0 items-center gap-2">
         {stepper}
-        {cta}
-        {checkoutBtn}
+        {addCta}
+        {checkoutCta}
       </div>
     );
   }
@@ -687,10 +702,19 @@ function PurchaseBlock({
     <div ref={root} className="border border-fg/15 p-5 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
         {stepper}
-        {cta}
+        {addCta}
       </div>
 
-      {checkoutBtn ? <div className="mt-3">{checkoutBtn}</div> : null}
+      {checkoutCta ? (
+        <div className="mt-3 flex flex-col gap-2">
+          {checkoutCta}
+          <p className="text-center text-[0.7rem] leading-relaxed text-fg/45">
+            {atCartMax
+              ? "Bag limit reached — continue to checkout."
+              : "Ready when you are — review bag and place order."}
+          </p>
+        </div>
+      ) : null}
 
       <p className="meta mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-fg/45">
         <span className="inline-flex items-center gap-2">
@@ -720,15 +744,6 @@ function PurchaseBlock({
         >
           Added to your selection.
           {quantityInCart > 0 ? ` ${quantityInCart} of ${CART_MAX_QTY} in bag.` : null}
-          {" "}
-          <button
-            type="button"
-            onClick={onCheckout}
-            data-cursor=""
-            className="text-accent underline decoration-accent/40 underline-offset-2 transition-colors hover:decoration-accent"
-          >
-            Checkout
-          </button>
         </p>
       ) : null}
 
