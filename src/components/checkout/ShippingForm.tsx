@@ -112,7 +112,7 @@ export function ShippingForm({
 
       <div className="flex flex-col gap-3 pt-1 sm:flex-row">
         <button type="button" onClick={onBack} data-cursor="" className={cn(ui.btnGhost, "flex-1")}>
-          Back to review
+          Back to cart
         </button>
         <button type="submit" data-cursor="" className={cn(ui.btnPrimary, "flex-1")}>
           Continue to payment

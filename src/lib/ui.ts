@@ -12,7 +12,7 @@ export const ui = {
   btnPrimary:
     "meta inline-flex min-h-11 items-center justify-center bg-ink px-4 py-3 text-paper transition-colors duration-300 hover:bg-accent disabled:cursor-not-allowed disabled:bg-charcoal/15 disabled:text-charcoal/35",
   btnPrimaryFull:
-    "meta inline-flex min-h-12 w-full items-center justify-center bg-ink px-4 py-3.5 text-paper transition-colors duration-300 hover:bg-accent disabled:cursor-not-allowed disabled:bg-charcoal/15 disabled:text-charcoal/35",
+    "meta inline-flex min-h-12 w-full items-center justify-center bg-ink px-4 py-3.5 text-paper transition-colors duration-300 hover:bg-accent disabled:cursor-not-allowed disabled:bg-charcoal/15 disabled:text-charcoal/35 disabled:shadow-none",
   btnGhost:
     "meta inline-flex min-h-11 items-center justify-center border border-charcoal/15 px-4 py-3 text-charcoal transition-colors duration-300 hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40",
   btnGhostTheme:

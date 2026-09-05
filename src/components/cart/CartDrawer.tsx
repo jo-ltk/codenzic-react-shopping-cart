@@ -19,7 +19,9 @@ import { OrderSuccess } from "@/components/checkout/OrderSuccess";
 export function CartDrawer() {
   const { items, itemCount, canCheckout, ...totals } = useCartTotals();
   const isOpen = useCartStore((s) => s.isOpen);
+  const checkoutIntent = useCartStore((s) => s.checkoutIntent);
   const closeCart = useCartStore((s) => s.closeCart);
+  const consumeCheckoutIntent = useCartStore((s) => s.consumeCheckoutIntent);
   const clear = useCartStore((s) => s.clear);
   const checkout = useCheckoutFlow();
   const navigate = useNavigate();
@@ -27,6 +29,7 @@ export function CartDrawer() {
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLElement>(null);
   const scrim = useRef<HTMLButtonElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const wasOpen = useRef(false);
 
   const summaryTotals = { ...totals, itemCount, canCheckout };
@@ -35,6 +38,34 @@ export function CartDrawer() {
   useEffect(() => {
     if (!isOpen) checkout.resetCheckout();
   }, [isOpen, checkout.resetCheckout]);
+
+  // Nav "Checkout" opens the drawer and asks to enter the existing checkout flow.
+  useEffect(() => {
+    if (!isOpen || !checkoutIntent) return;
+    consumeCheckoutIntent();
+    if (checkout.step === "success") return;
+    const proceeded = checkout.beginCheckout(canCheckout && items.length > 0);
+    if (!proceeded && checkout.step === "review") {
+      // Stay on review so the disabled CTA + minimum message are visible.
+      const cta = ctaRef.current?.querySelector<HTMLElement>("[data-cart-checkout-cta]");
+      cta?.focus({ preventScroll: true });
+      if (!prefersReducedMotion() && ctaRef.current) {
+        gsap.fromTo(
+          ctaRef.current,
+          { y: 6 },
+          { y: 0, duration: 0.35, ease: "power2.out" },
+        );
+      }
+    }
+  }, [
+    isOpen,
+    checkoutIntent,
+    canCheckout,
+    items.length,
+    checkout.step,
+    checkout.beginCheckout,
+    consumeCheckoutIntent,
+  ]);
 
   // Avoid "aria-hidden on focused descendant" when closing with focus still inside.
   useEffect(() => {
@@ -89,7 +120,7 @@ export function CartDrawer() {
       }
 
       tl.fromTo(
-        panelEl.querySelectorAll("[data-cart-summary]"),
+        panelEl.querySelectorAll("[data-cart-summary], [data-cart-checkout-footer]"),
         { y: 10, autoAlpha: 0 },
         { y: 0, autoAlpha: 1, duration: 0.35 },
         0.28,
@@ -176,10 +207,10 @@ export function CartDrawer() {
     checkout.step === "success"
       ? "Order placed"
       : checkout.step === "shipping"
-        ? "Checkout"
+        ? "Shipping"
         : checkout.step === "payment"
-          ? "Checkout"
-          : "Your selection";
+          ? "Payment"
+          : "Your cart";
 
   return (
     <div
@@ -304,7 +335,11 @@ export function CartDrawer() {
         </div>
 
         {checkout.step === "review" ? (
-          <div className="px-5 pt-2 pb-6 sm:px-7 sm:pb-8">
+          <div
+            ref={ctaRef}
+            data-cart-checkout-footer
+            className="shrink-0 border-t border-charcoal/15 bg-paper/95 px-5 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-16px_40px_-28px_rgba(10,22,16,0.45)] backdrop-blur-sm sm:px-7 sm:pt-5 sm:pb-8"
+          >
             <CartSummary
               totals={summaryTotals}
               onCheckout={() => {

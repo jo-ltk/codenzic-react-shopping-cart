@@ -19,9 +19,11 @@ export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
   const discountPct = Math.round(CART_DISCOUNT_RATE * 100);
   const taxPct = Math.round(CART_TAX_RATE * 100);
   const isEmpty = itemCount === 0 || subtotal === 0;
+  const amountNeeded = Math.max(0, CART_MIN_CHECKOUT - finalTotal);
+  const belowMinimum = !canCheckout && !isEmpty;
 
   return (
-    <div data-cart-summary className="border-t border-charcoal/15 pt-5 sm:pt-6">
+    <div data-cart-summary className="pt-1">
       <dl className="space-y-3">
         <div className="flex items-center justify-between gap-4">
           <dt className="meta text-charcoal/45">Subtotal</dt>
@@ -61,10 +63,15 @@ export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
         </div>
       </dl>
 
-      {!canCheckout && !isEmpty ? (
-        <p className={ui.notice} role="status">
-          Checkout is disabled below {formatMoney(CART_MIN_CHECKOUT)}. Add another
-          object so the final total reaches the minimum.
+      {belowMinimum ? (
+        <p
+          id="cart-checkout-disabled-reason"
+          className={ui.notice}
+          role="status"
+          data-cart-checkout-hint
+        >
+          Minimum order is {formatMoney(CART_MIN_CHECKOUT)}. Add{" "}
+          {formatMoney(amountNeeded)} more to unlock checkout.
         </p>
       ) : null}
 
@@ -79,6 +86,8 @@ export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
         disabled={!canCheckout}
         onClick={onCheckout}
         data-cursor=""
+        data-cart-checkout-cta
+        aria-describedby={belowMinimum ? "cart-checkout-disabled-reason" : undefined}
         title={
           !canCheckout
             ? isEmpty
@@ -86,14 +95,24 @@ export function CartSummary({ totals, onCheckout }: CartSummaryProps) {
               : `Minimum order is ${formatMoney(CART_MIN_CHECKOUT)}`
             : "Continue to shipping"
         }
-        className={cn(ui.btnPrimaryFull, "mt-6")}
+        className={cn(
+          ui.btnPrimaryFull,
+          "mt-5 min-h-14 tracking-[0.2em] sm:mt-6 sm:min-h-[3.5rem]",
+          canCheckout && "shadow-[0_12px_28px_-18px_rgba(10,22,16,0.65)]",
+        )}
       >
         {canCheckout
-          ? "Checkout"
+          ? "Proceed to Checkout"
           : isEmpty
             ? "Bag is empty"
-            : "Checkout unavailable"}
+            : "Proceed to Checkout"}
       </button>
+
+      {canCheckout ? (
+        <p className="mt-3 text-center text-xs leading-relaxed text-charcoal/45">
+          Next: review shipping, confirm payment, place order.
+        </p>
+      ) : null}
     </div>
   );
 }

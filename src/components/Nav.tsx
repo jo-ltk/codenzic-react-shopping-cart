@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { Search } from "lucide-react";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
+import { calculateCartTotals } from "@/lib/cart/calculations";
 import { useCartStore } from "@/lib/store/cart";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,8 @@ export function Nav() {
   );
   const cartOpen = useCartStore((s) => s.isOpen);
   const openCart = useCartStore((s) => s.openCart);
+  const openCheckout = useCartStore((s) => s.openCheckout);
+  const canCheckout = useCartStore((s) => calculateCartTotals(s.items).canCheckout);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -349,16 +352,37 @@ export function Nav() {
               }}
               data-cursor=""
               aria-label={`Open cart, ${cartCount} items`}
-              className="inline-flex items-center gap-1.5 px-3 py-3.5 text-[0.68rem] font-medium tracking-[0.18em] uppercase text-paper/85 transition-colors duration-300 hover:text-paper sm:gap-2.5 sm:border-l-2 sm:border-paper/15 sm:px-5 sm:py-0 sm:text-sm sm:tracking-[0.12em] sm:text-paper sm:hover:bg-accent sm:hover:text-paper md:px-6"
+              className="inline-flex items-center gap-1.5 px-3 py-3.5 text-[0.68rem] font-medium tracking-[0.18em] uppercase text-paper transition-colors duration-300 hover:text-paper sm:gap-2.5 sm:border-l-2 sm:border-paper/15 sm:px-5 sm:py-0 sm:text-sm sm:tracking-[0.12em] sm:hover:bg-accent sm:hover:text-paper md:px-6"
             >
-              <span className="sm:hidden">Cart ({cartCount})</span>
-              <span className="hidden sm:inline">Cart</span>
+              <span className="underline decoration-paper/35 underline-offset-4 sm:no-underline">
+                Cart
+              </span>
               <span
                 ref={countRef}
-                className="hidden min-w-7 items-center justify-center bg-paper px-1.5 py-0.5 font-mono text-xs font-medium tracking-wider text-ink sm:inline-flex"
+                className="inline-flex min-w-6 items-center justify-center bg-paper px-1.5 py-0.5 font-mono text-[0.65rem] font-medium tracking-wider text-ink sm:min-w-7 sm:text-xs"
               >
                 {cartCount}
               </span>
+            </button>
+
+            {/* Desktop checkout — opens cart and enters existing checkout flow */}
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                openCheckout();
+              }}
+              data-cursor=""
+              aria-label={
+                canCheckout
+                  ? "Proceed to checkout"
+                  : cartCount === 0
+                    ? "Open cart to start checkout"
+                    : "Open cart — minimum order not reached"
+              }
+              className="hidden items-center border-l-2 border-paper/15 bg-paper px-5 text-sm font-medium tracking-[0.12em] uppercase text-ink transition-colors duration-300 hover:bg-accent hover:text-paper sm:inline-flex md:px-6"
+            >
+              Checkout
             </button>
 
             <button
@@ -458,30 +482,47 @@ export function Nav() {
               </ul>
             </nav>
 
-            <div className="mt-10 flex flex-col gap-4 border-t-2 border-paper/20 pt-8 sm:mt-14 sm:flex-row sm:items-stretch md:pt-10">
-              <Link
-                to="/catalogue"
-                data-nav-foot
-                data-cursor=""
-                onClick={() => setMenuOpen(false)}
-                className="inline-flex min-h-14 flex-1 items-center justify-center gap-3 border-2 border-paper/30 px-6 text-sm font-medium tracking-[0.16em] uppercase transition-colors duration-300 hover:border-paper hover:bg-paper hover:text-ink"
-              >
-                <Search className="size-4" strokeWidth={1.5} />
-                Search
-              </Link>
+            <div className="mt-10 flex flex-col gap-3 border-t-2 border-paper/20 pt-8 sm:mt-14 sm:gap-4 md:pt-10">
               <button
                 type="button"
                 data-nav-foot
                 data-cursor=""
                 onClick={() => {
                   setMenuOpen(false);
-                  openCart();
+                  openCheckout();
                 }}
-                className="inline-flex min-h-14 flex-1 items-center justify-center gap-3 bg-paper px-6 text-sm font-medium tracking-[0.16em] uppercase text-ink transition-colors duration-300 hover:bg-accent hover:text-paper"
+                className="inline-flex min-h-14 w-full items-center justify-center gap-3 bg-accent px-6 text-sm font-medium tracking-[0.16em] uppercase text-paper transition-colors duration-300 hover:bg-paper hover:text-ink"
               >
-                Cart
-                <span className="font-mono tracking-wider">({cartCount})</span>
+                Checkout
+                {cartCount > 0 ? (
+                  <span className="font-mono tracking-wider">({cartCount})</span>
+                ) : null}
               </button>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+                <Link
+                  to="/catalogue"
+                  data-nav-foot
+                  data-cursor=""
+                  onClick={() => setMenuOpen(false)}
+                  className="inline-flex min-h-14 flex-1 items-center justify-center gap-3 border-2 border-paper/30 px-6 text-sm font-medium tracking-[0.16em] uppercase transition-colors duration-300 hover:border-paper hover:bg-paper hover:text-ink"
+                >
+                  <Search className="size-4" strokeWidth={1.5} />
+                  Search
+                </Link>
+                <button
+                  type="button"
+                  data-nav-foot
+                  data-cursor=""
+                  onClick={() => {
+                    setMenuOpen(false);
+                    openCart();
+                  }}
+                  className="inline-flex min-h-14 flex-1 items-center justify-center gap-3 border-2 border-paper bg-paper px-6 text-sm font-medium tracking-[0.16em] uppercase text-ink transition-colors duration-300 hover:bg-transparent hover:text-paper"
+                >
+                  Cart
+                  <span className="font-mono tracking-wider">({cartCount})</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

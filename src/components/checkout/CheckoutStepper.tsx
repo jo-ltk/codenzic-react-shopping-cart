@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 export type CheckoutStep = "review" | "shipping" | "payment" | "success";
 
 const STEPS: { id: Exclude<CheckoutStep, "success">; label: string }[] = [
-  { id: "review", label: "Review" },
+  { id: "review", label: "Cart" },
   { id: "shipping", label: "Shipping" },
   { id: "payment", label: "Payment" },
 ];

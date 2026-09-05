@@ -36,10 +36,15 @@ export const computeCartTotals = calculateCartTotals;
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
+  /** When true, CartDrawer should attempt beginCheckout after opening. */
+  checkoutIntent: boolean;
   hasHydrated: boolean;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
+  /** Open the cart and request entry into the existing checkout flow. */
+  openCheckout: () => void;
+  consumeCheckoutIntent: () => void;
   addItem: (
     item: Omit<CartItem, "quantity">,
     options?: number | { quantity?: number; openCart?: boolean },
@@ -62,13 +67,20 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       isOpen: false,
+      checkoutIntent: false,
       hasHydrated: false,
 
       setHasHydrated: (value) => set({ hasHydrated: value }),
 
-      openCart: () => set({ isOpen: true }),
-      closeCart: () => set({ isOpen: false }),
-      toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+      openCart: () => set({ isOpen: true, checkoutIntent: false }),
+      closeCart: () => set({ isOpen: false, checkoutIntent: false }),
+      toggleCart: () =>
+        set((state) => ({
+          isOpen: !state.isOpen,
+          checkoutIntent: false,
+        })),
+      openCheckout: () => set({ isOpen: true, checkoutIntent: true }),
+      consumeCheckoutIntent: () => set({ checkoutIntent: false }),
 
       addItem: (item, options) =>
         set((state) => {
@@ -154,6 +166,7 @@ export const useCartStore = create<CartState>()(
             ...current,
             items,
             isOpen: false,
+            checkoutIntent: false,
           };
         } catch {
           // Corrupt payload → start empty rather than crash.
@@ -161,6 +174,7 @@ export const useCartStore = create<CartState>()(
             ...current,
             items: [],
             isOpen: false,
+            checkoutIntent: false,
           };
         }
       },
@@ -171,7 +185,12 @@ export const useCartStore = create<CartState>()(
       onRehydrateStorage: () => (state, error) => {
         if (error) {
           // Failed rehydrate — keep an empty cart and mark ready.
-          useCartStore.setState({ items: [], hasHydrated: true, isOpen: false });
+          useCartStore.setState({
+            items: [],
+            hasHydrated: true,
+            isOpen: false,
+            checkoutIntent: false,
+          });
           return;
         }
         state?.setHasHydrated(true);
